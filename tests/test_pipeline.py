@@ -14,7 +14,7 @@ from pipeline.dataset import build_temporal_dataset, STAGE_NAMES, NUM_STAGES
 from models.attack_forecaster import AttackForecasterBiLSTM
 from models.risk_engine import DynamicRiskEngine
 from models.shap_explainer import AttackForecasterSHAPExplainer
-from dashboard.server import app, process_sequence
+from dashboard.server import app as server_app, process_sequence
 
 
 def test_step1_feature_extraction():
@@ -119,7 +119,7 @@ def test_step5_shap_gradient_explainer():
 
 def test_step6_fastapi_endpoints():
     """Verify FastAPI /api/forecast and /api/stream endpoints and output format."""
-    client = TestClient(app)
+    client = TestClient(server_app)
     
     # Test /api/forecast
     res_forecast = client.post("/api/forecast", json={})
@@ -170,7 +170,7 @@ def test_real_cicids_loader_and_ingest_endpoint():
     assert window.shape == (10, 12)
     
     # Test /api/ingest-real endpoint
-    client = TestClient(app)
+    client = TestClient(server_app)
     res_real = client.get("/api/ingest-real")
     assert res_real.status_code == 200
     data_real = res_real.json()
@@ -197,7 +197,7 @@ def test_windowed_real_data_and_defending_methods():
     2. The defending-methods list changes appropriately when predicted next stage changes across windows.
     3. Each returned defense item includes an action + a feature-based rationale string.
     """
-    client = TestClient(app)
+    client = TestClient(server_app)
     
     # 1. Test windowed real data ingestion
     res = client.get("/api/ingest-real")
@@ -264,7 +264,7 @@ def test_export_xlsx_endpoint():
     import openpyxl
     from pipeline.excel_exporter import HEADERS
 
-    client = TestClient(app)
+    client = TestClient(server_app)
     
     # Generate 3 forecasts to populate history
     for _ in range(3):
