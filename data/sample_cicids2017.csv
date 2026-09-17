@@ -1,0 +1,32 @@
+Destination Port, Flow Duration, Total Fwd Packets, Total Backward Packets, Flow Packets/s, Flow IAT Mean, Flow IAT Std, Flow IAT Max, SYN Flag Count, Average Packet Size, Protocol, Label
+0, 15000, 2, 0, 133.3, 15000.0, 0.0, 15000.0, 0, 32.0, 1, Host Discovery - ICMP Ping Sweep
+0, 16200, 2, 0, 123.4, 16200.0, 0.0, 16200.0, 0, 32.0, 1, Host Discovery - ICMP Ping Sweep
+0, 14800, 2, 0, 135.1, 14800.0, 0.0, 14800.0, 0, 32.0, 1, Host Discovery - ICMP Ping Sweep
+0, 18000, 3, 0, 166.6, 9000.0, 500.0, 9500.0, 0, 32.0, 1, Host Discovery - ICMP Ping Sweep
+0, 17500, 2, 0, 114.2, 17500.0, 0.0, 17500.0, 0, 32.0, 1, Host Discovery - ARP Sweep
+0, 19000, 3, 0, 157.8, 9500.0, 600.0, 10100.0, 0, 32.0, 1, Host Discovery - ARP Sweep
+21, 25000, 2, 1, 120.0, 12500.0, 1200.0, 13700.0, 1, 40.0, 6, PortScan - SYN Probe
+22, 28000, 2, 1, 107.1, 14000.0, 1100.0, 15100.0, 1, 40.0, 6, PortScan - SYN Probe
+23, 24000, 2, 1, 125.0, 12000.0, 900.0, 12900.0, 1, 40.0, 6, PortScan - SYN Probe
+80, 22000, 2, 1, 136.3, 11000.0, 800.0, 11800.0, 1, 40.0, 6, PortScan - SYN Probe
+443, 21000, 2, 1, 142.8, 10500.0, 750.0, 11250.0, 1, 40.0, 6, PortScan - SYN Probe
+8080, 29000, 2, 1, 103.4, 14500.0, 1300.0, 15800.0, 1, 40.0, 6, PortScan - SYN Probe
+8443, 27000, 2, 1, 111.1, 13500.0, 1150.0, 14650.0, 1, 40.0, 6, PortScan - SYN Probe
+3306, 31000, 2, 1, 96.7, 15500.0, 1400.0, 16900.0, 1, 40.0, 6, PortScan - SYN Probe
+80, 180000, 9, 8, 94.4, 11250.0, 3800.0, 24000.0, 1, 148.0, 6, Web Enumeration - Nikto Version Scan
+80, 195000, 10, 9, 97.4, 10263.1, 3500.0, 21000.0, 1, 155.0, 6, Web Enumeration - DirBuster Probe
+443, 140000, 8, 7, 107.1, 9333.3, 2900.0, 18000.0, 1, 160.0, 6, Web Enumeration - SSL Ciphers Probe
+22, 380000, 14, 12, 68.4, 15200.0, 6200.0, 38000.0, 1, 95.0, 6, Service Enumeration - SSH Banner Grab
+445, 320000, 12, 10, 68.7, 15238.0, 5800.0, 34000.0, 1, 110.0, 6, Service Enumeration - SMB Protocol Probe
+445, 335000, 13, 11, 71.6, 14565.2, 5400.0, 32000.0, 1, 115.0, 6, Service Enumeration - SMB IPC Share Enum
+80, 540000, 22, 18, 74.0, 13846.1, 8200.0, 52000.0, 1, 175.0, 6, Exploitation - SQL Injection Payload
+80, 560000, 24, 20, 78.5, 13023.2, 8500.0, 54000.0, 1, 182.0, 6, Exploitation - SQL Injection Blind Timing
+443, 620000, 28, 22, 80.6, 12653.0, 9400.0, 59000.0, 1, 190.0, 6, Exploitation - XSS Stored Weaponization
+8080, 780000, 36, 30, 84.6, 12000.0, 11000.0, 72000.0, 1, 210.0, 6, Exploitation - Apache Struts RCE Exploit
+8080, 810000, 38, 32, 86.4, 11739.1, 11400.0, 75000.0, 1, 218.0, 6, Exploitation - Infiltration Reverse Shell
+445, 890000, 42, 36, 87.6, 11558.4, 12200.0, 80000.0, 1, 225.0, 6, Exploitation - EternalBlue SMB Remote Exec
+445, 920000, 45, 38, 90.2, 11219.5, 12800.0, 84000.0, 1, 232.0, 6, Intrusion - Lateral Movement SMB Admin$
+88, 350000, 18, 15, 94.2, 10937.5, 6800.0, 39000.0, 1, 160.0, 6, Intrusion - Kerberos Golden Ticket Request
+445, 410000, 20, 18, 92.6, 11081.0, 7400.0, 44000.0, 1, 172.0, 6, Intrusion - PsExec Remote Service Spawn
+4444, 600000, 25, 20, 75.0, 13636.3, 9800.0, 62000.0, 1, 185.0, 6, Intrusion - C2 Beaconing Channel Established
+4444, 620000, 26, 22, 77.4, 13191.4, 9900.0, 64000.0, 1, 188.0, 6, Intrusion - C2 Exfiltration Payload Burst

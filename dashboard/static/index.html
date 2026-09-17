@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Network Attack Forecasting System | SIH26153</title>
+  <meta name="description" content="AI-based multi-stage cyber attack forecasting from temporal network flow patterns with SHAP explainability.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- Sticky Top Header -->
+  <header class="app-header" id="appHeader">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-title">SIH26153 // ATTACK FORECASTER</span>
+        <span class="brand-subtitle">Temporal Flow Predictive Engine</span>
+      </div>
+      <div class="header-utility">
+        <button id="streamTriggerBtn" class="action-btn" title="Fetch next flow window">
+          <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          Advance Stream
+        </button>
+        <button id="loadRealBtn" class="action-btn secondary" title="Ingest actual CICIDS2017/2018 CSV data">
+          <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Load Real CICIDS Sample
+        </button>
+        <button id="exportExcelBtn" class="action-btn" title="Export forecast session history to Excel (.xlsx)">
+          <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          Export to Excel
+        </button>
+        <div class="live-indicator" id="liveIndicator">
+          <span class="live-pulse" id="livePulse"></span>
+          <span class="live-label" id="liveLabel">LIVE FLOW STREAM</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Centered Content Container -->
+  <main class="main-container">
+
+    <!-- Section 0: Exact Specification Output Banner -->
+    <section class="banner-section" aria-label="Forecast Output Summary">
+      <div class="exact-output-bar" id="exactOutputBanner">
+        <span class="banner-prompt-label">SYSTEM FORECAST:</span>
+        <span class="banner-content" id="bannerContent">
+          Current: <strong id="bannerCurrent">Scanning</strong> → 
+          Predicted Next: <strong id="bannerNext">Enumeration</strong> → 
+          Confidence: <strong id="bannerConfidence">87%</strong> → 
+          Risk: <span id="bannerRiskBadge" class="risk-badge-text">HIGH</span>
+        </span>
+      </div>
+    </section>
+
+    <!-- Section 1: Conceptual Attack-Stage Step Indicator -->
+    <section class="section stage-indicator-section" aria-label="Attack Progression Timeline">
+      <div class="section-header">
+        <span class="section-caption">CONCEPTUAL ATTACK PROGRESSION (NON-RIGID)</span>
+      </div>
+      <div class="step-indicator-wrapper">
+        <div class="step-indicator" id="stepIndicator">
+          <div class="step-node" data-stage="Reconnaissance">
+            <div class="node-marker">1</div>
+            <div class="node-info">
+              <span class="node-title">Reconnaissance</span>
+              <span class="node-status-tag" id="tag-recon">Standby</span>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-node" data-stage="Scanning">
+            <div class="node-marker">2</div>
+            <div class="node-info">
+              <span class="node-title">Scanning</span>
+              <span class="node-status-tag" id="tag-scan">Standby</span>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-node" data-stage="Enumeration">
+            <div class="node-marker">3</div>
+            <div class="node-info">
+              <span class="node-title">Enumeration</span>
+              <span class="node-status-tag" id="tag-enum">Standby</span>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-node" data-stage="Exploitation">
+            <div class="node-marker">4</div>
+            <div class="node-info">
+              <span class="node-title">Exploitation</span>
+              <span class="node-status-tag" id="tag-expl">Standby</span>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-node" data-stage="Intrusion">
+            <div class="node-marker">5</div>
+            <div class="node-info">
+              <span class="node-title">Intrusion</span>
+              <span class="node-status-tag" id="tag-intr">Standby</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Trust Stat Callouts (Confidence & Dynamic Risk Score) -->
+    <section class="section stats-section" aria-label="Model Forecasting Statistics">
+      <div class="stats-grid">
+        <!-- Stat Callout 1: Confidence Value -->
+        <div class="stat-card" id="confidenceCard">
+          <div class="stat-number-wrapper">
+            <span class="stat-number" id="confidenceValue">0</span>
+            <span class="stat-unit">%</span>
+          </div>
+          <span class="stat-caption">PREDICTED NEXT STAGE CONFIDENCE</span>
+          <div class="stat-meta" id="confidenceMeta">Temporal sequence probability calibrated across candidate transitions</div>
+        </div>
+
+        <!-- Stat Callout 2: Dynamic Risk Score -->
+        <div class="stat-card" id="riskScoreCard">
+          <div class="stat-number-wrapper">
+            <span class="stat-number" id="riskScoreValue">0</span>
+            <span class="stat-unit">/100</span>
+          </div>
+          <span class="stat-caption">DYNAMIC RISK SCORE</span>
+          <div class="risk-badge-wrapper">
+            <span class="stat-meta">Threat Index:</span>
+            <span class="risk-badge" id="riskLevelBadge">ANALYZING</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Core Cards Grid (Current Stage, Predicted Next Stage, Preventive Response) -->
+    <section class="section cards-section" aria-label="Attack Stage Forecast & Defensive Recommendations">
+      <div class="cards-grid">
+        
+        <!-- Card 1: Current Stage -->
+        <div class="card-module animate-slot" id="currentStageCard">
+          <div class="card-header-bar">
+            <svg class="utility-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span class="card-caption">CURRENT ATTACK STAGE</span>
+          </div>
+          <div class="card-body">
+            <h3 class="card-value-title" id="currentStageTitle">Scanning</h3>
+            <p class="card-description" id="currentStageDesc">
+              Classified from active multi-flow behavioral heuristics, port-access diversity, and frequency distributions.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 2: Predicted Next Stage -->
+        <div class="card-module animate-slot" id="predictedStageCard">
+          <div class="card-header-bar">
+            <svg class="utility-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            <span class="card-caption">PREDICTED NEXT STAGE</span>
+          </div>
+          <div class="card-body">
+            <h3 class="card-value-title highlight" id="predictedStageTitle">Enumeration</h3>
+            <p class="card-description" id="predictedStageDesc">
+              Forecasted progression before confirmation via temporal sequence modeling and probabilistic transition estimation.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 3: Recommended Preventive Responses (Multiple Defending Methods) -->
+        <div class="card-module animate-slot" id="responseCard">
+          <div class="card-header-bar">
+            <svg class="utility-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span class="card-caption">RECOMMENDED PREVENTIVE RESPONSES (ANALYST REVIEW)</span>
+          </div>
+          <div class="card-body">
+            <div class="defense-options-list" id="defenseOptionsList">
+              <!-- Dynamically populated ranked list of 2-4 defensive options -->
+            </div>
+            <div class="advisory-badge">NON-BLOCKING DECISION SUPPORT</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 4: Tabbed SHAP Explanation Panel -->
+    <section class="section shap-section" aria-label="SHAP Explainability Module">
+      <div class="section-header-flex">
+        <div>
+          <span class="section-caption">SHAP FEATURE ATTRIBUTION EXPLAINABILITY</span>
+          <h2 class="section-heading">Prediction Drivers & Behavioral Impact</h2>
+        </div>
+        
+        <!-- Tab Switcher -->
+        <div class="tab-list" role="tablist" aria-label="SHAP Views">
+          <button class="tab-btn active" id="tabRankingBtn" role="tab" aria-selected="true" aria-controls="panelRanking">
+            Top Feature Attributions
+          </button>
+          <button class="tab-btn" id="tabForceBtn" role="tab" aria-selected="false" aria-controls="panelForce">
+            Contribution Force View
+          </button>
+        </div>
+      </div>
+
+      <div class="shap-panel-container">
+        
+        <!-- Tab 1: Feature Attribution Ranking View -->
+        <div class="shap-tab-panel active" id="panelRanking" role="tabpanel">
+          <div class="shap-table-container">
+            <table class="shap-table" id="shapTable">
+              <thead>
+                <tr>
+                  <th scope="col">FEATURE</th>
+                  <th scope="col">DESCRIPTION</th>
+                  <th scope="col">CURRENT VALUE</th>
+                  <th scope="col">IMPACT</th>
+                  <th scope="col">GRADIENT SHAP ATTRIBUTION</th>
+                </tr>
+              </thead>
+              <tbody id="shapRankingBody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 2: Force-Plot-Style Contribution View -->
+        <div class="shap-tab-panel" id="panelForce" role="tabpanel">
+          <div class="force-plot-wrapper">
+            <div class="force-meta-summary">
+              <div class="force-meta-item">
+                <span class="force-meta-label">BASELINE EXPECTATION E[f(x)]</span>
+                <span class="force-meta-value" id="forceBaseVal">0.200</span>
+              </div>
+              <div class="force-meta-arrow">→</div>
+              <div class="force-meta-item">
+                <span class="force-meta-label">MODEL FORECAST PROBABILITY f(x)</span>
+                <span class="force-meta-value highlight" id="forceOutputVal">0.870</span>
+              </div>
+            </div>
+
+            <!-- Force bars container -->
+            <div class="force-bars-card">
+              <div class="force-bars-header">
+                <div class="legend-item"><span class="legend-swatch positive"></span> Pushes Toward Forecast (Risk Escalation)</div>
+                <div class="legend-item"><span class="legend-swatch negative"></span> Suppresses Forecast (Baseline Drift)</div>
+              </div>
+              <div class="force-bars-list" id="forceBarsList">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
