@@ -1,0 +1,52 @@
+{
+  "random_seed": 42,
+  "split_method": "stratified_zero_leakage_unique_profiles",
+  "original_raw_flows": {
+    "total": 2012212,
+    "distribution": {
+      "BENIGN": 1454613,
+      "PortScan": 158930,
+      "DoS_DDoS": 380688,
+      "BruteForce": 13835,
+      "WebAttacks": 2180,
+      "Botnet": 1966
+    }
+  },
+  "conflicting_profiles_removed": 115,
+  "clean_unique_profiles_total": 1588698,
+  "partitions": {
+    "train": {
+      "total": 1112088,
+      "classes": {
+        "BENIGN": 876648,
+        "PortScan": 1370,
+        "DoS_DDoS": 225163,
+        "BruteForce": 6406,
+        "WebAttacks": 1500,
+        "Botnet": 1001
+      }
+    },
+    "validation": {
+      "total": 238305,
+      "classes": {
+        "BENIGN": 187853,
+        "PortScan": 294,
+        "DoS_DDoS": 48249,
+        "BruteForce": 1373,
+        "WebAttacks": 321,
+        "Botnet": 215
+      }
+    },
+    "test": {
+      "total": 238305,
+      "classes": {
+        "BENIGN": 187854,
+        "PortScan": 293,
+        "DoS_DDoS": 48249,
+        "BruteForce": 1373,
+        "WebAttacks": 322,
+        "Botnet": 214
+      }
+    }
+  }
+}

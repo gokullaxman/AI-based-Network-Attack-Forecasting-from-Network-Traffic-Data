@@ -30,7 +30,7 @@ FEATURE_NAMES = [
     "icmp_arp_ratio",         # ping / probe protocol ratio
     # 5. Service enumeration
     "service_probe_rate",     # service/version identification probe rate
-    "targeted_query_volume",  # high-density queries on open services (HTTP/SSH/SMB)
+    "targeted_query_volume",  # mean captured frame byte length
     # 6. Timing irregularities
     "iat_jitter",             # variance / standard deviation of packet inter-arrival times
     "burstiness_index"        # peak-to-average transmission ratio
@@ -46,7 +46,7 @@ FEATURE_DESCRIPTIONS = {
     "host_sweep_rate": "Frequency of horizontal host discovery attempts",
     "icmp_arp_ratio": "Ratio of diagnostic discovery frames (ICMP/ARP) to data frames",
     "service_probe_rate": "Rate of application-layer handshake/version probes",
-    "targeted_query_volume": "Specific service inspection burst density (HTTP/SMB/SSH)",
+    "targeted_query_volume": "Mean captured frame byte length (measures average captured packet length in bytes, not application-layer query depth)",
     "iat_jitter": "Irregularity and jitter in packet inter-arrival intervals",
     "burstiness_index": "Peak-to-average flow burst irregularity ratio"
 }

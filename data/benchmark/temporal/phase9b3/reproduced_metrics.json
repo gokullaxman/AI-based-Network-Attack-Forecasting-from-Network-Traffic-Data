@@ -1,0 +1,223 @@
+{
+  "metadata": {
+    "source_predictions_csv": "C:\\Users\\Dell Latitude 7410\\Downloads\\AI-based-Network-Attack-Forecasting-from-Network-Traffic-Data-main\\AI-based-Network-Attack-Forecasting-from-Network-Traffic-Data-main\\data/benchmark/temporal/phase9b2\\predictions.csv",
+    "source_predictions_sha256": "b7ac80085b978fbdb773691773e0853d3a07b0488508b944de60545b84785eb9",
+    "reproduction_timestamp": "2026-10-26T15:28:00Z",
+    "eval_sample_count": 280,
+    "eval_positive_count": 35,
+    "eval_negative_count": 245
+  },
+  "reproduced_window_metrics": {
+    "dummy_prior": {
+      "confusion_matrix": [
+        [
+          245,
+          0
+        ],
+        [
+          35,
+          0
+        ]
+      ],
+      "true_positives": 0,
+      "false_positives": 0,
+      "true_negatives": 245,
+      "false_negatives": 35,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "pr_auc": 0.125,
+      "roc_auc": 0.5,
+      "false_positive_rate": 0.0,
+      "exact_match_with_phase9b2": true
+    },
+    "dummy_stratified": {
+      "confusion_matrix": [
+        [
+          243,
+          2
+        ],
+        [
+          34,
+          1
+        ]
+      ],
+      "true_positives": 1,
+      "false_positives": 2,
+      "true_negatives": 243,
+      "false_negatives": 34,
+      "precision": 0.3333,
+      "recall": 0.0286,
+      "f1_score": 0.0526,
+      "pr_auc": 0.131,
+      "roc_auc": 0.5102,
+      "false_positive_rate": 0.0082,
+      "exact_match_with_phase9b2": true
+    },
+    "logistic_regression": {
+      "confusion_matrix": [
+        [
+          234,
+          11
+        ],
+        [
+          33,
+          2
+        ]
+      ],
+      "true_positives": 2,
+      "false_positives": 11,
+      "true_negatives": 234,
+      "false_negatives": 33,
+      "precision": 0.1538,
+      "recall": 0.0571,
+      "f1_score": 0.0833,
+      "pr_auc": 0.1554,
+      "roc_auc": 0.537,
+      "false_positive_rate": 0.0449,
+      "exact_match_with_phase9b2": true
+    },
+    "random_forest": {
+      "confusion_matrix": [
+        [
+          245,
+          0
+        ],
+        [
+          35,
+          0
+        ]
+      ],
+      "true_positives": 0,
+      "false_positives": 0,
+      "true_negatives": 245,
+      "false_negatives": 35,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "pr_auc": 0.1402,
+      "roc_auc": 0.4901,
+      "false_positive_rate": 0.0,
+      "exact_match_with_phase9b2": true
+    }
+  },
+  "bootstrap_statistical_tests": {
+    "iterations": 2000,
+    "seed": 42,
+    "logistic_regression_pr_auc_ci_95": [
+      0.1018,
+      0.2547
+    ],
+    "dummy_prior_pr_auc_ci_95": [
+      0.0893,
+      0.1643
+    ],
+    "logistic_regression_roc_auc_ci_95": [
+      0.4242,
+      0.6469
+    ],
+    "delta_pr_auc_ci_95": [
+      -0.0062,
+      0.1121
+    ],
+    "p_value_delta_le_zero": 0.048,
+    "statistical_verdict": "The 95% CI of PR-AUC delta [-0.0062, 0.1121] crosses zero, and ROC-AUC 95% CI [0.4242, 0.6469] spans 0.5000. Logistic Regression's improvement over Dummy is not statistically robust."
+  },
+  "false_alarm_episodes_audit": {
+    "total_false_positive_windows": 11,
+    "total_false_alarm_episodes": 8,
+    "false_alarm_episode_details": [
+      {
+        "episode_id": "FA_EP_01",
+        "capture_day": "Thursday",
+        "start_time": "2017-07-06 10:54:00",
+        "end_time": "2017-07-06 10:54:00",
+        "duration_minutes": 1,
+        "max_prob": 0.950224,
+        "windows": [
+          "2017-07-06 10:54:00"
+        ]
+      },
+      {
+        "episode_id": "FA_EP_02",
+        "capture_day": "Thursday",
+        "start_time": "2017-07-06 12:16:00",
+        "end_time": "2017-07-06 12:16:00",
+        "duration_minutes": 1,
+        "max_prob": 0.964447,
+        "windows": [
+          "2017-07-06 12:16:00"
+        ]
+      },
+      {
+        "episode_id": "FA_EP_03",
+        "capture_day": "Thursday",
+        "start_time": "2017-07-06 12:30:00",
+        "end_time": "2017-07-06 12:30:00",
+        "duration_minutes": 1,
+        "max_prob": 0.998585,
+        "windows": [
+          "2017-07-06 12:30:00"
+        ]
+      },
+      {
+        "episode_id": "FA_EP_04",
+        "capture_day": "Thursday",
+        "start_time": "2017-07-06 12:41:00",
+        "end_time": "2017-07-06 12:43:00",
+        "duration_minutes": 3,
+        "max_prob": 0.999974,
+        "windows": [
+          "2017-07-06 12:41:00",
+          "2017-07-06 12:42:00",
+          "2017-07-06 12:43:00"
+        ]
+      },
+      {
+        "episode_id": "FA_EP_05",
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 09:08:00",
+        "end_time": "2017-07-07 09:08:00",
+        "duration_minutes": 1,
+        "max_prob": 0.999997,
+        "windows": [
+          "2017-07-07 09:08:00"
+        ]
+      },
+      {
+        "episode_id": "FA_EP_06",
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 13:35:00",
+        "end_time": "2017-07-07 13:36:00",
+        "duration_minutes": 2,
+        "max_prob": 0.849374,
+        "windows": [
+          "2017-07-07 13:35:00",
+          "2017-07-07 13:36:00"
+        ]
+      },
+      {
+        "episode_id": "FA_EP_07",
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 14:30:00",
+        "end_time": "2017-07-07 14:30:00",
+        "duration_minutes": 1,
+        "max_prob": 0.914128,
+        "windows": [
+          "2017-07-07 14:30:00"
+        ]
+      },
+      {
+        "episode_id": "FA_EP_08",
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 16:53:00",
+        "end_time": "2017-07-07 16:53:00",
+        "duration_minutes": 1,
+        "max_prob": 0.512004,
+        "windows": [
+          "2017-07-07 16:53:00"
+        ]
+      }
+    ]
+  }
+}

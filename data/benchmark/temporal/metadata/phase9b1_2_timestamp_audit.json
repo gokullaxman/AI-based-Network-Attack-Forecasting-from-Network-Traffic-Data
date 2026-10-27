@@ -1,0 +1,59 @@
+{
+  "pre_correction_parquet": {
+    "path": "data\\benchmark\\temporal\\metadata\\epochs_1min_pre_correction_phase9b1_1.parquet",
+    "size_bytes": 212687,
+    "sha256": "a333d3e61dcb034330f3f298d0640a1e2802f2a002f6b585105d566cf7ca7e44"
+  },
+  "rebuilt_parquet": {
+    "path": "data\\benchmark\\temporal\\metadata\\epochs_1min.parquet",
+    "size_bytes": 212598,
+    "sha256": "2c3490de8f516b2a29e1d58239e4244ac52102edb6a804e4e588bed09d5cef59"
+  },
+  "correction_rule": "If raw hour H in [1, 2, 3, 4, 5, 6, 7] within WorkingHours captures, shift H <- H + 12 (13:00..19:00). Hours [8, 9, 10, 11, 12] are strictly preserved.",
+  "total_flow_records_shifted": 1183114,
+  "total_flow_records_preserved": 1359027,
+  "total_ambiguous_records": 0,
+  "ambiguity_handling": "Zero ambiguity: raw hours are strictly partitioned into {8, 9, 10, 11, 12} morning and {1, 2, 3, 4, 5} afternoon. Files labeled Morning contain zero afternoon hours.",
+  "daily_continuity_post_correction": [
+    {
+      "capture_day": "Friday",
+      "epoch_count": 484,
+      "min_timestamp": "2017-07-07 08:59:00",
+      "max_timestamp": "2017-07-07 17:02:00",
+      "continuous_1m_steps": 483,
+      "gaps_gt_1m": 0
+    },
+    {
+      "capture_day": "Monday",
+      "epoch_count": 487,
+      "min_timestamp": "2017-07-03 08:55:00",
+      "max_timestamp": "2017-07-03 17:01:00",
+      "continuous_1m_steps": 486,
+      "gaps_gt_1m": 0
+    },
+    {
+      "capture_day": "Thursday",
+      "epoch_count": 241,
+      "min_timestamp": "2017-07-06 08:59:00",
+      "max_timestamp": "2017-07-06 12:59:00",
+      "continuous_1m_steps": 240,
+      "gaps_gt_1m": 0
+    },
+    {
+      "capture_day": "Tuesday",
+      "epoch_count": 488,
+      "min_timestamp": "2017-07-04 08:53:00",
+      "max_timestamp": "2017-07-04 17:00:00",
+      "continuous_1m_steps": 487,
+      "gaps_gt_1m": 0
+    },
+    {
+      "capture_day": "Wednesday",
+      "epoch_count": 509,
+      "min_timestamp": "2017-07-05 08:42:00",
+      "max_timestamp": "2017-07-05 17:10:00",
+      "continuous_1m_steps": 508,
+      "gaps_gt_1m": 0
+    }
+  ]
+}

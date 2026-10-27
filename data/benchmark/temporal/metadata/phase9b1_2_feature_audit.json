@@ -1,0 +1,252 @@
+{
+  "candidate_predictor_count": 12,
+  "flattened_input_dimension_10min": 120,
+  "excluded_label_fields": [
+    "attack_flow_count",
+    "benign_flow_count",
+    "is_attack_active",
+    "attack_classes"
+  ],
+  "excluded_metadata_fields": [
+    "epoch_timestamp",
+    "capture_day",
+    "capture_file"
+  ],
+  "predictor_specifications": {
+    "flow_count": {
+      "source_fields": [
+        "Flow ID"
+      ],
+      "formula": "count(flows in 1-minute epoch)",
+      "unit": "flows/min",
+      "valid_range": "[1, +inf)",
+      "bounds_verified": true,
+      "live_capture_reproducible": true
+    },
+    "total_packets": {
+      "source_fields": [
+        "Total Fwd Packets",
+        "Total Backward Packets"
+      ],
+      "formula": "sum(Total Fwd Packets + Total Backward Packets)",
+      "unit": "packets/min",
+      "valid_range": "[1, +inf)",
+      "bounds_verified": true,
+      "live_capture_reproducible": true
+    },
+    "total_bytes": {
+      "source_fields": [
+        "Total Length of Fwd Packets",
+        "Total Length of Bwd Packets"
+      ],
+      "formula": "sum(Total Length of Fwd Packets + Total Length of Bwd Packets)",
+      "unit": "bytes/min",
+      "valid_range": "[0, +inf)",
+      "bounds_verified": true,
+      "live_capture_reproducible": true
+    },
+    "mean_flow_duration_ms": {
+      "source_fields": [
+        "Flow Duration"
+      ],
+      "formula": "mean(Flow Duration / 1000.0)",
+      "unit": "milliseconds",
+      "valid_range": "[0, +inf)",
+      "bounds_verified": true,
+      "live_capture_reproducible": true
+    },
+    "std_flow_duration_ms": {
+      "source_fields": [
+        "Flow Duration"
+      ],
+      "formula": "std(Flow Duration / 1000.0, ddof=0)",
+      "unit": "milliseconds",
+      "valid_range": "[0, +inf)",
+      "bounds_verified": true,
+      "live_capture_reproducible": true
+    },
+    "tcp_flow_ratio": {
+      "source_fields": [
+        "Protocol"
+      ],
+      "formula": "count(Protocol == 6) / flow_count",
+      "unit": "ratio",
+      "valid_range": "[0.0, 1.0]",
+      "bounds_verified": true,
+      "live_capture_reproducible": true
+    },
+    "udp_flow_ratio": {
+      "source_fields": [
+        "Protocol"
+      ],
+      "formula": "count(Protocol == 17) / flow_count",
+      "unit": "ratio",
+      "valid_range": "[0.0, 1.0]",
+      "bounds_verified": true,
+      "live_capture_reproducible": true
+    },
+    "dst_port_diversity": {
+      "source_fields": [
+        "Destination Port"
+      ],
+      "formula": "nunique(Destination Port)",
+      "unit": "distinct ports/min",
+      "valid_range": "[1, +inf)",
+      "bounds_verified": true,
+      "live_capture_reproducible": true
+    },
+    "dst_port_entropy": {
+      "source_fields": [
+        "Destination Port"
+      ],
+      "formula": "-sum(p_i * log2(p_i)) / log2(k) where k = nunique(Destination Port)",
+      "entropy_type": "Normalized Shannon Entropy (Pielou evenness)",
+      "unit": "bits / max_bits",
+      "valid_range": "[0.0, 1.0]",
+      "bounds_verified": true,
+      "zero_or_one_category_behavior": "Explicitly defined as 0.0 when k <= 1",
+      "live_capture_reproducible": true
+    },
+    "distinct_src_ips": {
+      "source_fields": [
+        "Source IP"
+      ],
+      "formula": "nunique(Source IP)",
+      "unit": "distinct IPs/min",
+      "valid_range": "[1, +inf)",
+      "bounds_verified": true,
+      "live_capture_reproducible": true
+    },
+    "distinct_dst_ips": {
+      "source_fields": [
+        "Destination IP"
+      ],
+      "formula": "nunique(Destination IP)",
+      "unit": "distinct IPs/min",
+      "valid_range": "[1, +inf)",
+      "bounds_verified": true,
+      "live_capture_reproducible": true
+    },
+    "syn_flag_ratio": {
+      "source_fields": [
+        "SYN Flag Count"
+      ],
+      "formula": "sum(SYN Flag Count) / flow_count",
+      "unit": "ratio",
+      "valid_range": "[0.0, 1.0]",
+      "bounds_verified": true,
+      "source_field_binary_verified": "Empirically verified SYN Flag Count in {0, 1} across 2,542,141 flows",
+      "live_capture_reproducible": true
+    }
+  },
+  "empirical_feature_distributions": {
+    "flow_count": {
+      "null_count": 0,
+      "inf_count": 0,
+      "mean": 1150.8107741059302,
+      "std": 2203.571456603689,
+      "min": 1.0,
+      "max": 46216.0,
+      "is_constant": false
+    },
+    "total_packets": {
+      "null_count": 0,
+      "inf_count": 0,
+      "mean": 23688.387052965143,
+      "std": 67800.16048630216,
+      "min": 8.0,
+      "max": 849289.0,
+      "is_constant": false
+    },
+    "total_bytes": {
+      "null_count": 0,
+      "inf_count": 0,
+      "mean": 20536619.669533726,
+      "std": 85967343.4719673,
+      "min": 10.0,
+      "max": 1068748533.0,
+      "is_constant": false
+    },
+    "mean_flow_duration_ms": {
+      "null_count": 0,
+      "inf_count": 0,
+      "mean": 6393.610659176274,
+      "std": 5429.1885792392395,
+      "min": 0.00175,
+      "max": 112740.625,
+      "is_constant": false
+    },
+    "std_flow_duration_ms": {
+      "null_count": 0,
+      "inf_count": 0,
+      "mean": 16119.64230025485,
+      "std": 10181.56815110511,
+      "min": 0.0,
+      "max": 51806.1652354639,
+      "is_constant": false
+    },
+    "tcp_flow_ratio": {
+      "null_count": 0,
+      "inf_count": 0,
+      "mean": 0.4351693001440446,
+      "std": 0.16807519759368758,
+      "min": 0.0,
+      "max": 1.0,
+      "is_constant": false
+    },
+    "udp_flow_ratio": {
+      "null_count": 0,
+      "inf_count": 0,
+      "mean": 0.5636816257962193,
+      "std": 0.16847382764558205,
+      "min": 0.0,
+      "max": 1.0,
+      "is_constant": false
+    },
+    "dst_port_diversity": {
+      "null_count": 0,
+      "inf_count": 0,
+      "mean": 122.20688094160253,
+      "std": 181.4259571385685,
+      "min": 1.0,
+      "max": 2001.0,
+      "is_constant": false
+    },
+    "dst_port_entropy": {
+      "null_count": 0,
+      "inf_count": 0,
+      "mean": 0.4766899088625445,
+      "std": 0.16180820161830028,
+      "min": 0.0,
+      "max": 1.0,
+      "is_constant": false
+    },
+    "distinct_src_ips": {
+      "null_count": 0,
+      "inf_count": 0,
+      "mean": 57.3168854685378,
+      "std": 31.3981861911226,
+      "min": 1.0,
+      "max": 249.0,
+      "is_constant": false
+    },
+    "distinct_dst_ips": {
+      "null_count": 0,
+      "inf_count": 0,
+      "mean": 112.04074241738343,
+      "std": 64.97349770884303,
+      "min": 1.0,
+      "max": 401.0,
+      "is_constant": false
+    },
+    "syn_flag_ratio": {
+      "null_count": 0,
+      "inf_count": 0,
+      "mean": 0.03651678070825575,
+      "std": 0.0396097406845583,
+      "min": 0.0,
+      "max": 1.0,
+      "is_constant": false
+    }
+  }
+}

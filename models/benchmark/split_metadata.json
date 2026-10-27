@@ -1,0 +1,26 @@
+{
+  "train": {
+    "total": 149879,
+    "classes": {
+      "BENIGN": 87526,
+      "PortScan": 62353
+    }
+  },
+  "validation": {
+    "total": 32117,
+    "classes": {
+      "PortScan": 20412,
+      "BENIGN": 11705
+    }
+  },
+  "test": {
+    "total": 32118,
+    "classes": {
+      "BENIGN": 24064,
+      "PortScan": 8054
+    }
+  },
+  "random_seed": 42,
+  "split_method": "chronological_sequence_without_overlap",
+  "deduplicated": true
+}

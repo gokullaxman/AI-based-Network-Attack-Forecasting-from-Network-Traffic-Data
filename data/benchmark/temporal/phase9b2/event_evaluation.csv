@@ -1,0 +1,11 @@
+event_id,capture_day,start_time,attack_classes,attack_flows,associated_anchor_count,detected_dummy_prior,max_prob_dummy_prior,lead_time_min_dummy_prior,detected_dummy_stratified,max_prob_dummy_stratified,lead_time_min_dummy_stratified,detected_logistic_regression,max_prob_logistic_regression,lead_time_min_logistic_regression,detected_random_forest,max_prob_random_forest,lead_time_min_random_forest
+EVT_FRI_01,Friday,2017-07-07 09:34:00,Bot,2,5,False,0.0269,,False,0.0,,False,0.0001,,False,0.0925,
+EVT_FRI_02,Friday,2017-07-07 10:04:00,Bot,1521,5,False,0.0269,,False,0.0,,False,0.0261,,False,0.1109,
+EVT_FRI_19,Friday,2017-07-07 13:52:00,PortScan,1,5,False,0.0269,,False,0.0,,True,0.7278,4.0,False,0.0827,
+EVT_FRI_20,Friday,2017-07-07 13:55:00,PortScan,226,2,False,0.0269,,False,0.0,,True,0.7278,7.0,False,0.0827,
+EVT_FRI_21,Friday,2017-07-07 14:14:00,PortScan,138,2,False,0.0269,,False,0.0,,False,0.1206,,False,0.1168,
+EVT_FRI_22,Friday,2017-07-07 14:51:00,PortScan,138493,5,False,0.0269,,False,0.0,,False,0.0005,,False,0.0851,
+EVT_FRI_27,Friday,2017-07-07 15:56:00,DDoS,128027,5,False,0.0269,,False,0.0,,True,0.5443,6.0,False,0.1285,
+EVT_THU_28,Thursday,2017-07-06 09:15:00,Web Attack - Brute Force,5,5,False,0.0269,,True,1.0,4.0,False,0.0,,False,0.2137,
+EVT_THU_29,Thursday,2017-07-06 09:18:00,Web Attack - Brute Force,8,2,False,0.0269,,True,1.0,7.0,False,0.0,,False,0.2137,
+EVT_THU_31,Thursday,2017-07-06 10:15:00,Web Attack - XSS,652,3,False,0.0269,,False,0.0,,False,0.0376,,False,0.1199,

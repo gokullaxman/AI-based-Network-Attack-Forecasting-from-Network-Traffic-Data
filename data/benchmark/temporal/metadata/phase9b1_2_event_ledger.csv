@@ -1,0 +1,58 @@
+event_id,capture_day,source_file,start_time,end_time,duration_minutes,attack_classes,attack_flows,preceding_10m_history_clean,preceding_2m_gap_clean,is_forecastable_target_a,associated_positive_windows_count,associated_anchor_epochs,partition
+EVT_FRI_01,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 09:34:00,2017-07-07 09:35:00,2,Bot,2,True,True,True,5,2017-07-07 09:27:00|2017-07-07 09:28:00|2017-07-07 09:29:00|2017-07-07 09:30:00|2017-07-07 09:31:00,TEST
+EVT_FRI_02,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 10:04:00,2017-07-07 11:13:00,70,Bot,1521,True,True,True,5,2017-07-07 09:57:00|2017-07-07 09:58:00|2017-07-07 09:59:00|2017-07-07 10:00:00|2017-07-07 10:01:00,TEST
+EVT_FRI_03,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 11:15:00,2017-07-07 11:18:00,4,Bot,21,False,False,False,0,,TEST
+EVT_FRI_04,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 11:20:00,2017-07-07 11:23:00,4,Bot,23,False,False,False,0,,TEST
+EVT_FRI_05,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 11:25:00,2017-07-07 11:28:00,4,Bot,21,False,False,False,0,,TEST
+EVT_FRI_06,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 11:30:00,2017-07-07 11:45:00,16,Bot,70,False,False,False,0,,TEST
+EVT_FRI_07,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 11:47:00,2017-07-07 11:50:00,4,Bot,21,False,False,False,0,,TEST
+EVT_FRI_08,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 11:52:00,2017-07-07 11:55:00,4,Bot,21,False,False,False,0,,TEST
+EVT_FRI_09,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 11:57:00,2017-07-07 12:00:00,4,Bot,21,False,False,False,0,,TEST
+EVT_FRI_10,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 12:02:00,2017-07-07 12:17:00,16,Bot,70,False,False,False,0,,TEST
+EVT_FRI_11,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 12:19:00,2017-07-07 12:22:00,4,Bot,21,False,False,False,0,,TEST
+EVT_FRI_12,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 12:24:00,2017-07-07 12:27:00,4,Bot,21,False,False,False,0,,TEST
+EVT_FRI_13,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 12:29:00,2017-07-07 12:32:00,4,Bot,21,False,False,False,0,,TEST
+EVT_FRI_14,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 12:34:00,2017-07-07 12:37:00,4,Bot,21,False,False,False,0,,TEST
+EVT_FRI_15,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 12:39:00,2017-07-07 12:49:00,11,Bot,49,False,False,False,0,,TEST
+EVT_FRI_16,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 12:51:00,2017-07-07 12:54:00,4,Bot,21,False,False,False,0,,TEST
+EVT_FRI_17,Friday,Friday-WorkingHours-Morning.pcap_ISCX.csv,2017-07-07 12:56:00,2017-07-07 12:59:00,4,Bot,21,False,False,False,0,,TEST
+EVT_FRI_18,Friday,Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,2017-07-07 13:05:00,2017-07-07 13:06:00,2,PortScan,7,False,True,False,0,,TEST
+EVT_FRI_19,Friday,Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,2017-07-07 13:52:00,2017-07-07 13:52:00,1,PortScan,1,True,True,True,5,2017-07-07 13:45:00|2017-07-07 13:46:00|2017-07-07 13:47:00|2017-07-07 13:48:00|2017-07-07 13:49:00,TEST
+EVT_FRI_20,Friday,Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,2017-07-07 13:55:00,2017-07-07 14:00:00,6,PortScan,226,False,True,True,2,2017-07-07 13:48:00|2017-07-07 13:49:00,TEST
+EVT_FRI_21,Friday,Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,2017-07-07 14:14:00,2017-07-07 14:16:00,3,PortScan,138,True,True,True,2,2017-07-07 14:10:00|2017-07-07 14:11:00,TEST
+EVT_FRI_22,Friday,Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,2017-07-07 14:51:00,2017-07-07 14:56:00,6,PortScan,138493,True,True,True,5,2017-07-07 14:44:00|2017-07-07 14:45:00|2017-07-07 14:46:00|2017-07-07 14:47:00|2017-07-07 14:48:00,TEST
+EVT_FRI_23,Friday,Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,2017-07-07 15:03:00,2017-07-07 15:03:00,1,PortScan,2,False,True,False,0,,TEST
+EVT_FRI_24,Friday,Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,2017-07-07 15:08:00,2017-07-07 15:10:00,3,PortScan,11036,False,True,False,0,,TEST
+EVT_FRI_25,Friday,Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,2017-07-07 15:12:00,2017-07-07 15:13:00,2,PortScan,2,False,False,False,0,,TEST
+EVT_FRI_26,Friday,Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv,2017-07-07 15:21:00,2017-07-07 15:23:00,3,PortScan,9025,False,True,False,0,,TEST
+EVT_FRI_27,Friday,Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv,2017-07-07 15:56:00,2017-07-07 16:16:00,21,DDoS,128027,True,True,True,5,2017-07-07 15:49:00|2017-07-07 15:50:00|2017-07-07 15:51:00|2017-07-07 15:52:00|2017-07-07 15:53:00,TEST
+EVT_THU_28,Thursday,Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv,2017-07-06 09:15:00,2017-07-06 09:16:00,2,Web Attack - Brute Force,5,True,True,True,5,2017-07-06 09:08:00|2017-07-06 09:09:00|2017-07-06 09:10:00|2017-07-06 09:11:00|2017-07-06 09:12:00,TEST
+EVT_THU_29,Thursday,Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv,2017-07-06 09:18:00,2017-07-06 09:19:00,2,Web Attack - Brute Force,8,False,False,True,2,2017-07-06 09:11:00|2017-07-06 09:12:00,TEST
+EVT_THU_30,Thursday,Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv,2017-07-06 09:21:00,2017-07-06 10:00:00,40,Web Attack - Brute Force,1494,False,False,False,0,,TEST
+EVT_THU_31,Thursday,Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv,2017-07-06 10:15:00,2017-07-06 10:35:00,21,Web Attack - XSS,652,True,True,True,3,2017-07-06 10:10:00|2017-07-06 10:11:00|2017-07-06 10:12:00,TEST
+EVT_THU_32,Thursday,Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv,2017-07-06 10:40:00,2017-07-06 10:42:00,3,Web Attack - Sql Injection,21,False,True,False,0,,TEST
+EVT_TUE_33,Tuesday,Tuesday-WorkingHours.pcap_ISCX.csv,2017-07-04 09:17:00,2017-07-04 09:17:00,1,FTP-Patator,1,True,True,True,5,2017-07-04 09:10:00|2017-07-04 09:11:00|2017-07-04 09:12:00|2017-07-04 09:13:00|2017-07-04 09:14:00,TRAIN
+EVT_TUE_34,Tuesday,Tuesday-WorkingHours.pcap_ISCX.csv,2017-07-04 09:19:00,2017-07-04 10:20:00,62,FTP-Patator,7936,False,False,True,3,2017-07-04 09:12:00|2017-07-04 09:13:00|2017-07-04 09:14:00,TRAIN
+EVT_TUE_35,Tuesday,Tuesday-WorkingHours.pcap_ISCX.csv,2017-07-04 10:30:00,2017-07-04 10:30:00,1,FTP-Patator,1,False,True,False,0,,TRAIN
+EVT_TUE_36,Tuesday,Tuesday-WorkingHours.pcap_ISCX.csv,2017-07-04 14:09:00,2017-07-04 15:11:00,63,SSH-Patator,5897,True,True,True,5,2017-07-04 14:02:00|2017-07-04 14:03:00|2017-07-04 14:04:00|2017-07-04 14:05:00|2017-07-04 14:06:00,TRAIN
+EVT_WED_37,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 09:01:00,2017-07-05 09:01:00,1,DoS slowloris,1,True,True,True,5,2017-07-05 08:54:00|2017-07-05 08:55:00|2017-07-05 08:56:00|2017-07-05 08:57:00|2017-07-05 08:58:00,TRAIN
+EVT_WED_38,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 09:48:00,2017-07-05 10:11:00,24,DoS slowloris,5790,True,True,True,5,2017-07-05 09:41:00|2017-07-05 09:42:00|2017-07-05 09:43:00|2017-07-05 09:44:00|2017-07-05 09:45:00,TRAIN
+EVT_WED_39,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 10:15:00,2017-07-05 10:19:00,5,DoS Slowhttptest,1502,False,True,False,0,,TRAIN
+EVT_WED_40,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 10:22:00,2017-07-05 10:29:00,8,DoS Slowhttptest,2642,False,True,False,0,,TRAIN
+EVT_WED_41,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 10:32:00,2017-07-05 10:37:00,6,DoS Slowhttptest,1355,False,True,False,0,,TRAIN
+EVT_WED_42,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 10:43:00,2017-07-05 11:01:00,19,DoS Hulk,230928,False,True,False,0,,TRAIN
+EVT_WED_43,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 11:06:00,2017-07-05 11:07:00,2,DoS Hulk,145,False,True,False,0,,TRAIN
+EVT_WED_44,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 11:10:00,2017-07-05 11:14:00,5,DoS GoldenEye,6170,False,True,False,0,,TRAIN
+EVT_WED_45,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 11:17:00,2017-07-05 11:19:00,3,DoS GoldenEye,4123,False,True,False,0,,TRAIN
+EVT_WED_46,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 14:24:00,2017-07-05 14:25:00,2,DoS slowloris,5,True,True,True,5,2017-07-05 14:17:00|2017-07-05 14:18:00|2017-07-05 14:19:00|2017-07-05 14:20:00|2017-07-05 14:21:00,TRAIN
+EVT_WED_47,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 15:12:00,2017-07-05 15:12:00,1,Heartbleed,1,True,True,True,5,2017-07-05 15:05:00|2017-07-05 15:06:00|2017-07-05 15:07:00|2017-07-05 15:08:00|2017-07-05 15:09:00,TRAIN
+EVT_WED_48,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 15:14:00,2017-07-05 15:14:00,1,Heartbleed,1,False,False,True,3,2017-07-05 15:07:00|2017-07-05 15:08:00|2017-07-05 15:09:00,TRAIN
+EVT_WED_49,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 15:16:00,2017-07-05 15:16:00,1,Heartbleed,1,False,False,True,1,2017-07-05 15:09:00,TRAIN
+EVT_WED_50,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 15:18:00,2017-07-05 15:18:00,1,Heartbleed,1,False,False,False,0,,TRAIN
+EVT_WED_51,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 15:20:00,2017-07-05 15:20:00,1,Heartbleed,1,False,False,False,0,,TRAIN
+EVT_WED_52,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 15:22:00,2017-07-05 15:22:00,1,Heartbleed,1,False,False,False,0,,TRAIN
+EVT_WED_53,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 15:24:00,2017-07-05 15:24:00,1,Heartbleed,1,False,False,False,0,,TRAIN
+EVT_WED_54,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 15:26:00,2017-07-05 15:26:00,1,Heartbleed,1,False,False,False,0,,TRAIN
+EVT_WED_55,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 15:28:00,2017-07-05 15:28:00,1,Heartbleed,1,False,False,False,0,,TRAIN
+EVT_WED_56,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 15:30:00,2017-07-05 15:30:00,1,Heartbleed,1,False,False,False,0,,TRAIN
+EVT_WED_57,Wednesday,Wednesday-workingHours.pcap_ISCX.csv,2017-07-05 15:32:00,2017-07-05 15:32:00,1,Heartbleed,1,False,False,False,0,,TRAIN

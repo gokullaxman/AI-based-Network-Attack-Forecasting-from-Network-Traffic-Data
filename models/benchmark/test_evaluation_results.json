@@ -1,0 +1,104 @@
+{
+  "dataset": "CICIDS2017 Friday-WorkingHours-Afternoon-PortScan",
+  "partitions": {
+    "train": {
+      "total": 149879,
+      "classes": {
+        "BENIGN": 87526,
+        "PortScan": 62353
+      }
+    },
+    "validation": {
+      "total": 32117,
+      "classes": {
+        "PortScan": 20412,
+        "BENIGN": 11705
+      }
+    },
+    "test": {
+      "total": 32118,
+      "classes": {
+        "BENIGN": 24064,
+        "PortScan": 8054
+      }
+    },
+    "random_seed": 42,
+    "split_method": "chronological_sequence_without_overlap",
+    "deduplicated": true
+  },
+  "test_partition": {
+    "total_records": 32118,
+    "benign_records": 24064,
+    "attack_records": 8054,
+    "benign_prevalence": 0.7492,
+    "attack_prevalence": 0.2508
+  },
+  "models": {
+    "Logistic Regression (Linear Baseline)": {
+      "accuracy": 0.9964194532660813,
+      "macro_f1": 0.9952179870585607,
+      "macro_precision": 0.997072390753142,
+      "macro_recall": 0.9933976297046135,
+      "roc_auc": 0.9986513284333409,
+      "confusion_matrix": {
+        "tn": 24051,
+        "fp": 13,
+        "fn": 102,
+        "tp": 7952
+      },
+      "error_rates": {
+        "false_positive_rate_benign": 0.0005402260638297873,
+        "false_negative_rate_attack": 0.012664514526943133
+      },
+      "class_0_benign": {
+        "precision": 0.9957769221214756,
+        "recall": 0.9994597739361702,
+        "f1_score": 0.9976149490843479,
+        "support": 24064
+      },
+      "class_1_attack": {
+        "precision": 0.9983678593848085,
+        "recall": 0.9873354854730568,
+        "f1_score": 0.9928210250327736,
+        "support": 8054
+      },
+      "inference_latency": {
+        "total_seconds": 0.0047,
+        "microseconds_per_flow": 0.15
+      }
+    },
+    "Random Forest (Ensemble Baseline)": {
+      "accuracy": 0.9980073479046018,
+      "macro_f1": 0.9973414742923097,
+      "macro_precision": 0.9986737400530503,
+      "macro_recall": 0.9960268189719395,
+      "roc_auc": 0.9986694697758217,
+      "confusion_matrix": {
+        "tn": 24064,
+        "fp": 0,
+        "fn": 64,
+        "tp": 7990
+      },
+      "error_rates": {
+        "false_positive_rate_benign": 0.0,
+        "false_negative_rate_attack": 0.007946362056121183
+      },
+      "class_0_benign": {
+        "precision": 0.9973474801061007,
+        "recall": 1.0,
+        "f1_score": 0.99867197875166,
+        "support": 24064
+      },
+      "class_1_attack": {
+        "precision": 1.0,
+        "recall": 0.9920536379438788,
+        "f1_score": 0.9960109698329593,
+        "support": 8054
+      },
+      "inference_latency": {
+        "total_seconds": 0.0909,
+        "microseconds_per_flow": 2.83
+      }
+    }
+  }
+}

@@ -1,0 +1,325 @@
+{
+  "benchmark_phase": "Phase 8B Multi-Attack Classification Benchmark",
+  "dataset_provenance": {
+    "source": "Authentic CICIDS2017 Benchmark Flow Data (ISCX CSVs)",
+    "classes": [
+      "BENIGN",
+      "PortScan",
+      "DoS_DDoS",
+      "BruteForce",
+      "WebAttacks",
+      "Botnet"
+    ],
+    "feature_count": 66,
+    "excluded_labels": {
+      "Heartbleed": "11 instances in raw dataset; excluded due to extreme rarity (<50 flows)",
+      "Infiltration": "36 instances in raw dataset; excluded due to extreme rarity (<50 flows)"
+    }
+  },
+  "population_audit": {
+    "original_flow_records": {
+      "total": 2012212,
+      "distribution": {
+        "BENIGN": 1454613,
+        "PortScan": 158930,
+        "DoS_DDoS": 380688,
+        "BruteForce": 13835,
+        "WebAttacks": 2180,
+        "Botnet": 1966
+      }
+    },
+    "conflicting_profiles_removed": 115,
+    "clean_unique_profiles_total": 1588698,
+    "split_partition_sizes": {
+      "train": {
+        "total": 1112088,
+        "classes": {
+          "BENIGN": 876648,
+          "PortScan": 1370,
+          "DoS_DDoS": 225163,
+          "BruteForce": 6406,
+          "WebAttacks": 1500,
+          "Botnet": 1001
+        }
+      },
+      "validation": {
+        "total": 238305,
+        "classes": {
+          "BENIGN": 187853,
+          "PortScan": 294,
+          "DoS_DDoS": 48249,
+          "BruteForce": 1373,
+          "WebAttacks": 321,
+          "Botnet": 215
+        }
+      },
+      "test": {
+        "total": 238305,
+        "classes": {
+          "BENIGN": 187854,
+          "PortScan": 293,
+          "DoS_DDoS": 48249,
+          "BruteForce": 1373,
+          "WebAttacks": 322,
+          "Botnet": 214
+        }
+      }
+    }
+  },
+  "evaluation_domain": {
+    "metric_type": "Deduplicated Unique Feature Profiles (Novel Profile Generalization)",
+    "warning": "Metrics evaluate observed flow classification on unique feature profiles, not operational raw flow-level error rates or live stream forecasting."
+  },
+  "models": {
+    "Multiclass Logistic Regression (Linear Baseline)": {
+      "overall_metrics": {
+        "accuracy": 0.878642915591364,
+        "macro_f1": 0.49931324536851474,
+        "macro_precision": 0.44672203924582954,
+        "macro_recall": 0.9510038897519119,
+        "weighted_f1": 0.912713933971167,
+        "weighted_precision": 0.9611075956571363,
+        "weighted_recall": 0.878642915591364
+      },
+      "benign_false_positive_rate": {
+        "fpr": 0.14967474741022282,
+        "false_positives_count": 28117,
+        "true_benign_denominator": 187854,
+        "formula": "benign_fp / total_true_benign (where y_true == 0 and y_pred != 0)"
+      },
+      "per_class_metrics": {
+        "BENIGN": {
+          "class_id": 0,
+          "precision": 0.996425675254195,
+          "recall": 0.8503252525897772,
+          "f1_score": 0.9175963051895084,
+          "support": 187854
+        },
+        "PortScan": {
+          "class_id": 1,
+          "precision": 0.1949820788530466,
+          "recall": 0.9283276450511946,
+          "f1_score": 0.3222748815165877,
+          "support": 293
+        },
+        "DoS_DDoS": {
+          "class_id": 2,
+          "precision": 0.8494877433889395,
+          "recall": 0.9847043462040664,
+          "f1_score": 0.9121119622185107,
+          "support": 48249
+        },
+        "BruteForce": {
+          "class_id": 3,
+          "precision": 0.5785374296841195,
+          "recall": 0.9737800436999272,
+          "f1_score": 0.7258414766558089,
+          "support": 1373
+        },
+        "WebAttacks": {
+          "class_id": 4,
+          "precision": 0.025634824667472793,
+          "recall": 0.9875776397515528,
+          "f1_score": 0.04997249941070166,
+          "support": 322
+        },
+        "Botnet": {
+          "class_id": 5,
+          "precision": 0.03526448362720403,
+          "recall": 0.9813084112149533,
+          "f1_score": 0.06808234721997082,
+          "support": 214
+        }
+      },
+      "confusion_matrix": {
+        "classes": [
+          "BENIGN",
+          "PortScan",
+          "DoS_DDoS",
+          "BruteForce",
+          "WebAttacks",
+          "Botnet"
+        ],
+        "matrix_rows_are_true_cols_are_pred": [
+          [
+            159737,
+            1107,
+            8404,
+            957,
+            11946,
+            5703
+          ],
+          [
+            1,
+            272,
+            12,
+            0,
+            3,
+            5
+          ],
+          [
+            565,
+            12,
+            47511,
+            17,
+            107,
+            37
+          ],
+          [
+            3,
+            2,
+            2,
+            1337,
+            29,
+            0
+          ],
+          [
+            2,
+            2,
+            0,
+            0,
+            318,
+            0
+          ],
+          [
+            2,
+            0,
+            0,
+            0,
+            2,
+            210
+          ]
+        ]
+      },
+      "inference_latency": {
+        "total_seconds": 0.0573,
+        "microseconds_per_profile": 0.24
+      }
+    },
+    "Multiclass Random Forest (Ensemble Baseline)": {
+      "overall_metrics": {
+        "accuracy": 0.9970122322234112,
+        "macro_f1": 0.9071269771299441,
+        "macro_precision": 0.9007646359610577,
+        "macro_recall": 0.9401525371503042,
+        "weighted_f1": 0.997213665491058,
+        "weighted_precision": 0.9975641203377611,
+        "weighted_recall": 0.9970122322234112
+      },
+      "benign_false_positive_rate": {
+        "fpr": 0.0020228475305290278,
+        "false_positives_count": 380,
+        "true_benign_denominator": 187854,
+        "formula": "benign_fp / total_true_benign (where y_true == 0 and y_pred != 0)"
+      },
+      "per_class_metrics": {
+        "BENIGN": {
+          "class_id": 0,
+          "precision": 0.9983225854549521,
+          "recall": 0.9979771524694709,
+          "f1_score": 0.9981498390759311,
+          "support": 187854
+        },
+        "PortScan": {
+          "class_id": 1,
+          "precision": 1.0,
+          "recall": 0.9112627986348123,
+          "f1_score": 0.9535714285714286,
+          "support": 293
+        },
+        "DoS_DDoS": {
+          "class_id": 2,
+          "precision": 0.9971358004192524,
+          "recall": 0.9957304814607557,
+          "f1_score": 0.9964326454422897,
+          "support": 48249
+        },
+        "BruteForce": {
+          "class_id": 3,
+          "precision": 1.0,
+          "recall": 0.9708667152221413,
+          "f1_score": 0.9852180339985218,
+          "support": 1373
+        },
+        "WebAttacks": {
+          "class_id": 4,
+          "precision": 0.9932203389830508,
+          "recall": 0.9099378881987578,
+          "f1_score": 0.9497568881685575,
+          "support": 322
+        },
+        "Botnet": {
+          "class_id": 5,
+          "precision": 0.4159090909090909,
+          "recall": 0.8551401869158879,
+          "f1_score": 0.5596330275229358,
+          "support": 214
+        }
+      },
+      "confusion_matrix": {
+        "classes": [
+          "BENIGN",
+          "PortScan",
+          "DoS_DDoS",
+          "BruteForce",
+          "WebAttacks",
+          "Botnet"
+        ],
+        "matrix_rows_are_true_cols_are_pred": [
+          [
+            187474,
+            0,
+            123,
+            0,
+            0,
+            257
+          ],
+          [
+            12,
+            267,
+            13,
+            0,
+            1,
+            0
+          ],
+          [
+            205,
+            0,
+            48043,
+            0,
+            1,
+            0
+          ],
+          [
+            38,
+            0,
+            2,
+            1333,
+            0,
+            0
+          ],
+          [
+            29,
+            0,
+            0,
+            0,
+            293,
+            0
+          ],
+          [
+            31,
+            0,
+            0,
+            0,
+            0,
+            183
+          ]
+        ]
+      },
+      "inference_latency": {
+        "total_seconds": 0.798,
+        "microseconds_per_profile": 3.35
+      }
+    }
+  }
+}

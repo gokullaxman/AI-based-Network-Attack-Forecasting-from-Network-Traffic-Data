@@ -1,0 +1,89 @@
+{
+  "experiment": "Phase 7B.1 Zero-Leakage Alternative",
+  "partitions": {
+    "train": {
+      "total": 83704,
+      "classes": {
+        "BENIGN": 82926,
+        "PortScan": 778
+      }
+    },
+    "validation": {
+      "total": 17936,
+      "classes": {
+        "BENIGN": 16905,
+        "PortScan": 1031
+      }
+    },
+    "test": {
+      "total": 17938,
+      "classes": {
+        "BENIGN": 17789,
+        "PortScan": 149
+      }
+    },
+    "random_seed": 42,
+    "split_method": "row_order_feature_deduplicated_zero_overlap",
+    "deduplicated_on": "66_behavioral_features"
+  },
+  "models": {
+    "Logistic Regression (Audit Baseline)": {
+      "training_time_seconds": 0.6,
+      "inference_latency_microseconds": 0.25,
+      "accuracy": 0.9962649124763073,
+      "macro_f1": 0.8611997779373839,
+      "macro_precision": 0.9663758483690805,
+      "macro_recall": 0.7951333698790558,
+      "roc_auc": 0.9699806946529435,
+      "confusion_matrix": {
+        "tn": 17783,
+        "fp": 6,
+        "fn": 61,
+        "tp": 88
+      },
+      "false_positive_rate_benign": 0.0003372870875259992,
+      "false_negative_rate_attack": 0.40939597315436244,
+      "class_0_benign": {
+        "precision": 0.9965814839722036,
+        "recall": 0.999662712912474,
+        "f1_score": 0.9981197204838211,
+        "support": 17789
+      },
+      "class_1_attack": {
+        "precision": 0.9361702127659575,
+        "recall": 0.5906040268456376,
+        "f1_score": 0.7242798353909465,
+        "support": 149
+      }
+    },
+    "Random Forest (Audit Baseline)": {
+      "training_time_seconds": 3.55,
+      "inference_latency_microseconds": 4.65,
+      "accuracy": 0.9982718251756049,
+      "macro_f1": 0.9419438744919104,
+      "macro_precision": 0.994991488008381,
+      "macro_recall": 0.8993007518031089,
+      "roc_auc": 0.9647393514052307,
+      "confusion_matrix": {
+        "tn": 17788,
+        "fp": 1,
+        "fn": 30,
+        "tp": 119
+      },
+      "false_positive_rate_benign": 5.621451458766653e-05,
+      "false_negative_rate_attack": 0.20134228187919462,
+      "class_0_benign": {
+        "precision": 0.9983163093500954,
+        "recall": 0.9999437854854123,
+        "f1_score": 0.9991293846715533,
+        "support": 17789
+      },
+      "class_1_attack": {
+        "precision": 0.9916666666666667,
+        "recall": 0.7986577181208053,
+        "f1_score": 0.8847583643122676,
+        "support": 149
+      }
+    }
+  }
+}

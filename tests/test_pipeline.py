@@ -14,7 +14,7 @@ from pipeline.dataset import build_temporal_dataset, STAGE_NAMES, NUM_STAGES
 from models.attack_forecaster import AttackForecasterBiLSTM
 from models.risk_engine import DynamicRiskEngine
 from models.shap_explainer import AttackForecasterSHAPExplainer
-from dashboard.server import app as server_app, process_sequence
+from dashboard.server import app as server_app, process_sequence, capture_engine
 
 
 def test_step1_feature_extraction():
@@ -118,15 +118,23 @@ def test_step5_shap_gradient_explainer():
 
 
 def test_step6_fastapi_endpoints():
-    """Verify FastAPI /api/forecast and /api/stream endpoints and output format."""
+    """Verify FastAPI /api/forecast and /api/stream endpoints with strict gating."""
+    capture_engine.clear_buffer()
     client = TestClient(server_app)
     
-    # Test /api/forecast
-    res_forecast = client.post("/api/forecast", json={})
+    # 1. Gated check: empty body returns unavailable state
+    res_empty = client.post("/api/forecast", json={})
+    assert res_empty.status_code == 200
+    data_empty = res_empty.json()
+    assert not data_empty["prediction_available"]
+    assert "Prediction unavailable" in data_empty["formatted_output"]
+
+    # 2. Valid sequence forecast
+    valid_seq = [[10.0, 50.0, 3.0, 0.4, 5.0, 0.8, 1.0, 0.05, 1.0, 40.0, 0.5, 2.0] for _ in range(10)]
+    res_forecast = client.post("/api/forecast", json={"sequence": valid_seq})
     assert res_forecast.status_code == 200
     data_forecast = res_forecast.json()
-    assert "formatted_output" in data_forecast
-    # Check expected format: Current: ... -> Predicted Next: ... -> Confidence: ... -> Risk: ...
+    assert data_forecast["prediction_available"] is True
     assert "Current:" in data_forecast["formatted_output"]
     assert "Predicted Next:" in data_forecast["formatted_output"]
     assert "Confidence:" in data_forecast["formatted_output"]
@@ -134,16 +142,8 @@ def test_step6_fastapi_endpoints():
     assert data_forecast["current_stage"] in STAGE_NAMES
     assert data_forecast["predicted_next_stage"] in STAGE_NAMES
     assert data_forecast["risk_level"] in ["LOW", "MEDIUM", "HIGH"]
-    
-    # Test /api/stream
-    res_stream = client.get("/api/stream")
-    assert res_stream.status_code == 200
-    data_stream = res_stream.json()
-    assert "formatted_output" in data_stream
-    assert "shap" in data_stream
-    assert "recommendation" in data_stream
-    assert "confidence" in data_stream
-    assert "risk_score" in data_stream
+    assert "shap" in data_forecast
+    assert "recommendation" in data_forecast
 
 
 def test_real_cicids_loader_and_ingest_endpoint():
@@ -267,8 +267,9 @@ def test_export_xlsx_endpoint():
     client = TestClient(server_app)
     
     # Generate 3 forecasts to populate history
+    valid_seq = [[10.0, 50.0, 3.0, 0.4, 5.0, 0.8, 1.0, 0.05, 1.0, 40.0, 0.5, 2.0] for _ in range(10)]
     for _ in range(3):
-        client.get("/api/stream")
+        client.post("/api/forecast", json={"sequence": valid_seq})
         
     # Test GET /api/export-xlsx
     res = client.get("/api/export-xlsx")

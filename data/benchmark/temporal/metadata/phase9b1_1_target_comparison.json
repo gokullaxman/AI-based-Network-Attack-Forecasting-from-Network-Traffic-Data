@@ -1,0 +1,83 @@
+{
+  "target_parameters": {
+    "history_minutes": 10,
+    "lead_time_gap_minutes": 2,
+    "forecast_horizon_minutes": 5,
+    "total_window_span_minutes": 17
+  },
+  "target_a_onset_forecasting": {
+    "description": "History and lead-time gap strictly attack-free; attack onset in horizon",
+    "eligible_windows": 1349,
+    "positive_windows": 65,
+    "negative_windows": 1284,
+    "class_imbalance": "1:19",
+    "ineligible_attack_in_history": 688,
+    "ineligible_attack_in_gap": 28,
+    "excluded_gap_or_boundary": 144,
+    "unambiguous_positive_windows": 55,
+    "ambiguous_positive_windows": 10
+  },
+  "target_b_future_activity_forecasting": {
+    "description": "History attack-free; attack observed in horizon (attacks permitted in gap)",
+    "eligible_windows": 1377,
+    "positive_windows": 89,
+    "negative_windows": 1288,
+    "class_imbalance": "1:14",
+    "ineligible_attack_in_history": 688,
+    "ineligible_attack_in_gap": 0,
+    "excluded_gap_or_boundary": 144
+  },
+  "chronological_split_target_a": {
+    "train_mon_wed": {
+      "eligible_windows": 1069,
+      "positive_windows": 30,
+      "negative_windows": 1039,
+      "ground_truth_episodes": 25,
+      "forecastable_episodes": 9,
+      "attack_categories": [
+        "DoS GoldenEye",
+        "DoS Hulk",
+        "DoS Slowhttptest",
+        "DoS slowloris",
+        "FTP-Patator",
+        "Heartbleed",
+        "SSH-Patator"
+      ]
+    },
+    "test_thu_fri": {
+      "eligible_windows": 280,
+      "positive_windows": 35,
+      "negative_windows": 245,
+      "ground_truth_episodes": 32,
+      "forecastable_episodes": 10,
+      "attack_categories": [
+        "Bot",
+        "DDoS",
+        "PortScan",
+        "Web Attack \u0096 Brute Force",
+        "Web Attack \u0096 Sql Injection",
+        "Web Attack \u0096 XSS"
+      ]
+    },
+    "category_shift_analysis": {
+      "train_only": [
+        "DoS GoldenEye",
+        "DoS Hulk",
+        "DoS Slowhttptest",
+        "DoS slowloris",
+        "FTP-Patator",
+        "Heartbleed",
+        "SSH-Patator"
+      ],
+      "test_only": [
+        "Bot",
+        "DDoS",
+        "PortScan",
+        "Web Attack \u0096 Brute Force",
+        "Web Attack \u0096 Sql Injection",
+        "Web Attack \u0096 XSS"
+      ],
+      "shared": []
+    }
+  }
+}

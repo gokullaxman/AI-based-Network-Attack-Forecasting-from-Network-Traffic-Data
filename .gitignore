@@ -64,3 +64,10 @@ coverage.xml
 *~
 .DS_Store
 Thumbs.db
+
+# Large raw benchmark data files exceeding GitHub 100MB limit
+data/benchmark/raw/
+data/benchmark/temporal/raw/
+*.csv.gz
+*.pcapng
+

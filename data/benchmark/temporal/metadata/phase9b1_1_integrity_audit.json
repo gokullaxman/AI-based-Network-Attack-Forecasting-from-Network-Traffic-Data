@@ -1,0 +1,990 @@
+{
+  "raw_record_reconciliation": {
+    "total_extracted_csv_lines_including_headers": 2830750,
+    "total_headers": 7,
+    "total_extracted_non_header_lines": 2830743,
+    "thursday_blank_comma_padded_lines": 288602,
+    "genuine_flow_records": 2542141,
+    "records_in_1min_parquet": 2542141,
+    "unparseable_or_skipped_records": 288602,
+    "skip_reason": "Thursday CSV lines 170367-458969 contain solely 84 blank commas with no data"
+  },
+  "epoch_key_integrity": {
+    "total_epochs": 2209,
+    "distinct_capture_day_epoch_timestamp_pairs": 2209,
+    "distinct_times_of_day_if_date_omitted": 509,
+    "duplicate_epoch_keys": 0,
+    "calendar_date_preserved": true
+  },
+  "daily_breakdown": [
+    {
+      "capture_day": "Friday",
+      "epoch_count": 484,
+      "attack_epoch_count": 211,
+      "attack_epoch_pct": 43.6,
+      "total_flow_count": 703245,
+      "attack_flow_count": 288923,
+      "benign_flow_count": 414322,
+      "min_timestamp": "2017-07-07 01:00:00",
+      "max_timestamp": "2017-07-07 12:59:00",
+      "continuous_1m_steps": 482,
+      "continuity_gaps_gt_1m": 1,
+      "max_gap_minutes": 237.0
+    },
+    {
+      "capture_day": "Monday",
+      "epoch_count": 487,
+      "attack_epoch_count": 0,
+      "attack_epoch_pct": 0.0,
+      "total_flow_count": 529918,
+      "attack_flow_count": 0,
+      "benign_flow_count": 529918,
+      "min_timestamp": "2017-07-03 01:00:00",
+      "max_timestamp": "2017-07-03 12:59:00",
+      "continuous_1m_steps": 485,
+      "continuity_gaps_gt_1m": 1,
+      "max_gap_minutes": 234.0
+    },
+    {
+      "capture_day": "Thursday",
+      "epoch_count": 241,
+      "attack_epoch_count": 68,
+      "attack_epoch_pct": 28.22,
+      "total_flow_count": 170366,
+      "attack_flow_count": 2180,
+      "benign_flow_count": 168186,
+      "min_timestamp": "2017-07-06 08:59:00",
+      "max_timestamp": "2017-07-06 12:59:00",
+      "continuous_1m_steps": 240,
+      "continuity_gaps_gt_1m": 0,
+      "max_gap_minutes": 1.0
+    },
+    {
+      "capture_day": "Tuesday",
+      "epoch_count": 488,
+      "attack_epoch_count": 127,
+      "attack_epoch_pct": 26.02,
+      "total_flow_count": 445909,
+      "attack_flow_count": 13835,
+      "benign_flow_count": 432074,
+      "min_timestamp": "2017-07-04 01:00:00",
+      "max_timestamp": "2017-07-04 12:59:00",
+      "continuous_1m_steps": 486,
+      "continuity_gaps_gt_1m": 1,
+      "max_gap_minutes": 233.0
+    },
+    {
+      "capture_day": "Wednesday",
+      "epoch_count": 509,
+      "attack_epoch_count": 86,
+      "attack_epoch_pct": 16.9,
+      "total_flow_count": 692703,
+      "attack_flow_count": 252672,
+      "benign_flow_count": 440031,
+      "min_timestamp": "2017-07-05 01:00:00",
+      "max_timestamp": "2017-07-05 12:59:00",
+      "continuous_1m_steps": 507,
+      "continuity_gaps_gt_1m": 1,
+      "max_gap_minutes": 212.0
+    }
+  ],
+  "ground_truth_attack_episodes": {
+    "strict_episodes_count": 57,
+    "macro_episodes_count": 13,
+    "episodes_detail": [
+      {
+        "episode_id": 1,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 01:05:00",
+        "end_time": "2017-07-07 01:06:00",
+        "duration_minutes": 2,
+        "classes": [
+          "PortScan"
+        ],
+        "attack_flows": 7,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 2,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 01:52:00",
+        "end_time": "2017-07-07 01:52:00",
+        "duration_minutes": 1,
+        "classes": [
+          "PortScan"
+        ],
+        "attack_flows": 1,
+        "is_forecastable": true,
+        "positive_window_count": 5,
+        "lead_window_epochs": [
+          "2017-07-07 01:45:00",
+          "2017-07-07 01:46:00",
+          "2017-07-07 01:47:00",
+          "2017-07-07 01:48:00",
+          "2017-07-07 01:49:00"
+        ]
+      },
+      {
+        "episode_id": 3,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 01:55:00",
+        "end_time": "2017-07-07 02:00:00",
+        "duration_minutes": 6,
+        "classes": [
+          "PortScan"
+        ],
+        "attack_flows": 226,
+        "is_forecastable": true,
+        "positive_window_count": 2,
+        "lead_window_epochs": [
+          "2017-07-07 01:48:00",
+          "2017-07-07 01:49:00"
+        ]
+      },
+      {
+        "episode_id": 4,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 02:14:00",
+        "end_time": "2017-07-07 02:16:00",
+        "duration_minutes": 3,
+        "classes": [
+          "PortScan"
+        ],
+        "attack_flows": 138,
+        "is_forecastable": true,
+        "positive_window_count": 2,
+        "lead_window_epochs": [
+          "2017-07-07 02:10:00",
+          "2017-07-07 02:11:00"
+        ]
+      },
+      {
+        "episode_id": 5,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 02:51:00",
+        "end_time": "2017-07-07 02:56:00",
+        "duration_minutes": 6,
+        "classes": [
+          "PortScan"
+        ],
+        "attack_flows": 138493,
+        "is_forecastable": true,
+        "positive_window_count": 5,
+        "lead_window_epochs": [
+          "2017-07-07 02:44:00",
+          "2017-07-07 02:45:00",
+          "2017-07-07 02:46:00",
+          "2017-07-07 02:47:00",
+          "2017-07-07 02:48:00"
+        ]
+      },
+      {
+        "episode_id": 6,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 03:03:00",
+        "end_time": "2017-07-07 03:03:00",
+        "duration_minutes": 1,
+        "classes": [
+          "PortScan"
+        ],
+        "attack_flows": 2,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 7,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 03:08:00",
+        "end_time": "2017-07-07 03:10:00",
+        "duration_minutes": 3,
+        "classes": [
+          "PortScan"
+        ],
+        "attack_flows": 11036,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 8,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 03:12:00",
+        "end_time": "2017-07-07 03:13:00",
+        "duration_minutes": 2,
+        "classes": [
+          "PortScan"
+        ],
+        "attack_flows": 2,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 9,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 03:21:00",
+        "end_time": "2017-07-07 03:23:00",
+        "duration_minutes": 3,
+        "classes": [
+          "PortScan"
+        ],
+        "attack_flows": 9025,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 10,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 03:56:00",
+        "end_time": "2017-07-07 04:16:00",
+        "duration_minutes": 21,
+        "classes": [
+          "DDoS"
+        ],
+        "attack_flows": 128027,
+        "is_forecastable": true,
+        "positive_window_count": 5,
+        "lead_window_epochs": [
+          "2017-07-07 03:49:00",
+          "2017-07-07 03:50:00",
+          "2017-07-07 03:51:00",
+          "2017-07-07 03:52:00",
+          "2017-07-07 03:53:00"
+        ]
+      },
+      {
+        "episode_id": 11,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 09:34:00",
+        "end_time": "2017-07-07 09:35:00",
+        "duration_minutes": 2,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 2,
+        "is_forecastable": true,
+        "positive_window_count": 5,
+        "lead_window_epochs": [
+          "2017-07-07 09:27:00",
+          "2017-07-07 09:28:00",
+          "2017-07-07 09:29:00",
+          "2017-07-07 09:30:00",
+          "2017-07-07 09:31:00"
+        ]
+      },
+      {
+        "episode_id": 12,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 10:04:00",
+        "end_time": "2017-07-07 11:13:00",
+        "duration_minutes": 70,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 1521,
+        "is_forecastable": true,
+        "positive_window_count": 5,
+        "lead_window_epochs": [
+          "2017-07-07 09:57:00",
+          "2017-07-07 09:58:00",
+          "2017-07-07 09:59:00",
+          "2017-07-07 10:00:00",
+          "2017-07-07 10:01:00"
+        ]
+      },
+      {
+        "episode_id": 13,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 11:15:00",
+        "end_time": "2017-07-07 11:18:00",
+        "duration_minutes": 4,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 21,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 14,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 11:20:00",
+        "end_time": "2017-07-07 11:23:00",
+        "duration_minutes": 4,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 23,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 15,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 11:25:00",
+        "end_time": "2017-07-07 11:28:00",
+        "duration_minutes": 4,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 21,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 16,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 11:30:00",
+        "end_time": "2017-07-07 11:45:00",
+        "duration_minutes": 16,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 70,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 17,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 11:47:00",
+        "end_time": "2017-07-07 11:50:00",
+        "duration_minutes": 4,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 21,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 18,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 11:52:00",
+        "end_time": "2017-07-07 11:55:00",
+        "duration_minutes": 4,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 21,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 19,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 11:57:00",
+        "end_time": "2017-07-07 12:00:00",
+        "duration_minutes": 4,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 21,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 20,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 12:02:00",
+        "end_time": "2017-07-07 12:17:00",
+        "duration_minutes": 16,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 70,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 21,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 12:19:00",
+        "end_time": "2017-07-07 12:22:00",
+        "duration_minutes": 4,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 21,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 22,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 12:24:00",
+        "end_time": "2017-07-07 12:27:00",
+        "duration_minutes": 4,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 21,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 23,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 12:29:00",
+        "end_time": "2017-07-07 12:32:00",
+        "duration_minutes": 4,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 21,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 24,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 12:34:00",
+        "end_time": "2017-07-07 12:37:00",
+        "duration_minutes": 4,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 21,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 25,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 12:39:00",
+        "end_time": "2017-07-07 12:49:00",
+        "duration_minutes": 11,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 49,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 26,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 12:51:00",
+        "end_time": "2017-07-07 12:54:00",
+        "duration_minutes": 4,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 21,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 27,
+        "capture_day": "Friday",
+        "start_time": "2017-07-07 12:56:00",
+        "end_time": "2017-07-07 12:59:00",
+        "duration_minutes": 4,
+        "classes": [
+          "Bot"
+        ],
+        "attack_flows": 21,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 28,
+        "capture_day": "Thursday",
+        "start_time": "2017-07-06 09:15:00",
+        "end_time": "2017-07-06 09:16:00",
+        "duration_minutes": 2,
+        "classes": [
+          "Web Attack \u0096 Brute Force"
+        ],
+        "attack_flows": 5,
+        "is_forecastable": true,
+        "positive_window_count": 5,
+        "lead_window_epochs": [
+          "2017-07-06 09:08:00",
+          "2017-07-06 09:09:00",
+          "2017-07-06 09:10:00",
+          "2017-07-06 09:11:00",
+          "2017-07-06 09:12:00"
+        ]
+      },
+      {
+        "episode_id": 29,
+        "capture_day": "Thursday",
+        "start_time": "2017-07-06 09:18:00",
+        "end_time": "2017-07-06 09:19:00",
+        "duration_minutes": 2,
+        "classes": [
+          "Web Attack \u0096 Brute Force"
+        ],
+        "attack_flows": 8,
+        "is_forecastable": true,
+        "positive_window_count": 2,
+        "lead_window_epochs": [
+          "2017-07-06 09:11:00",
+          "2017-07-06 09:12:00"
+        ]
+      },
+      {
+        "episode_id": 30,
+        "capture_day": "Thursday",
+        "start_time": "2017-07-06 09:21:00",
+        "end_time": "2017-07-06 10:00:00",
+        "duration_minutes": 40,
+        "classes": [
+          "Web Attack \u0096 Brute Force"
+        ],
+        "attack_flows": 1494,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 31,
+        "capture_day": "Thursday",
+        "start_time": "2017-07-06 10:15:00",
+        "end_time": "2017-07-06 10:35:00",
+        "duration_minutes": 21,
+        "classes": [
+          "Web Attack \u0096 XSS"
+        ],
+        "attack_flows": 652,
+        "is_forecastable": true,
+        "positive_window_count": 3,
+        "lead_window_epochs": [
+          "2017-07-06 10:10:00",
+          "2017-07-06 10:11:00",
+          "2017-07-06 10:12:00"
+        ]
+      },
+      {
+        "episode_id": 32,
+        "capture_day": "Thursday",
+        "start_time": "2017-07-06 10:40:00",
+        "end_time": "2017-07-06 10:42:00",
+        "duration_minutes": 3,
+        "classes": [
+          "Web Attack \u0096 Sql Injection"
+        ],
+        "attack_flows": 21,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 33,
+        "capture_day": "Tuesday",
+        "start_time": "2017-07-04 02:09:00",
+        "end_time": "2017-07-04 03:11:00",
+        "duration_minutes": 63,
+        "classes": [
+          "SSH-Patator"
+        ],
+        "attack_flows": 5897,
+        "is_forecastable": true,
+        "positive_window_count": 5,
+        "lead_window_epochs": [
+          "2017-07-04 02:02:00",
+          "2017-07-04 02:03:00",
+          "2017-07-04 02:04:00",
+          "2017-07-04 02:05:00",
+          "2017-07-04 02:06:00"
+        ]
+      },
+      {
+        "episode_id": 34,
+        "capture_day": "Tuesday",
+        "start_time": "2017-07-04 09:17:00",
+        "end_time": "2017-07-04 09:17:00",
+        "duration_minutes": 1,
+        "classes": [
+          "FTP-Patator"
+        ],
+        "attack_flows": 1,
+        "is_forecastable": true,
+        "positive_window_count": 5,
+        "lead_window_epochs": [
+          "2017-07-04 09:10:00",
+          "2017-07-04 09:11:00",
+          "2017-07-04 09:12:00",
+          "2017-07-04 09:13:00",
+          "2017-07-04 09:14:00"
+        ]
+      },
+      {
+        "episode_id": 35,
+        "capture_day": "Tuesday",
+        "start_time": "2017-07-04 09:19:00",
+        "end_time": "2017-07-04 10:20:00",
+        "duration_minutes": 62,
+        "classes": [
+          "FTP-Patator"
+        ],
+        "attack_flows": 7936,
+        "is_forecastable": true,
+        "positive_window_count": 3,
+        "lead_window_epochs": [
+          "2017-07-04 09:12:00",
+          "2017-07-04 09:13:00",
+          "2017-07-04 09:14:00"
+        ]
+      },
+      {
+        "episode_id": 36,
+        "capture_day": "Tuesday",
+        "start_time": "2017-07-04 10:30:00",
+        "end_time": "2017-07-04 10:30:00",
+        "duration_minutes": 1,
+        "classes": [
+          "FTP-Patator"
+        ],
+        "attack_flows": 1,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 37,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 02:24:00",
+        "end_time": "2017-07-05 02:25:00",
+        "duration_minutes": 2,
+        "classes": [
+          "DoS slowloris"
+        ],
+        "attack_flows": 5,
+        "is_forecastable": true,
+        "positive_window_count": 5,
+        "lead_window_epochs": [
+          "2017-07-05 02:17:00",
+          "2017-07-05 02:18:00",
+          "2017-07-05 02:19:00",
+          "2017-07-05 02:20:00",
+          "2017-07-05 02:21:00"
+        ]
+      },
+      {
+        "episode_id": 38,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 03:12:00",
+        "end_time": "2017-07-05 03:12:00",
+        "duration_minutes": 1,
+        "classes": [
+          "Heartbleed"
+        ],
+        "attack_flows": 1,
+        "is_forecastable": true,
+        "positive_window_count": 5,
+        "lead_window_epochs": [
+          "2017-07-05 03:05:00",
+          "2017-07-05 03:06:00",
+          "2017-07-05 03:07:00",
+          "2017-07-05 03:08:00",
+          "2017-07-05 03:09:00"
+        ]
+      },
+      {
+        "episode_id": 39,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 03:14:00",
+        "end_time": "2017-07-05 03:14:00",
+        "duration_minutes": 1,
+        "classes": [
+          "Heartbleed"
+        ],
+        "attack_flows": 1,
+        "is_forecastable": true,
+        "positive_window_count": 3,
+        "lead_window_epochs": [
+          "2017-07-05 03:07:00",
+          "2017-07-05 03:08:00",
+          "2017-07-05 03:09:00"
+        ]
+      },
+      {
+        "episode_id": 40,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 03:16:00",
+        "end_time": "2017-07-05 03:16:00",
+        "duration_minutes": 1,
+        "classes": [
+          "Heartbleed"
+        ],
+        "attack_flows": 1,
+        "is_forecastable": true,
+        "positive_window_count": 1,
+        "lead_window_epochs": [
+          "2017-07-05 03:09:00"
+        ]
+      },
+      {
+        "episode_id": 41,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 03:18:00",
+        "end_time": "2017-07-05 03:18:00",
+        "duration_minutes": 1,
+        "classes": [
+          "Heartbleed"
+        ],
+        "attack_flows": 1,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 42,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 03:20:00",
+        "end_time": "2017-07-05 03:20:00",
+        "duration_minutes": 1,
+        "classes": [
+          "Heartbleed"
+        ],
+        "attack_flows": 1,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 43,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 03:22:00",
+        "end_time": "2017-07-05 03:22:00",
+        "duration_minutes": 1,
+        "classes": [
+          "Heartbleed"
+        ],
+        "attack_flows": 1,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 44,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 03:24:00",
+        "end_time": "2017-07-05 03:24:00",
+        "duration_minutes": 1,
+        "classes": [
+          "Heartbleed"
+        ],
+        "attack_flows": 1,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 45,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 03:26:00",
+        "end_time": "2017-07-05 03:26:00",
+        "duration_minutes": 1,
+        "classes": [
+          "Heartbleed"
+        ],
+        "attack_flows": 1,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 46,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 03:28:00",
+        "end_time": "2017-07-05 03:28:00",
+        "duration_minutes": 1,
+        "classes": [
+          "Heartbleed"
+        ],
+        "attack_flows": 1,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 47,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 03:30:00",
+        "end_time": "2017-07-05 03:30:00",
+        "duration_minutes": 1,
+        "classes": [
+          "Heartbleed"
+        ],
+        "attack_flows": 1,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 48,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 03:32:00",
+        "end_time": "2017-07-05 03:32:00",
+        "duration_minutes": 1,
+        "classes": [
+          "Heartbleed"
+        ],
+        "attack_flows": 1,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 49,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 09:01:00",
+        "end_time": "2017-07-05 09:01:00",
+        "duration_minutes": 1,
+        "classes": [
+          "DoS slowloris"
+        ],
+        "attack_flows": 1,
+        "is_forecastable": true,
+        "positive_window_count": 5,
+        "lead_window_epochs": [
+          "2017-07-05 08:54:00",
+          "2017-07-05 08:55:00",
+          "2017-07-05 08:56:00",
+          "2017-07-05 08:57:00",
+          "2017-07-05 08:58:00"
+        ]
+      },
+      {
+        "episode_id": 50,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 09:48:00",
+        "end_time": "2017-07-05 10:11:00",
+        "duration_minutes": 24,
+        "classes": [
+          "DoS slowloris"
+        ],
+        "attack_flows": 5790,
+        "is_forecastable": true,
+        "positive_window_count": 5,
+        "lead_window_epochs": [
+          "2017-07-05 09:41:00",
+          "2017-07-05 09:42:00",
+          "2017-07-05 09:43:00",
+          "2017-07-05 09:44:00",
+          "2017-07-05 09:45:00"
+        ]
+      },
+      {
+        "episode_id": 51,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 10:15:00",
+        "end_time": "2017-07-05 10:19:00",
+        "duration_minutes": 5,
+        "classes": [
+          "DoS Slowhttptest"
+        ],
+        "attack_flows": 1502,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 52,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 10:22:00",
+        "end_time": "2017-07-05 10:29:00",
+        "duration_minutes": 8,
+        "classes": [
+          "DoS Slowhttptest"
+        ],
+        "attack_flows": 2642,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 53,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 10:32:00",
+        "end_time": "2017-07-05 10:37:00",
+        "duration_minutes": 6,
+        "classes": [
+          "DoS Slowhttptest"
+        ],
+        "attack_flows": 1355,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 54,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 10:43:00",
+        "end_time": "2017-07-05 11:01:00",
+        "duration_minutes": 19,
+        "classes": [
+          "DoS Hulk"
+        ],
+        "attack_flows": 230928,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 55,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 11:06:00",
+        "end_time": "2017-07-05 11:07:00",
+        "duration_minutes": 2,
+        "classes": [
+          "DoS Hulk"
+        ],
+        "attack_flows": 145,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 56,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 11:10:00",
+        "end_time": "2017-07-05 11:14:00",
+        "duration_minutes": 5,
+        "classes": [
+          "DoS GoldenEye"
+        ],
+        "attack_flows": 6170,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      },
+      {
+        "episode_id": 57,
+        "capture_day": "Wednesday",
+        "start_time": "2017-07-05 11:17:00",
+        "end_time": "2017-07-05 11:19:00",
+        "duration_minutes": 3,
+        "classes": [
+          "DoS GoldenEye"
+        ],
+        "attack_flows": 4123,
+        "is_forecastable": false,
+        "positive_window_count": 0,
+        "lead_window_epochs": []
+      }
+    ]
+  }
+}

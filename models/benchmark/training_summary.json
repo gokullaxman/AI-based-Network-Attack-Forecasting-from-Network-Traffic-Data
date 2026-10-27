@@ -1,0 +1,133 @@
+{
+  "dataset": "CICIDS2017 Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+  "split_sizes": {
+    "train": 149879,
+    "val": 32117,
+    "test": 32118
+  },
+  "features": {
+    "count": 66,
+    "list": [
+      "Flow Duration",
+      "Total Fwd Packets",
+      "Total Backward Packets",
+      "Total Length of Fwd Packets",
+      "Total Length of Bwd Packets",
+      "Fwd Packet Length Max",
+      "Fwd Packet Length Min",
+      "Fwd Packet Length Mean",
+      "Fwd Packet Length Std",
+      "Bwd Packet Length Max",
+      "Bwd Packet Length Min",
+      "Bwd Packet Length Mean",
+      "Bwd Packet Length Std",
+      "Flow Bytes/s",
+      "Flow Packets/s",
+      "Flow IAT Mean",
+      "Flow IAT Std",
+      "Flow IAT Max",
+      "Flow IAT Min",
+      "Fwd IAT Total",
+      "Fwd IAT Mean",
+      "Fwd IAT Std",
+      "Fwd IAT Max",
+      "Fwd IAT Min",
+      "Bwd IAT Total",
+      "Bwd IAT Mean",
+      "Bwd IAT Std",
+      "Bwd IAT Max",
+      "Bwd IAT Min",
+      "Fwd PSH Flags",
+      "Fwd Header Length",
+      "Bwd Header Length",
+      "Fwd Packets/s",
+      "Bwd Packets/s",
+      "Min Packet Length",
+      "Max Packet Length",
+      "Packet Length Mean",
+      "Packet Length Std",
+      "Packet Length Variance",
+      "FIN Flag Count",
+      "SYN Flag Count",
+      "RST Flag Count",
+      "PSH Flag Count",
+      "ACK Flag Count",
+      "URG Flag Count",
+      "ECE Flag Count",
+      "Down/Up Ratio",
+      "Average Packet Size",
+      "Avg Fwd Segment Size",
+      "Avg Bwd Segment Size",
+      "Subflow Fwd Packets",
+      "Subflow Fwd Bytes",
+      "Subflow Bwd Packets",
+      "Subflow Bwd Bytes",
+      "Init_Win_bytes_forward",
+      "Init_Win_bytes_backward",
+      "act_data_pkt_fwd",
+      "min_seg_size_forward",
+      "Active Mean",
+      "Active Std",
+      "Active Max",
+      "Active Min",
+      "Idle Mean",
+      "Idle Std",
+      "Idle Max",
+      "Idle Min"
+    ]
+  },
+  "logistic_regression": {
+    "training_time_seconds": 1.48,
+    "val_accuracy": 0.99959522994053,
+    "val_f1": 0.9996816300541229,
+    "val_roc_auc": 0.9999070493414475
+  },
+  "random_forest": {
+    "training_time_seconds": 4.98,
+    "val_accuracy": 1.0,
+    "val_f1": 1.0,
+    "val_roc_auc": 1.0,
+    "top_10_features": [
+      {
+        "feature": "Total Length of Fwd Packets",
+        "importance": 0.10615034311920102
+      },
+      {
+        "feature": "Subflow Fwd Bytes",
+        "importance": 0.0966417788225999
+      },
+      {
+        "feature": "Fwd Packet Length Mean",
+        "importance": 0.08151305989231984
+      },
+      {
+        "feature": "Average Packet Size",
+        "importance": 0.05892842511426104
+      },
+      {
+        "feature": "Bwd Packets/s",
+        "importance": 0.05654887365667867
+      },
+      {
+        "feature": "Packet Length Mean",
+        "importance": 0.05510948405014883
+      },
+      {
+        "feature": "Fwd Packet Length Max",
+        "importance": 0.05226112084001203
+      },
+      {
+        "feature": "Avg Fwd Segment Size",
+        "importance": 0.05117117396081337
+      },
+      {
+        "feature": "Packet Length Std",
+        "importance": 0.0483054300161854
+      },
+      {
+        "feature": "Max Packet Length",
+        "importance": 0.04787450117168258
+      }
+    ]
+  }
+}

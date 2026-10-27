@@ -1,0 +1,645 @@
+{
+  "total_epochs": 2209,
+  "window_parameters": {
+    "history_length_minutes": 10,
+    "lead_time_gap_minutes": 2,
+    "prediction_horizon_minutes": 5,
+    "total_window_span_minutes": 17
+  },
+  "window_counts": {
+    "total_eligible_windows": 1377,
+    "positive_onset_windows": 89,
+    "negative_attack_free_windows": 1288,
+    "class_imbalance_ratio": "1 positive : 14 negative",
+    "ineligible_windows_active_attack_in_history": 688,
+    "excluded_boundary_or_continuity_gap_windows": 144
+  },
+  "independent_attack_onsets": {
+    "total_independent_onsets": 14,
+    "onset_events_detail": [
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 01:45:00",
+        "horizon_start": "2017-07-07 01:48:00",
+        "horizon_end": "2017-07-07 01:52:00",
+        "attack_flows_in_horizon": 1
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 01:46:00",
+        "horizon_start": "2017-07-07 01:49:00",
+        "horizon_end": "2017-07-07 01:53:00",
+        "attack_flows_in_horizon": 1
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 01:47:00",
+        "horizon_start": "2017-07-07 01:50:00",
+        "horizon_end": "2017-07-07 01:54:00",
+        "attack_flows_in_horizon": 1
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 01:48:00",
+        "horizon_start": "2017-07-07 01:51:00",
+        "horizon_end": "2017-07-07 01:55:00",
+        "attack_flows_in_horizon": 31
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 01:49:00",
+        "horizon_start": "2017-07-07 01:52:00",
+        "horizon_end": "2017-07-07 01:56:00",
+        "attack_flows_in_horizon": 76
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 01:50:00",
+        "horizon_start": "2017-07-07 01:53:00",
+        "horizon_end": "2017-07-07 01:57:00",
+        "attack_flows_in_horizon": 104
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 01:51:00",
+        "horizon_start": "2017-07-07 01:54:00",
+        "horizon_end": "2017-07-07 01:58:00",
+        "attack_flows_in_horizon": 115
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 02:10:00",
+        "horizon_start": "2017-07-07 02:13:00",
+        "horizon_end": "2017-07-07 02:17:00",
+        "attack_flows_in_horizon": 138
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 02:11:00",
+        "horizon_start": "2017-07-07 02:14:00",
+        "horizon_end": "2017-07-07 02:18:00",
+        "attack_flows_in_horizon": 138
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 02:12:00",
+        "horizon_start": "2017-07-07 02:15:00",
+        "horizon_end": "2017-07-07 02:19:00",
+        "attack_flows_in_horizon": 68
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 02:13:00",
+        "horizon_start": "2017-07-07 02:16:00",
+        "horizon_end": "2017-07-07 02:20:00",
+        "attack_flows_in_horizon": 4
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 02:44:00",
+        "horizon_start": "2017-07-07 02:47:00",
+        "horizon_end": "2017-07-07 02:51:00",
+        "attack_flows_in_horizon": 10916
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 02:45:00",
+        "horizon_start": "2017-07-07 02:48:00",
+        "horizon_end": "2017-07-07 02:52:00",
+        "attack_flows_in_horizon": 54519
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 02:46:00",
+        "horizon_start": "2017-07-07 02:49:00",
+        "horizon_end": "2017-07-07 02:53:00",
+        "attack_flows_in_horizon": 58476
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 02:47:00",
+        "horizon_start": "2017-07-07 02:50:00",
+        "horizon_end": "2017-07-07 02:54:00",
+        "attack_flows_in_horizon": 93096
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 02:48:00",
+        "horizon_start": "2017-07-07 02:51:00",
+        "horizon_end": "2017-07-07 02:55:00",
+        "attack_flows_in_horizon": 137506
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 02:49:00",
+        "horizon_start": "2017-07-07 02:52:00",
+        "horizon_end": "2017-07-07 02:56:00",
+        "attack_flows_in_horizon": 127577
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 02:50:00",
+        "horizon_start": "2017-07-07 02:53:00",
+        "horizon_end": "2017-07-07 02:57:00",
+        "attack_flows_in_horizon": 83974
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 03:49:00",
+        "horizon_start": "2017-07-07 03:52:00",
+        "horizon_end": "2017-07-07 03:56:00",
+        "attack_flows_in_horizon": 2438
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 03:50:00",
+        "horizon_start": "2017-07-07 03:53:00",
+        "horizon_end": "2017-07-07 03:57:00",
+        "attack_flows_in_horizon": 10682
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 03:51:00",
+        "horizon_start": "2017-07-07 03:54:00",
+        "horizon_end": "2017-07-07 03:58:00",
+        "attack_flows_in_horizon": 17258
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 03:52:00",
+        "horizon_start": "2017-07-07 03:55:00",
+        "horizon_end": "2017-07-07 03:59:00",
+        "attack_flows_in_horizon": 23865
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 03:53:00",
+        "horizon_start": "2017-07-07 03:56:00",
+        "horizon_end": "2017-07-07 04:00:00",
+        "attack_flows_in_horizon": 30398
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 03:54:00",
+        "horizon_start": "2017-07-07 03:57:00",
+        "horizon_end": "2017-07-07 04:01:00",
+        "attack_flows_in_horizon": 34937
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 03:55:00",
+        "horizon_start": "2017-07-07 03:58:00",
+        "horizon_end": "2017-07-07 04:02:00",
+        "attack_flows_in_horizon": 33582
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 09:27:00",
+        "horizon_start": "2017-07-07 09:30:00",
+        "horizon_end": "2017-07-07 09:34:00",
+        "attack_flows_in_horizon": 1
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 09:28:00",
+        "horizon_start": "2017-07-07 09:31:00",
+        "horizon_end": "2017-07-07 09:35:00",
+        "attack_flows_in_horizon": 2
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 09:29:00",
+        "horizon_start": "2017-07-07 09:32:00",
+        "horizon_end": "2017-07-07 09:36:00",
+        "attack_flows_in_horizon": 2
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 09:30:00",
+        "horizon_start": "2017-07-07 09:33:00",
+        "horizon_end": "2017-07-07 09:37:00",
+        "attack_flows_in_horizon": 2
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 09:31:00",
+        "horizon_start": "2017-07-07 09:34:00",
+        "horizon_end": "2017-07-07 09:38:00",
+        "attack_flows_in_horizon": 2
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 09:32:00",
+        "horizon_start": "2017-07-07 09:35:00",
+        "horizon_end": "2017-07-07 09:39:00",
+        "attack_flows_in_horizon": 1
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 09:57:00",
+        "horizon_start": "2017-07-07 10:00:00",
+        "horizon_end": "2017-07-07 10:04:00",
+        "attack_flows_in_horizon": 12
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 09:58:00",
+        "horizon_start": "2017-07-07 10:01:00",
+        "horizon_end": "2017-07-07 10:05:00",
+        "attack_flows_in_horizon": 24
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 09:59:00",
+        "horizon_start": "2017-07-07 10:02:00",
+        "horizon_end": "2017-07-07 10:06:00",
+        "attack_flows_in_horizon": 34
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 10:00:00",
+        "horizon_start": "2017-07-07 10:03:00",
+        "horizon_end": "2017-07-07 10:07:00",
+        "attack_flows_in_horizon": 46
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 10:01:00",
+        "horizon_start": "2017-07-07 10:04:00",
+        "horizon_end": "2017-07-07 10:08:00",
+        "attack_flows_in_horizon": 58
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 10:02:00",
+        "horizon_start": "2017-07-07 10:05:00",
+        "horizon_end": "2017-07-07 10:09:00",
+        "attack_flows_in_horizon": 60
+      },
+      {
+        "capture_day": "Friday",
+        "current_epoch": "2017-07-07 10:03:00",
+        "horizon_start": "2017-07-07 10:06:00",
+        "horizon_end": "2017-07-07 10:10:00",
+        "attack_flows_in_horizon": 62
+      },
+      {
+        "capture_day": "Thursday",
+        "current_epoch": "2017-07-06 09:08:00",
+        "horizon_start": "2017-07-06 09:11:00",
+        "horizon_end": "2017-07-06 09:15:00",
+        "attack_flows_in_horizon": 2
+      },
+      {
+        "capture_day": "Thursday",
+        "current_epoch": "2017-07-06 09:09:00",
+        "horizon_start": "2017-07-06 09:12:00",
+        "horizon_end": "2017-07-06 09:16:00",
+        "attack_flows_in_horizon": 5
+      },
+      {
+        "capture_day": "Thursday",
+        "current_epoch": "2017-07-06 09:10:00",
+        "horizon_start": "2017-07-06 09:13:00",
+        "horizon_end": "2017-07-06 09:17:00",
+        "attack_flows_in_horizon": 5
+      },
+      {
+        "capture_day": "Thursday",
+        "current_epoch": "2017-07-06 09:11:00",
+        "horizon_start": "2017-07-06 09:14:00",
+        "horizon_end": "2017-07-06 09:18:00",
+        "attack_flows_in_horizon": 9
+      },
+      {
+        "capture_day": "Thursday",
+        "current_epoch": "2017-07-06 09:12:00",
+        "horizon_start": "2017-07-06 09:15:00",
+        "horizon_end": "2017-07-06 09:19:00",
+        "attack_flows_in_horizon": 13
+      },
+      {
+        "capture_day": "Thursday",
+        "current_epoch": "2017-07-06 09:13:00",
+        "horizon_start": "2017-07-06 09:16:00",
+        "horizon_end": "2017-07-06 09:20:00",
+        "attack_flows_in_horizon": 11
+      },
+      {
+        "capture_day": "Thursday",
+        "current_epoch": "2017-07-06 09:14:00",
+        "horizon_start": "2017-07-06 09:17:00",
+        "horizon_end": "2017-07-06 09:21:00",
+        "attack_flows_in_horizon": 21
+      },
+      {
+        "capture_day": "Thursday",
+        "current_epoch": "2017-07-06 10:10:00",
+        "horizon_start": "2017-07-06 10:13:00",
+        "horizon_end": "2017-07-06 10:17:00",
+        "attack_flows_in_horizon": 65
+      },
+      {
+        "capture_day": "Thursday",
+        "current_epoch": "2017-07-06 10:11:00",
+        "horizon_start": "2017-07-06 10:14:00",
+        "horizon_end": "2017-07-06 10:18:00",
+        "attack_flows_in_horizon": 98
+      },
+      {
+        "capture_day": "Thursday",
+        "current_epoch": "2017-07-06 10:12:00",
+        "horizon_start": "2017-07-06 10:15:00",
+        "horizon_end": "2017-07-06 10:19:00",
+        "attack_flows_in_horizon": 131
+      },
+      {
+        "capture_day": "Thursday",
+        "current_epoch": "2017-07-06 10:13:00",
+        "horizon_start": "2017-07-06 10:16:00",
+        "horizon_end": "2017-07-06 10:20:00",
+        "attack_flows_in_horizon": 156
+      },
+      {
+        "capture_day": "Thursday",
+        "current_epoch": "2017-07-06 10:14:00",
+        "horizon_start": "2017-07-06 10:17:00",
+        "horizon_end": "2017-07-06 10:21:00",
+        "attack_flows_in_horizon": 166
+      },
+      {
+        "capture_day": "Tuesday",
+        "current_epoch": "2017-07-04 02:02:00",
+        "horizon_start": "2017-07-04 02:05:00",
+        "horizon_end": "2017-07-04 02:09:00",
+        "attack_flows_in_horizon": 89
+      },
+      {
+        "capture_day": "Tuesday",
+        "current_epoch": "2017-07-04 02:03:00",
+        "horizon_start": "2017-07-04 02:06:00",
+        "horizon_end": "2017-07-04 02:10:00",
+        "attack_flows_in_horizon": 173
+      },
+      {
+        "capture_day": "Tuesday",
+        "current_epoch": "2017-07-04 02:04:00",
+        "horizon_start": "2017-07-04 02:07:00",
+        "horizon_end": "2017-07-04 02:11:00",
+        "attack_flows_in_horizon": 268
+      },
+      {
+        "capture_day": "Tuesday",
+        "current_epoch": "2017-07-04 02:05:00",
+        "horizon_start": "2017-07-04 02:08:00",
+        "horizon_end": "2017-07-04 02:12:00",
+        "attack_flows_in_horizon": 368
+      },
+      {
+        "capture_day": "Tuesday",
+        "current_epoch": "2017-07-04 02:06:00",
+        "horizon_start": "2017-07-04 02:09:00",
+        "horizon_end": "2017-07-04 02:13:00",
+        "attack_flows_in_horizon": 470
+      },
+      {
+        "capture_day": "Tuesday",
+        "current_epoch": "2017-07-04 02:07:00",
+        "horizon_start": "2017-07-04 02:10:00",
+        "horizon_end": "2017-07-04 02:14:00",
+        "attack_flows_in_horizon": 479
+      },
+      {
+        "capture_day": "Tuesday",
+        "current_epoch": "2017-07-04 02:08:00",
+        "horizon_start": "2017-07-04 02:11:00",
+        "horizon_end": "2017-07-04 02:15:00",
+        "attack_flows_in_horizon": 474
+      },
+      {
+        "capture_day": "Tuesday",
+        "current_epoch": "2017-07-04 09:10:00",
+        "horizon_start": "2017-07-04 09:13:00",
+        "horizon_end": "2017-07-04 09:17:00",
+        "attack_flows_in_horizon": 1
+      },
+      {
+        "capture_day": "Tuesday",
+        "current_epoch": "2017-07-04 09:11:00",
+        "horizon_start": "2017-07-04 09:14:00",
+        "horizon_end": "2017-07-04 09:18:00",
+        "attack_flows_in_horizon": 1
+      },
+      {
+        "capture_day": "Tuesday",
+        "current_epoch": "2017-07-04 09:12:00",
+        "horizon_start": "2017-07-04 09:15:00",
+        "horizon_end": "2017-07-04 09:19:00",
+        "attack_flows_in_horizon": 60
+      },
+      {
+        "capture_day": "Tuesday",
+        "current_epoch": "2017-07-04 09:13:00",
+        "horizon_start": "2017-07-04 09:16:00",
+        "horizon_end": "2017-07-04 09:20:00",
+        "attack_flows_in_horizon": 197
+      },
+      {
+        "capture_day": "Tuesday",
+        "current_epoch": "2017-07-04 09:14:00",
+        "horizon_start": "2017-07-04 09:17:00",
+        "horizon_end": "2017-07-04 09:21:00",
+        "attack_flows_in_horizon": 323
+      },
+      {
+        "capture_day": "Tuesday",
+        "current_epoch": "2017-07-04 09:15:00",
+        "horizon_start": "2017-07-04 09:18:00",
+        "horizon_end": "2017-07-04 09:22:00",
+        "attack_flows_in_horizon": 454
+      },
+      {
+        "capture_day": "Tuesday",
+        "current_epoch": "2017-07-04 09:16:00",
+        "horizon_start": "2017-07-04 09:19:00",
+        "horizon_end": "2017-07-04 09:23:00",
+        "attack_flows_in_horizon": 578
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 02:17:00",
+        "horizon_start": "2017-07-05 02:20:00",
+        "horizon_end": "2017-07-05 02:24:00",
+        "attack_flows_in_horizon": 4
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 02:18:00",
+        "horizon_start": "2017-07-05 02:21:00",
+        "horizon_end": "2017-07-05 02:25:00",
+        "attack_flows_in_horizon": 5
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 02:19:00",
+        "horizon_start": "2017-07-05 02:22:00",
+        "horizon_end": "2017-07-05 02:26:00",
+        "attack_flows_in_horizon": 5
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 02:20:00",
+        "horizon_start": "2017-07-05 02:23:00",
+        "horizon_end": "2017-07-05 02:27:00",
+        "attack_flows_in_horizon": 5
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 02:21:00",
+        "horizon_start": "2017-07-05 02:24:00",
+        "horizon_end": "2017-07-05 02:28:00",
+        "attack_flows_in_horizon": 5
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 02:22:00",
+        "horizon_start": "2017-07-05 02:25:00",
+        "horizon_end": "2017-07-05 02:29:00",
+        "attack_flows_in_horizon": 1
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 03:05:00",
+        "horizon_start": "2017-07-05 03:08:00",
+        "horizon_end": "2017-07-05 03:12:00",
+        "attack_flows_in_horizon": 1
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 03:06:00",
+        "horizon_start": "2017-07-05 03:09:00",
+        "horizon_end": "2017-07-05 03:13:00",
+        "attack_flows_in_horizon": 1
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 03:07:00",
+        "horizon_start": "2017-07-05 03:10:00",
+        "horizon_end": "2017-07-05 03:14:00",
+        "attack_flows_in_horizon": 2
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 03:08:00",
+        "horizon_start": "2017-07-05 03:11:00",
+        "horizon_end": "2017-07-05 03:15:00",
+        "attack_flows_in_horizon": 2
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 03:09:00",
+        "horizon_start": "2017-07-05 03:12:00",
+        "horizon_end": "2017-07-05 03:16:00",
+        "attack_flows_in_horizon": 3
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 03:10:00",
+        "horizon_start": "2017-07-05 03:13:00",
+        "horizon_end": "2017-07-05 03:17:00",
+        "attack_flows_in_horizon": 2
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 03:11:00",
+        "horizon_start": "2017-07-05 03:14:00",
+        "horizon_end": "2017-07-05 03:18:00",
+        "attack_flows_in_horizon": 3
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 08:54:00",
+        "horizon_start": "2017-07-05 08:57:00",
+        "horizon_end": "2017-07-05 09:01:00",
+        "attack_flows_in_horizon": 1
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 08:55:00",
+        "horizon_start": "2017-07-05 08:58:00",
+        "horizon_end": "2017-07-05 09:02:00",
+        "attack_flows_in_horizon": 1
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 08:56:00",
+        "horizon_start": "2017-07-05 08:59:00",
+        "horizon_end": "2017-07-05 09:03:00",
+        "attack_flows_in_horizon": 1
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 08:57:00",
+        "horizon_start": "2017-07-05 09:00:00",
+        "horizon_end": "2017-07-05 09:04:00",
+        "attack_flows_in_horizon": 1
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 08:58:00",
+        "horizon_start": "2017-07-05 09:01:00",
+        "horizon_end": "2017-07-05 09:05:00",
+        "attack_flows_in_horizon": 1
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 09:41:00",
+        "horizon_start": "2017-07-05 09:44:00",
+        "horizon_end": "2017-07-05 09:48:00",
+        "attack_flows_in_horizon": 323
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 09:42:00",
+        "horizon_start": "2017-07-05 09:45:00",
+        "horizon_end": "2017-07-05 09:49:00",
+        "attack_flows_in_horizon": 724
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 09:43:00",
+        "horizon_start": "2017-07-05 09:46:00",
+        "horizon_end": "2017-07-05 09:50:00",
+        "attack_flows_in_horizon": 989
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 09:44:00",
+        "horizon_start": "2017-07-05 09:47:00",
+        "horizon_end": "2017-07-05 09:51:00",
+        "attack_flows_in_horizon": 1248
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 09:45:00",
+        "horizon_start": "2017-07-05 09:48:00",
+        "horizon_end": "2017-07-05 09:52:00",
+        "attack_flows_in_horizon": 1455
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 09:46:00",
+        "horizon_start": "2017-07-05 09:49:00",
+        "horizon_end": "2017-07-05 09:53:00",
+        "attack_flows_in_horizon": 1323
+      },
+      {
+        "capture_day": "Wednesday",
+        "current_epoch": "2017-07-05 09:47:00",
+        "horizon_start": "2017-07-05 09:50:00",
+        "horizon_end": "2017-07-05 09:54:00",
+        "attack_flows_in_horizon": 1214
+      }
+    ]
+  }
+}

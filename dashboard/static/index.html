@@ -1,269 +1,1176 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Network Attack Forecasting System | SIH26153</title>
-  <meta name="description" content="AI-based multi-stage cyber attack forecasting from temporal network flow patterns with SHAP explainability.">
+  <title>Cybersecurity Attack Visualization & Network Threat Monitoring Dashboard | SOC Console</title>
+  <meta name="description"
+    content="SOC Monitoring Dashboard for network traffic observation, normal/suspicious/malicious classification, 3D Three.js network threat visualization, and event log investigation.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
+  <!-- Local Three.js and OrbitControls for 100% reliable offline 3D rendering -->
+  <script src="/static/three.min.js"></script>
+  <script src="/static/OrbitControls.js"></script>
 </head>
-<body>
 
-  <!-- Sticky Top Header -->
-  <header class="app-header" id="appHeader">
-    <div class="header-inner">
-      <div class="brand">
-        <span class="brand-title">SIH26153 // ATTACK FORECASTER</span>
-        <span class="brand-subtitle">Temporal Flow Predictive Engine</span>
-      </div>
-      <div class="header-utility">
-        <button id="streamTriggerBtn" class="action-btn" title="Fetch next flow window">
-          <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-          Advance Stream
-        </button>
-        <button id="loadRealBtn" class="action-btn secondary" title="Ingest actual CICIDS2017/2018 CSV data">
-          <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-          Load Real CICIDS Sample
-        </button>
-        <button id="exportExcelBtn" class="action-btn" title="Export forecast session history to Excel (.xlsx)">
-          <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-          Export to Excel
-        </button>
-        <div class="live-indicator" id="liveIndicator">
-          <span class="live-pulse" id="livePulse"></span>
-          <span class="live-label" id="liveLabel">LIVE FLOW STREAM</span>
+<body class="soc-theme">
+
+  <!-- =====================================================================
+       TOP APP HEADER & UTILITY BAR
+       ===================================================================== -->
+  <header class="soc-header" id="socHeader">
+    <div class="soc-header-inner">
+      <div class="soc-brand">
+        <div class="brand-shield-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            <path d="m9 12 2 2 4-4"></path>
+          </svg>
         </div>
+        <div class="brand-text">
+          <h1 class="soc-brand-title">CYBERSECURITY ATTACK VISUALIZATION DASHBOARD</h1>
+          <span class="soc-brand-subtitle">Security Operations Center (SOC) Network Threat Monitoring Console</span>
+        </div>
+      </div>
+
+      <!-- Center Navigation Tabs -->
+      <nav class="soc-nav-tabs">
+        <button class="soc-nav-tab active" id="tabSocDashboard" data-view="soc3ColumnView">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+            <line x1="15" y1="3" x2="15" y2="21"></line>
+          </svg>
+          <span>SOC 3-Column Console</span>
+        </button>
+        <button class="soc-nav-tab" id="tabModelDeepDive" data-view="modelDeepDiveView">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          <span>AI BiLSTM & Sensor Matrix</span>
+          <span class="tab-badge">T=10 SENSORS</span>
+        </button>
+        <button class="soc-nav-tab" id="tabTemporalExperimental" data-view="temporalExperimentalView">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>Real-Data Forecaster (Phase 9C)</span>
+          <span class="tab-badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4);">TARGET A (5-MIN)</span>
+        </button>
+      </nav>
+
+      <!-- Right Header Actions -->
+      <div class="soc-header-actions">
+        <!-- Live Traffic Source Indicator -->
+        <div class="source-status-badge" id="sourceStatusBadge" title="Traffic Data Ingestion Mode">
+          <span class="pulse-indicator-dot" id="headerPulseDot"></span>
+          <span class="source-type-pill" id="sourceTypePill">LIVE</span>
+          <span class="source-text" id="sourceTextLabel">Host Sockets</span>
+        </div>
+
+        <!-- Quick Ping Probe -->
+        <div class="header-ping-tool">
+          <input type="text" id="headerPingInput" class="soc-mini-input" placeholder="e.g. 8.8.8.8, 192.168.1.25" value="8.8.8.8" title="Enter IP or hostname to ping">
+          <button id="headerPingBtn" class="soc-mini-btn" title="Send Real ICMP Ping Probe">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="22" y1="12" x2="18" y2="12"></line><line x1="6" y1="12" x2="2" y2="12"></line><line x1="12" y1="6" x2="12" y2="2"></line><line x1="12" y1="22" x2="12" y2="18"></line></svg>
+            Ping
+          </button>
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <button id="btnAdvanceStream" class="soc-btn secondary" title="Step forward in multi-stage attack timeline">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="13 17 18 12 13 7"></polyline>
+            <polyline points="6 17 11 12 6 7"></polyline>
+          </svg>
+          Advance
+        </button>
+        <button id="btnExportExcel" class="soc-btn primary" title="Export SOC incident and threat forecast history to Excel">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Export
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Centered Content Container -->
-  <main class="main-container">
-
-    <!-- Section 0: Exact Specification Output Banner -->
-    <section class="banner-section" aria-label="Forecast Output Summary">
-      <div class="exact-output-bar" id="exactOutputBanner">
-        <span class="banner-prompt-label">SYSTEM FORECAST:</span>
-        <span class="banner-content" id="bannerContent">
-          Current: <strong id="bannerCurrent">Scanning</strong> → 
-          Predicted Next: <strong id="bannerNext">Enumeration</strong> → 
-          Confidence: <strong id="bannerConfidence">87%</strong> → 
-          Risk: <span id="bannerRiskBadge" class="risk-badge-text">HIGH</span>
-        </span>
-      </div>
-    </section>
-
-    <!-- Section 1: Conceptual Attack-Stage Step Indicator -->
-    <section class="section stage-indicator-section" aria-label="Attack Progression Timeline">
-      <div class="section-header">
-        <span class="section-caption">CONCEPTUAL ATTACK PROGRESSION (NON-RIGID)</span>
-      </div>
-      <div class="step-indicator-wrapper">
-        <div class="step-indicator" id="stepIndicator">
-          <div class="step-node" data-stage="Reconnaissance">
-            <div class="node-marker">1</div>
-            <div class="node-info">
-              <span class="node-title">Reconnaissance</span>
-              <span class="node-status-tag" id="tag-recon">Standby</span>
-            </div>
-          </div>
-          <div class="step-connector"></div>
-          <div class="step-node" data-stage="Scanning">
-            <div class="node-marker">2</div>
-            <div class="node-info">
-              <span class="node-title">Scanning</span>
-              <span class="node-status-tag" id="tag-scan">Standby</span>
-            </div>
-          </div>
-          <div class="step-connector"></div>
-          <div class="step-node" data-stage="Enumeration">
-            <div class="node-marker">3</div>
-            <div class="node-info">
-              <span class="node-title">Enumeration</span>
-              <span class="node-status-tag" id="tag-enum">Standby</span>
-            </div>
-          </div>
-          <div class="step-connector"></div>
-          <div class="step-node" data-stage="Exploitation">
-            <div class="node-marker">4</div>
-            <div class="node-info">
-              <span class="node-title">Exploitation</span>
-              <span class="node-status-tag" id="tag-expl">Standby</span>
-            </div>
-          </div>
-          <div class="step-connector"></div>
-          <div class="step-node" data-stage="Intrusion">
-            <div class="node-marker">5</div>
-            <div class="node-info">
-              <span class="node-title">Intrusion</span>
-              <span class="node-status-tag" id="tag-intr">Standby</span>
-            </div>
-          </div>
+  <!-- =====================================================================
+       CAPTURE HEALTH & PROVENANCE DIAGNOSTIC BANNER (PHASE 5)
+       ===================================================================== -->
+  <section class="capture-health-banner" id="captureHealthBanner" aria-label="Packet Capture Health & Diagnostics">
+    <div class="health-banner-inner">
+      <div class="health-status-col">
+        <div class="health-indicator-badge" id="healthIndicatorBadge">
+          <span class="health-dot dot-warning" id="healthStatusDot"></span>
+          <span class="health-status-text" id="healthStatusText">INITIALIZING</span>
+        </div>
+        <div class="health-meta-group">
+          <span class="health-meta-item">Backend: <strong id="healthBackendText">Scapy / Npcap</strong></span>
+          <span class="health-meta-item">Adapter: <strong id="healthInterfaceText">Auto-detecting...</strong></span>
+          <span class="health-meta-item">Packets: <strong id="healthPacketCount">0</strong></span>
+          <span class="health-meta-item">Last Observed: <strong id="healthLastSeen">Not yet observed</strong></span>
         </div>
       </div>
-    </section>
-
-    <!-- Section 2: Trust Stat Callouts (Confidence & Dynamic Risk Score) -->
-    <section class="section stats-section" aria-label="Model Forecasting Statistics">
-      <div class="stats-grid">
-        <!-- Stat Callout 1: Confidence Value -->
-        <div class="stat-card" id="confidenceCard">
-          <div class="stat-number-wrapper">
-            <span class="stat-number" id="confidenceValue">0</span>
-            <span class="stat-unit">%</span>
-          </div>
-          <span class="stat-caption">PREDICTED NEXT STAGE CONFIDENCE</span>
-          <div class="stat-meta" id="confidenceMeta">Temporal sequence probability calibrated across candidate transitions</div>
+      <div class="health-actions-col">
+        <div class="mode-selector-group">
+          <label for="systemModeSelect" class="mode-select-label">Mode:</label>
+          <select id="systemModeSelect" class="soc-select-sm">
+            <option value="live" selected>LIVE MODE (Real Observations)</option>
+            <option value="pcap">OFFLINE PCAP (Historical)</option>
+            <option value="connection_metadata">CONNECTION METADATA (Netstat)</option>
+          </select>
         </div>
-
-        <!-- Stat Callout 2: Dynamic Risk Score -->
-        <div class="stat-card" id="riskScoreCard">
-          <div class="stat-number-wrapper">
-            <span class="stat-number" id="riskScoreValue">0</span>
-            <span class="stat-unit">/100</span>
-          </div>
-          <span class="stat-caption">DYNAMIC RISK SCORE</span>
-          <div class="risk-badge-wrapper">
-            <span class="stat-meta">Threat Index:</span>
-            <span class="risk-badge" id="riskLevelBadge">ANALYZING</span>
-          </div>
+        <div class="interface-selector-group">
+          <label for="systemInterfaceSelect" class="mode-select-label">Interface:</label>
+          <select id="systemInterfaceSelect" class="soc-select-sm">
+            <option value="">Enumerating interfaces...</option>
+          </select>
         </div>
       </div>
-    </section>
+    </div>
+    <!-- Actionable Diagnostic Error / Instruction Strip -->
+    <div class="health-diagnostic-strip" id="healthDiagnosticStrip" style="display: none;">
+      <div class="strip-icon-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+      <div class="strip-text-box">
+        <strong id="healthDiagnosticTitle">Capture Error</strong>
+        <span id="healthDiagnosticMsg">Checking capture backend...</span>
+      </div>
+    </div>
+  </section>
 
-    <!-- Section 3: Core Cards Grid (Current Stage, Predicted Next Stage, Preventive Response) -->
-    <section class="section cards-section" aria-label="Attack Stage Forecast & Defensive Recommendations">
-      <div class="cards-grid">
-        
-        <!-- Card 1: Current Stage -->
-        <div class="card-module animate-slot" id="currentStageCard">
-          <div class="card-header-bar">
-            <svg class="utility-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            <span class="card-caption">CURRENT ATTACK STAGE</span>
-          </div>
-          <div class="card-body">
-            <h3 class="card-value-title" id="currentStageTitle">Scanning</h3>
-            <p class="card-description" id="currentStageDesc">
-              Classified from active multi-flow behavioral heuristics, port-access diversity, and frequency distributions.
-            </p>
-          </div>
-        </div>
+  <!-- =====================================================================
+       MAIN WORKSPACE
+       ===================================================================== -->
+  <main class="soc-main-content">
 
-        <!-- Card 2: Predicted Next Stage -->
-        <div class="card-module animate-slot" id="predictedStageCard">
-          <div class="card-header-bar">
-            <svg class="utility-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-            </svg>
-            <span class="card-caption">PREDICTED NEXT STAGE</span>
-          </div>
-          <div class="card-body">
-            <h3 class="card-value-title highlight" id="predictedStageTitle">Enumeration</h3>
-            <p class="card-description" id="predictedStageDesc">
-              Forecasted progression before confirmation via temporal sequence modeling and probabilistic transition estimation.
-            </p>
-          </div>
-        </div>
+    <!-- ===================================================================
+         VIEW 1: PRIMARY 3-COLUMN SOC DASHBOARD
+         =================================================================== -->
+    <div id="soc3ColumnView" class="dashboard-view active">
+      <div class="soc-three-column-grid">
 
-        <!-- Card 3: Recommended Preventive Responses (Multiple Defending Methods) -->
-        <div class="card-module animate-slot" id="responseCard">
-          <div class="card-header-bar">
-            <svg class="utility-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            </svg>
-            <span class="card-caption">RECOMMENDED PREVENTIVE RESPONSES (ANALYST REVIEW)</span>
-          </div>
-          <div class="card-body">
-            <div class="defense-options-list" id="defenseOptionsList">
-              <!-- Dynamically populated ranked list of 2-4 defensive options -->
+        <!-- ===============================================================
+             COLUMN 1: LEFT SIDEBAR — NETWORK MONITOR
+             =============================================================== -->
+        <aside class="soc-col soc-col-left" aria-label="Network Monitoring Sidebar">
+          <div class="col-header-bar">
+            <div class="col-title-group">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+              </svg>
+              <h2 class="col-heading">NETWORK MONITOR</h2>
             </div>
-            <div class="advisory-badge">NON-BLOCKING DECISION SUPPORT</div>
+            <span class="soc-badge-live" id="leftLiveBadge">LIVE INGESTION</span>
           </div>
-        </div>
 
-      </div>
-    </section>
+          <div class="col-scrollable-body">
 
-    <!-- Section 4: Tabbed SHAP Explanation Panel -->
-    <section class="section shap-section" aria-label="SHAP Explainability Module">
-      <div class="section-header-flex">
-        <div>
-          <span class="section-caption">SHAP FEATURE ATTRIBUTION EXPLAINABILITY</span>
-          <h2 class="section-heading">Prediction Drivers & Behavioral Impact</h2>
-        </div>
-        
-        <!-- Tab Switcher -->
-        <div class="tab-list" role="tablist" aria-label="SHAP Views">
-          <button class="tab-btn active" id="tabRankingBtn" role="tab" aria-selected="true" aria-controls="panelRanking">
-            Top Feature Attributions
-          </button>
-          <button class="tab-btn" id="tabForceBtn" role="tab" aria-selected="false" aria-controls="panelForce">
-            Contribution Force View
-          </button>
-        </div>
-      </div>
+            <!-- Card 1: Verified Traffic Classification Counters -->
+            <section class="soc-panel traffic-counters-panel">
+              <div class="panel-header">
+                <span class="panel-caption">TRAFFIC CLASSIFICATION</span>
+                <span class="panel-meta-note">Categorized Network Sessions</span>
+              </div>
 
-      <div class="shap-panel-container">
-        
-        <!-- Tab 1: Feature Attribution Ranking View -->
-        <div class="shap-tab-panel active" id="panelRanking" role="tabpanel">
-          <div class="shap-table-container">
-            <table class="shap-table" id="shapTable">
+              <div class="traffic-counters-stack">
+                <!-- Normal Counter -->
+                <div class="traffic-counter-item normal-counter">
+                  <div class="counter-header">
+                    <span class="counter-label">
+                      <span class="counter-dot dot-normal"></span>
+                      Normal Traffic
+                    </span>
+                    <span class="counter-pct" id="normalTrafficPct">—</span>
+                  </div>
+                  <div class="counter-val-row">
+                    <span class="counter-value" id="normalTrafficCount">0</span>
+                    <span class="counter-unit">flows</span>
+                  </div>
+                  <div class="counter-bar-track">
+                    <div class="counter-bar-fill bar-normal" id="normalBarFill" style="width: 0%;"></div>
+                  </div>
+                  <span class="counter-subtext">Verified benign business & service flows</span>
+                </div>
+
+                <!-- Suspicious Counter -->
+                <div class="traffic-counter-item suspicious-counter">
+                  <div class="counter-header">
+                    <span class="counter-label">
+                      <span class="counter-dot dot-suspicious"></span>
+                      Suspicious Traffic
+                    </span>
+                    <span class="counter-pct" id="suspiciousTrafficPct">—</span>
+                  </div>
+                  <div class="counter-val-row">
+                    <span class="counter-value" id="suspiciousTrafficCount">0</span>
+                    <span class="counter-unit">flows</span>
+                  </div>
+                  <div class="counter-bar-track">
+                    <div class="counter-bar-fill bar-suspicious" id="suspiciousBarFill" style="width: 0%;"></div>
+                  </div>
+                  <span class="counter-subtext">Heuristic anomalies & port sweeps requiring review</span>
+                </div>
+
+                <!-- Malicious Counter -->
+                <div class="traffic-counter-item malicious-counter">
+                  <div class="counter-header">
+                    <span class="counter-label">
+                      <span class="counter-dot dot-malicious"></span>
+                      Malicious Traffic
+                    </span>
+                    <span class="counter-pct" id="maliciousTrafficPct">—</span>
+                  </div>
+                  <div class="counter-val-row">
+                    <span class="counter-value" id="maliciousTrafficCount">0</span>
+                    <span class="counter-unit">flows</span>
+                  </div>
+                  <div class="counter-bar-track">
+                    <div class="counter-bar-fill bar-malicious" id="maliciousBarFill" style="width: 0%;"></div>
+                  </div>
+                  <span class="counter-subtext">Exploits, C2 communications & active intrusions</span>
+                </div>
+              </div>
+
+              <!-- Combined Traffic Distribution Bar -->
+              <div class="combined-distribution-wrapper">
+                <span class="dist-label">Total Classified Flows: <strong id="totalTrafficCount">0</strong></span>
+                <div class="segmented-progress-bar">
+                  <div class="seg-fill seg-normal" id="segNormal" style="width: 0%;"></div>
+                  <div class="seg-fill seg-suspicious" id="segSuspicious" style="width: 0%;"></div>
+                  <div class="seg-fill seg-malicious" id="segMalicious" style="width: 0%;"></div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Card 2: Packet-Rate & Network Statistics -->
+            <section class="soc-panel network-stats-panel">
+              <div class="panel-header">
+                <span class="panel-caption">NETWORK TELEMETRY & STATS</span>
+                <span class="panel-meta-note">Wire Dynamics</span>
+              </div>
+              <div class="stats-metric-grid">
+                <div class="metric-box">
+                  <span class="metric-label">PACKET RATE</span>
+                  <div class="metric-val-row">
+                    <span class="metric-val" id="leftPacketRate">0.0</span>
+                    <span class="metric-unit">pkts/s</span>
+                  </div>
+                  <span class="metric-foot">Instantaneous</span>
+                </div>
+
+                <div class="metric-box">
+                  <span class="metric-label">CAPTURED THROUGHPUT</span>
+                  <div class="metric-val-row">
+                    <span class="metric-val" id="leftBandwidth">0.0</span>
+                    <span class="metric-unit">kbps</span>
+                  </div>
+                  <span class="metric-foot">Frame Throughput</span>
+                </div>
+
+                <div class="metric-box">
+                  <span class="metric-label">ACTIVE FLOWS</span>
+                  <div class="metric-val-row">
+                    <span class="metric-val" id="leftActiveFlows">0</span>
+                    <span class="metric-unit">endpoints</span>
+                  </div>
+                  <span class="metric-foot">Verified Observed</span>
+                </div>
+
+                <div class="metric-box">
+                  <span class="metric-label">DATA VOLUME</span>
+                  <div class="metric-val-row">
+                    <span class="metric-val" id="leftDataVolume">0.0</span>
+                    <span class="metric-unit">KB</span>
+                  </div>
+                  <span class="metric-foot">Wire Size</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- Card 3: Real-Time Traffic Time-Series Chart -->
+            <section class="soc-panel traffic-chart-panel">
+              <div class="panel-header flex-between">
+                <div>
+                  <span class="panel-caption">HISTORICAL TRAFFIC RATE</span>
+                  <span class="panel-meta-note">Measured packets per second over time</span>
+                </div>
+                <div class="chart-legend-row">
+                  <span class="chart-legend-item"><span class="legend-color norm"></span>Normal</span>
+                  <span class="chart-legend-item"><span class="legend-color susp"></span>Suspicious</span>
+                  <span class="chart-legend-item"><span class="legend-color mal"></span>Malicious</span>
+                </div>
+              </div>
+              <div class="chart-canvas-wrapper">
+                <canvas id="trafficTimeSeriesCanvas" width="340" height="120"></canvas>
+                <div id="chartTooltip" class="chart-tooltip" style="display: none;"></div>
+              </div>
+            </section>
+
+            <!-- Card 4: Threat Severity Breakdown System -->
+            <section class="soc-panel severity-system-panel">
+              <div class="panel-header">
+                <span class="panel-caption">THREAT SEVERITY DISTRIBUTION</span>
+                <span class="panel-meta-note">SOC Classification Levels</span>
+              </div>
+              <div class="severity-chips-grid">
+                <div class="sev-chip sev-critical" data-sev="Critical">
+                  <span class="sev-name">Critical</span>
+                  <span class="sev-badge-count" id="sevCriticalCount">0</span>
+                </div>
+                <div class="sev-chip sev-high" data-sev="High">
+                  <span class="sev-name">High</span>
+                  <span class="sev-badge-count" id="sevHighCount">0</span>
+                </div>
+                <div class="sev-chip sev-medium" data-sev="Medium">
+                  <span class="sev-name">Medium</span>
+                  <span class="sev-badge-count" id="sevMediumCount">0</span>
+                </div>
+                <div class="sev-chip sev-low" data-sev="Low">
+                  <span class="sev-name">Low</span>
+                  <span class="sev-badge-count" id="sevLowCount">0</span>
+                </div>
+                <div class="sev-chip sev-info" data-sev="Informational">
+                  <span class="sev-name">Informational</span>
+                  <span class="sev-badge-count" id="sevInfoCount">0</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- Card 5: AI BiLSTM Model Forecast & Risk Callout -->
+            <section class="soc-panel ai-risk-panel">
+              <div class="panel-header">
+                <span class="panel-caption">AI THREAT FORECAST ENGINE</span>
+                <span class="panel-meta-note">BiLSTM Sequence Classifier</span>
+              </div>
+              <div class="ai-forecast-card">
+                <div class="forecast-headline">
+                  <span class="headline-label">SYSTEM FORECAST:</span>
+                  <div class="forecast-output-text" id="leftForecastOutput">
+                    <span class="forecast-unavailable-msg" id="leftForecastMsg">Prediction unavailable — insufficient validated real traffic data (0/10 flows).</span>
+                  </div>
+                </div>
+
+                <div class="risk-meter-row">
+                  <div class="risk-score-display">
+                    <span class="risk-num" id="leftRiskScore">—</span>
+                    <span class="risk-denom">/100</span>
+                  </div>
+                  <div class="risk-badge-box">
+                    <span class="risk-level-badge level-unavailable" id="leftRiskBadge">UNAVAILABLE</span>
+                    <span class="risk-meta-info">Confidence: <strong id="leftConfidencePct">Unavailable</strong></span>
+                  </div>
+                </div>
+
+                <div class="stage-transition-bar">
+                  <div class="stage-pill active" id="pill-Reconnaissance">Recon</div>
+                  <span class="stage-arrow">➔</span>
+                  <div class="stage-pill current" id="pill-Scanning">Scanning</div>
+                  <span class="stage-arrow">➔</span>
+                  <div class="stage-pill next-target" id="pill-Enumeration">Enum (Next)</div>
+                  <span class="stage-arrow">➔</span>
+                  <div class="stage-pill future" id="pill-Exploitation">Exploit</div>
+                  <span class="stage-arrow">➔</span>
+                  <div class="stage-pill future" id="pill-Intrusion">Intrusion</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Card 6: Capture Source & Interactive Controls -->
+            <section class="soc-panel controls-panel">
+              <div class="panel-header">
+                <span class="panel-caption">TRAFFIC CAPTURE CONTROLS</span>
+                <span class="panel-meta-note">Ingestion Engine Settings</span>
+              </div>
+              <div class="controls-form">
+                <label for="socCaptureSourceSelect" class="input-label">Data Ingestion Source:</label>
+                <select id="socCaptureSourceSelect" class="soc-select">
+                  <option value="live_sniff" selected>📡 Live Network Interface Packet Sniffer (Scapy / Npcap)</option>
+                  <option value="system_sockets">🌐 Operating System Network Sockets (Windows Netstat)</option>
+                </select>
+
+                <div class="btn-action-row">
+                  <button id="socToggleCaptureBtn" class="soc-btn success" title="Start / Stop Packet Capture">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span id="socCaptureBtnLabel">Live Capture Active</span>
+                  </button>
+                  <button id="socClearBufferBtn" class="soc-btn outline" title="Clear packet buffers & reset baseline">
+                    Reset
+                  </button>
+                </div>
+
+                <!-- Host Ping Tool -->
+                <div class="ping-subpanel">
+                  <label for="socPingTargetInput" class="input-label">Real OS ICMP Ping Injection:</label>
+                  <div class="ping-input-row">
+                    <input type="text" id="socPingTargetInput" class="soc-input" placeholder="8.8.8.8, 192.168.1.1, google.com" value="8.8.8.8">
+                    <button id="socSendPingBtn" class="soc-btn ping-action-btn">
+                      Send Ping
+                    </button>
+                  </div>
+                  <div class="quick-ping-targets">
+                    <span class="quick-label">Presets:</span>
+                    <button class="quick-chip" data-target="8.8.8.8">8.8.8.8 (Google)</button>
+                    <button class="quick-chip" data-target="1.1.1.1">1.1.1.1 (Cloudflare)</button>
+                    <button class="quick-chip" data-target="192.168.1.1">192.168.1.1 (GW)</button>
+                    <button class="quick-chip" data-target="127.0.0.1">127.0.0.1</button>
+                  </div>
+                </div>
+
+                <!-- PCAP Load & Upload -->
+                <div class="pcap-subpanel">
+                  <button id="socLoadSamplePcapBtn" class="soc-btn secondary full-width">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Load Sample Attack PCAP (37 pkts)
+                  </button>
+                  <label class="soc-btn outline full-width file-upload-label" for="socPcapFileInput">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+                      <path d="M12 12v9"></path>
+                      <path d="m16 16-4-4-4 4"></path>
+                    </svg>
+                    <span>Upload Custom .PCAP</span>
+                    <input type="file" id="socPcapFileInput" accept=".pcap,.pcapng,.cap" style="display:none;">
+                  </label>
+                </div>
+              </div>
+            </section>
+
+          </div><!-- End col-scrollable-body -->
+        </aside>
+
+        <!-- ===============================================================
+             COLUMN 2: CENTRAL VISUALIZATION — 3D NETWORK VIEW (THREE.JS)
+             =============================================================== -->
+        <main class="soc-col soc-col-center" aria-label="3D Network Visualization Viewport">
+          <div class="col-header-bar flex-between">
+            <div class="col-title-group">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+              </svg>
+              <h2 class="col-heading">3D NETWORK TOPOLOGY VISUALIZATION</h2>
+            </div>
+            <div class="center-header-stats">
+              <span class="hud-stat-pill" id="hudNodesOnline">0 NODES OBSERVED</span>
+              <span class="hud-stat-pill" id="hudEdgesActive">0 ACTIVE LINKS</span>
+              <span class="hud-stat-pill highlight" id="hudThreatNodes">0 THREAT NODES</span>
+            </div>
+          </div>
+
+          <!-- Main 3D Viewport Container -->
+          <div class="threejs-viewport-container" id="threejsViewportContainer">
+            <!-- Three.js WebGL Canvas -->
+            <canvas id="threeJsCanvas"></canvas>
+
+            <!-- Three.js Verified Empty State Overlay -->
+            <div id="threeJsEmptyState" class="threejs-empty-overlay">
+              <div class="empty-state-card">
+                <div class="empty-icon-pulse">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                  </svg>
+                </div>
+                <h3 class="empty-title">Waiting for real network observations...</h3>
+                <p class="empty-desc">
+                  No verified network endpoints have been observed on the active interface yet. Once genuine packets or verified connection records arrive, nodes and flow links will render in 3D space.
+                </p>
+                <div class="empty-status-tag" id="emptyCaptureStatusTag">Status: INITIALIZING</div>
+              </div>
+            </div>
+
+            <!-- Floating Top Toolbar on 3D Canvas -->
+            <div class="canvas-floating-toolbar">
+              <div class="view-filter-chips">
+                <span class="filter-caption">Threat Filter:</span>
+                <button class="view-chip active" data-filter="ALL">ALL NODES</button>
+                <button class="view-chip" data-filter="NORMAL">NORMAL</button>
+                <button class="view-chip" data-filter="SUSPICIOUS">SUSPICIOUS</button>
+                <button class="view-chip" data-filter="MALICIOUS">MALICIOUS</button>
+              </div>
+
+              <div class="camera-actions-group">
+                <button id="btnResetCamera" class="canvas-ctrl-btn" title="Reset Camera to Default Angle">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                  Reset View
+                </button>
+                <button id="btnAutoRotate" class="canvas-ctrl-btn" title="Toggle Cinematic Auto-Rotation">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  Auto-Rotate: OFF
+                </button>
+                <button id="btnFocusAlertNode" class="canvas-ctrl-btn alert-btn" title="Focus Camera on Flagged IP 192.168.1.25">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                  Focus 192.168.1.25
+                </button>
+                <button id="btnToggleFullscreen" class="canvas-ctrl-btn icon-btn" title="Toggle Fullscreen 3D View">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Floating 3D Hover Tooltip -->
+            <div id="threeJsTooltip" class="threejs-tooltip" style="display: none;"></div>
+
+            <!-- Floating 3D Node Inspector Card (Opens on Node Click) -->
+            <div id="threeNodeInspector" class="floating-node-inspector" style="display: none;">
+              <div class="node-inspector-header">
+                <div class="inspector-badge-row">
+                  <span class="inspector-role-pill" id="insRolePill">Suspicious Host</span>
+                  <span class="inspector-cat-pill" id="insCatPill">SUSPICIOUS</span>
+                </div>
+                <button id="btnCloseNodeInspector" class="ins-close-btn" title="Close Inspector">&times;</button>
+              </div>
+              <div class="node-inspector-body">
+                <h3 class="ins-node-title" id="insNodeLabel">Suspicious Endpoint (Active Alert)</h3>
+                <div class="ins-ip-row">
+                  <span class="ins-ip-val" id="insNodeIp">192.168.1.25</span>
+                  <button id="insCopyIpBtn" class="copy-icon-btn" title="Copy IP Address">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  </button>
+                </div>
+                <p class="ins-desc" id="insNodeDesc">Flagged device exhibiting aggressive horizontal port sweeping and SYN probes.</p>
+
+                <div class="ins-metrics-grid">
+                  <div class="ins-metric-item">
+                    <span class="ins-m-label">MAC ADDRESS</span>
+                    <span class="ins-m-val" id="insNodeMac">00:0C:29:8B:4E:25</span>
+                  </div>
+                  <div class="ins-metric-item">
+                    <span class="ins-m-label">OPERATING SYSTEM</span>
+                    <span class="ins-m-val" id="insNodeOs">Debian Linux / Kali</span>
+                  </div>
+                  <div class="ins-metric-item">
+                    <span class="ins-m-label">ACTIVE SESSIONS</span>
+                    <span class="ins-m-val" id="insNodeSessions">22 flows</span>
+                  </div>
+                  <div class="ins-metric-item">
+                    <span class="ins-m-label">RISK SCORE</span>
+                    <span class="ins-m-val highlight" id="insNodeRisk">82 / 100</span>
+                  </div>
+                </div>
+
+                <div class="ins-actions-bar">
+                  <button id="insFilterLogsBtn" class="soc-btn primary full-width">
+                    Filter Threat Logs for This IP
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Floating Visual Legend Overlay (Bottom-Left) -->
+            <div class="canvas-visual-legend" id="canvasLegend">
+              <div class="legend-header">
+                <span class="legend-title">TOPOLOGY LEGEND</span>
+                <span class="legend-hint">Orbit: Left Click | Pan: Right Click | Zoom: Scroll</span>
+              </div>
+              <div class="legend-grid">
+                <div class="legend-col">
+                  <span class="legend-col-title">DEVICE NODES:</span>
+                  <div class="legend-row"><span class="legend-dot dot-gw"></span> Gateway Router (192.168.1.1)</div>
+                  <div class="legend-row"><span class="legend-dot dot-server"></span> Internal Server Cluster</div>
+                  <div class="legend-row"><span class="legend-dot dot-ws"></span> Corporate Workstations</div>
+                  <div class="legend-row"><span class="legend-dot dot-susp"></span> Suspicious Host (192.168.1.25)</div>
+                  <div class="legend-row"><span class="legend-dot dot-att"></span> External Attacker (198.51.100.77)</div>
+                </div>
+                <div class="legend-col">
+                  <span class="legend-col-title">TRAFFIC LINKS:</span>
+                  <div class="legend-row"><span class="legend-line line-norm"></span> Normal Business Flow</div>
+                  <div class="legend-row"><span class="legend-line line-susp"></span> Suspicious Scan / Sweep</div>
+                  <div class="legend-row"><span class="legend-line line-mal"></span> Malicious Exploit / C2</div>
+                  <div class="legend-row"><span class="legend-pulse-icon"></span> Animated Glowing Particles</div>
+                  <div class="legend-row"><span class="legend-ring-icon"></span> Pulsing Alert Ring</div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- End threejs-viewport-container -->
+        </main>
+
+        <!-- ===============================================================
+             COLUMN 3: RIGHT SIDEBAR — THREAT DETECTION PANEL
+             =============================================================== -->
+        <aside class="soc-col soc-col-right" aria-label="Threat Detection and Event Logs Panel">
+          <div class="col-header-bar flex-between">
+            <div class="col-title-group">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <h2 class="col-heading">THREAT DETECTION PANEL</h2>
+            </div>
+            <span class="badge-count" id="threatLogsCountBadge">0 Events</span>
+          </div>
+
+          <div class="col-scrollable-body">
+
+            <!-- Security Alert Callout Banner (Shown dynamically when genuine alert exists) -->
+            <section class="soc-alert-banner" id="mainSecurityAlertBanner" style="display: none;">
+              <div class="alert-banner-top">
+                <div class="alert-badge-group">
+                  <span class="alert-sev-badge sev-badge-high" id="alertBannerSev">HIGH ALERT</span>
+                  <span class="alert-status-badge" id="alertBannerStatus">STATUS: NEW</span>
+                </div>
+                <span class="alert-time-tag" id="alertBannerTime">12s ago</span>
+              </div>
+              <h3 class="alert-title" id="alertBannerTitle">Security Event</h3>
+              <p class="alert-message" id="alertBannerMsg">
+                No active threats detected.
+              </p>
+              <div class="alert-actions-row">
+                <button id="alertBtnInvestigate" class="soc-mini-btn alert-action-btn">
+                  Investigate Event
+                </button>
+                <button id="alertBtnLocate3D" class="soc-mini-btn outline">
+                  Locate in 3D
+                </button>
+                <button id="alertBtnAcknowledge" class="soc-mini-btn secondary">
+                  Acknowledge
+                </button>
+              </div>
+            </section>
+
+            <!-- Log Filtering Controls -->
+            <section class="soc-panel log-filters-panel">
+              <div class="panel-header">
+                <span class="panel-caption">EVENT LOG FILTERS</span>
+                <span class="panel-meta-note">Narrow Investigation Focus</span>
+              </div>
+
+              <!-- Search Bar -->
+              <div class="filter-search-box">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="logSearchInput" class="soc-search-input" placeholder="Search IP (e.g. 192.168.1.25), event type, reason...">
+              </div>
+
+              <!-- Severity & Status Filter Selectors -->
+              <div class="filters-dropdown-row">
+                <div class="filter-control-item">
+                  <label for="filterSeveritySelect" class="filter-label">Severity:</label>
+                  <select id="filterSeveritySelect" class="soc-select-sm">
+                    <option value="ALL" selected>All Severities</option>
+                    <option value="Critical">Critical</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                    <option value="Informational">Informational</option>
+                  </select>
+                </div>
+
+                <div class="filter-control-item">
+                  <label for="filterStatusSelect" class="filter-label">Status:</label>
+                  <select id="filterStatusSelect" class="soc-select-sm">
+                    <option value="ALL" selected>All Statuses</option>
+                    <option value="New">New</option>
+                    <option value="Acknowledged">Acknowledged</option>
+                    <option value="Investigating">Investigating</option>
+                    <option value="Resolved">Resolved</option>
+                  </select>
+                </div>
+              </div>
+            </section>
+
+            <!-- Threat Event Logs List -->
+            <section class="soc-panel threat-logs-panel">
+              <div class="panel-header flex-between">
+                <div>
+                  <span class="panel-caption">SECURITY EVENT LOGS</span>
+                  <span class="panel-meta-note">Click any log to view complete forensic details</span>
+                </div>
+                <button id="btnRefreshLogs" class="refresh-icon-btn" title="Refresh Threat Logs">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <polyline points="1 20 1 14 7 14"></polyline>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Event Log Items Container -->
+              <div class="threat-logs-feed" id="threatLogsFeed">
+                <!-- Dynamically populated threat log cards -->
+              </div>
+            </section>
+
+            <!-- Detailed Event Inspection Drawer (Opens when user clicks any log) -->
+            <section class="soc-panel event-details-drawer" id="eventDetailsDrawer" style="display: none;">
+              <div class="panel-header flex-between">
+                <div class="flex-align">
+                  <span class="panel-caption" id="detailLogIdTitle">EVENT DETAILS</span>
+                </div>
+                <button id="btnCloseDetailsDrawer" class="ins-close-btn" title="Close Details">&times;</button>
+              </div>
+
+              <div class="drawer-body" id="drawerBodyContent">
+                <!-- Dynamically rendered full investigation details -->
+              </div>
+            </section>
+
+            <!-- Automated Defensive Recommendations (AI BiLSTM) -->
+            <section class="soc-panel defenses-panel">
+              <div class="panel-header">
+                <span class="panel-caption">RECOMMENDED PREVENTIVE RESPONSES</span>
+                <span class="panel-meta-note">Analyst Review & Countermeasures</span>
+              </div>
+              <div class="defense-options-list" id="socDefenseList">
+                <!-- Dynamically populated defense recommendations -->
+              </div>
+              <div class="advisory-badge">NON-BLOCKING SOC DECISION SUPPORT</div>
+            </section>
+
+          </div><!-- End col-scrollable-body -->
+        </aside>
+
+      </div><!-- End soc-three-column-grid -->
+    </div><!-- End soc3ColumnView -->
+
+
+    <!-- ===================================================================
+         VIEW 2: AI BILSTM PREDICTIVE DEEP-DIVE & SENSOR MATRIX
+         =================================================================== -->
+    <div id="modelDeepDiveView" class="dashboard-view">
+      <div class="deep-dive-container">
+
+        <!-- Top Overview Banner -->
+        <section class="soc-panel deep-dive-header">
+          <div class="flex-between">
+            <div>
+              <span class="badge-tag">AI DEEP LEARNING MODEL</span>
+              <h2 class="deep-title">BiLSTM Temporal Sequence Forecasting & 12-Sensor Feature Matrix</h2>
+              <p class="deep-sub">
+                Evaluates multi-flow sliding temporal windows (T=10 flows, 12 aggregated features) to forecast cyber attack escalation before target intrusion occurs.
+              </p>
+            </div>
+            <div class="deep-metrics-summary">
+              <div class="deep-metric-card">
+                <span class="deep-m-label">CLASSIFIED STAGE</span>
+                <span class="deep-m-val highlight" id="deepCurrStage">—</span>
+              </div>
+              <div class="deep-metric-card">
+                <span class="deep-m-label">PREDICTED NEXT</span>
+                <span class="deep-m-val accent" id="deepNextStage">—</span>
+              </div>
+              <div class="deep-metric-card">
+                <span class="deep-m-label">CONFIDENCE</span>
+                <span class="deep-m-val" id="deepConfVal">—</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 12 Dynamic Sliding Window Feature Sensors -->
+        <section class="soc-panel sensors-array-panel">
+          <div class="panel-header flex-between">
+            <div>
+              <span class="panel-caption">DYNAMIC SLIDING WINDOW FEATURE EXTRACTION (T=10 FLOWS, 12 SENSORS)</span>
+              <span class="panel-meta-note">Mathematical feature inputs feeding the trained BiLSTM neural network</span>
+            </div>
+            <span class="badge-count" id="deepSensorWindowTag">Window T=10 Active</span>
+          </div>
+          <div class="features-sensor-grid" id="deepSensorsGrid">
+            <!-- 12 dynamic feature meters -->
+          </div>
+        </section>
+
+        <!-- SHAP Feature Attribution Explainer -->
+        <section class="soc-panel shap-explainer-panel">
+          <div class="panel-header flex-between">
+            <div>
+              <span class="panel-caption">SHAP FEATURE ATTRIBUTION EXPLAINABILITY</span>
+              <span class="panel-meta-note">Gradient SHAP attributions explaining why the model predicted the next stage</span>
+            </div>
+            <div class="shap-mode-tabs">
+              <button class="tab-btn active" id="btnShapRanking">Top Drivers</button>
+              <button class="tab-btn" id="btnShapForce">Force Contribution</button>
+            </div>
+          </div>
+
+          <div class="shap-content-area">
+            <!-- Ranking View -->
+            <div id="shapRankingView" class="shap-subview active">
+              <table class="shap-table" id="deepShapTable">
+                <thead>
+                  <tr>
+                    <th>FEATURE</th>
+                    <th>DESCRIPTION</th>
+                    <th>CURRENT VALUE</th>
+                    <th>IMPACT</th>
+                    <th>GRADIENT SHAP ATTRIBUTION</th>
+                  </tr>
+                </thead>
+                <tbody id="deepShapRankingBody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Force View -->
+            <div id="shapForceView" class="shap-subview" style="display: none;">
+              <div class="force-bars-card">
+                <div class="force-bars-header">
+                  <div class="legend-item"><span class="legend-swatch positive"></span> Pushes Toward Forecast (Risk Escalation)</div>
+                  <div class="legend-item"><span class="legend-swatch negative"></span> Suppresses Forecast (Baseline Drift)</div>
+                </div>
+                <div class="force-bars-list" id="deepForceBarsList">
+                  <!-- Dynamically populated -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Live Dissected Packet Stream Table -->
+        <section class="soc-panel packet-table-panel">
+          <div class="panel-header flex-between">
+            <div>
+              <span class="panel-caption">REAL-TIME CAPTURED PACKETS (DEEP DISSECTION)</span>
+              <span class="panel-meta-note">Click any packet row for full hex wire dump</span>
+            </div>
+            <span class="badge-count" id="deepPacketTableCount">0 Packets</span>
+          </div>
+          <div class="table-scroll-container">
+            <table class="packet-table" id="deepLivePacketTable">
               <thead>
                 <tr>
-                  <th scope="col">FEATURE</th>
-                  <th scope="col">DESCRIPTION</th>
-                  <th scope="col">CURRENT VALUE</th>
-                  <th scope="col">IMPACT</th>
-                  <th scope="col">GRADIENT SHAP ATTRIBUTION</th>
+                  <th style="width: 48px;">#</th>
+                  <th style="width: 86px;">TIME</th>
+                  <th style="width: 140px;">SOURCE</th>
+                  <th style="width: 140px;">DESTINATION</th>
+                  <th style="width: 58px;">PROTO</th>
+                  <th style="width: 52px;">LEN</th>
+                  <th style="width: 68px;">FLAGS</th>
+                  <th>DISSECTED SUMMARY</th>
                 </tr>
               </thead>
-              <tbody id="shapRankingBody">
-                <!-- Dynamically populated -->
+              <tbody id="deepLivePacketTableBody">
+                <tr class="empty-row">
+                  <td colspan="8">No packets captured yet.</td>
+                </tr>
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
 
-        <!-- Tab 2: Force-Plot-Style Contribution View -->
-        <div class="shap-tab-panel" id="panelForce" role="tabpanel">
-          <div class="force-plot-wrapper">
-            <div class="force-meta-summary">
-              <div class="force-meta-item">
-                <span class="force-meta-label">BASELINE EXPECTATION E[f(x)]</span>
-                <span class="force-meta-value" id="forceBaseVal">0.200</span>
+      </div><!-- End deep-dive-container -->
+    </div><!-- End modelDeepDiveView -->
+
+
+    <!-- ===================================================================
+         VIEW 3: PHASE 9C REAL-DATA TEMPORAL ATTACK ONSET FORECASTER (TARGET A)
+         =================================================================== -->
+    <div id="temporalExperimentalView" class="dashboard-view">
+      <div class="temporal-container">
+
+        <!-- Top Header Banner -->
+        <section class="soc-panel deep-dive-header">
+          <div class="flex-between">
+            <div>
+              <span class="badge-tag" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);">AUTHENTIC EMPIRICAL RESEARCH MODEL</span>
+              <h2 class="deep-title">Phase 9C: Target A Temporal Attack Onset Forecaster</h2>
+              <p class="deep-sub">
+                Evaluates authentic 10-minute historical flow sequences ($10 \times 12 = 120$ features) to forecast whether a multi-stage cyber attack onset will commence within a 5-minute future horizon.
+              </p>
+            </div>
+            <div class="deep-metrics-summary">
+              <div class="deep-metric-card">
+                <span class="deep-m-label">MODEL STATUS</span>
+                <span class="deep-m-val highlight" style="color: #38bdf8; font-size: 0.95rem;">EXPERIMENTAL</span>
               </div>
-              <div class="force-meta-arrow">→</div>
-              <div class="force-meta-item">
-                <span class="force-meta-label">MODEL FORECAST PROBABILITY f(x)</span>
-                <span class="force-meta-value highlight" id="forceOutputVal">0.870</span>
+              <div class="deep-metric-card">
+                <span class="deep-m-label">PREDICTOR SCHEMA</span>
+                <span class="deep-m-val" style="color: #a78bfa; font-size: 0.95rem;">120 FLOW DIMS</span>
+              </div>
+              <div class="deep-metric-card">
+                <span class="deep-m-label">CALIBRATION</span>
+                <span class="deep-m-val accent" style="color: #fbbf24; font-size: 0.85rem;">UNCALIBRATED</span>
               </div>
             </div>
+          </div>
+        </section>
 
-            <!-- Force bars container -->
-            <div class="force-bars-card">
-              <div class="force-bars-header">
-                <div class="legend-item"><span class="legend-swatch positive"></span> Pushes Toward Forecast (Risk Escalation)</div>
-                <div class="legend-item"><span class="legend-swatch negative"></span> Suppresses Forecast (Baseline Drift)</div>
-              </div>
-              <div class="force-bars-list" id="forceBarsList">
-                <!-- Dynamically populated -->
-              </div>
+        <!-- Live Capture Rejection & Incompatibility Notice -->
+        <div class="incompatibility-alert-box" id="temporalLiveAlertBox">
+          <div class="alert-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <div class="alert-content-box">
+            <div class="alert-title">Live Packet Stream Incompatible with Flow Model</div>
+            <div class="alert-text">
+              The live network capture adapter (Npcap / Scapy) observes raw Ethernet frames and calculates packet-layer metrics (e.g. <code>mean_frame_length</code>, <code>tcp_packet_ratio</code>, <code>iat_mean</code>).
+              The Phase 9C experimental model was trained strictly on dataset-native flow records (<code>PREDICTOR_COLUMNS</code>: <code>flow_count</code>, <code>mean_flow_duration_ms</code>, <code>dst_port_diversity</code>, etc.).
+              <br><strong>Scientific Integrity Gate:</strong> Cross-layer feature mapping without empirical calibration is strictly prohibited. Live capture forecasting remains disabled with status:
+              <strong style="color: #fbbf24;">FORECASTING MODEL NOT VALIDATED FOR THIS DATA</strong>. To evaluate the model, select an authentic historical test window below.
             </div>
           </div>
         </div>
 
-      </div>
-    </section>
+        <!-- Target A Horizon Timeline Tracker -->
+        <section class="soc-panel">
+          <div class="panel-header flex-between">
+            <div>
+              <span class="panel-caption">TARGET A FORECAST HORIZON ARCHITECTURE</span>
+              <span class="panel-meta-note">Strict chronological separation between observation history, buffer gap, and target horizon</span>
+            </div>
+            <span class="badge-count">Lead Time: ~5.7 Minutes</span>
+          </div>
+
+          <div class="target-a-horizon-grid">
+            <!-- Step 1: History -->
+            <div class="horizon-step-card history">
+              <div class="step-card-header">
+                <span class="step-title">[1] Historical Context</span>
+                <span class="step-duration">10 Minutes [t-9m ... t]</span>
+              </div>
+              <div class="step-desc">
+                10 consecutive 1-minute epochs. Extracts 12 observable flow features per minute ($10 \times 12 = 120$ inputs). Zero future or label leakage.
+              </div>
+              <div class="step-condition clean">✓ REQUIREMENT: 100% ATTACK-FREE HISTORY</div>
+            </div>
+
+            <!-- Step 2: Gap -->
+            <div class="horizon-step-card gap">
+              <div class="step-card-header">
+                <span class="step-title">[2] Buffer Lead Gap</span>
+                <span class="step-duration">2 Minutes [t+1m, t+2m]</span>
+              </div>
+              <div class="step-desc">
+                2-minute buffer preventing ongoing attack traffic from leaking into the forecast. Distinguishes proactive early forecasting from reactive detection.
+              </div>
+              <div class="step-condition buffer">✓ REQUIREMENT: 100% ATTACK-FREE GAP</div>
+            </div>
+
+            <!-- Step 3: Horizon -->
+            <div class="horizon-step-card target">
+              <div class="step-card-header">
+                <span class="step-title">[3] Target Forecast Horizon</span>
+                <span class="step-duration">5 Minutes [t+3m ... t+7m]</span>
+              </div>
+              <div class="step-desc">
+                The 5-minute prediction window. Model predicts whether an adversary will initiate an authentic attack episode onset within this window.
+              </div>
+              <div class="step-condition onset">⚡ TARGET: POSITIVE (y=1) IF ATTACK COMMENCES</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Interactive Evaluation Console -->
+        <div class="temporal-eval-grid">
+          <!-- Left: Input Selector -->
+          <div class="eval-console-card">
+            <div class="panel-header flex-between" style="padding: 0 0 12px 0;">
+              <div>
+                <span class="panel-caption">HISTORICAL FLOW SEQUENCE EVALUATOR</span>
+                <span class="panel-meta-note">Select verified test window from CICIDS2017 benchmark</span>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+              <label for="temporalSampleSelect" style="display:block; font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; font-weight:600;">
+                Verified Test Window:
+              </label>
+              <select id="temporalSampleSelect" class="soc-select-sm" style="width: 100%; height: 36px; font-size: 0.78rem;">
+                <option value="">Loading benchmark samples...</option>
+              </select>
+            </div>
+
+            <div id="temporalSampleNotesBox" style="background: var(--bg-card-subtle); border: 1px solid var(--border-card); border-radius: 6px; padding: 10px 12px; margin-bottom: 14px; font-size: 0.73rem; color: var(--text-secondary); line-height: 1.45;">
+              Select a benchmark test window to inspect the 120-dimensional flow features and evaluate genuine model forecasting.
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <button id="btnRunTemporalForecast" class="soc-btn primary full-width" style="height: 38px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                Evaluate Target A Forecast
+              </button>
+              <button id="btnTestPacketRejection" class="soc-btn secondary" title="Simulate sending packet-layer features to test strict rejection" style="white-space: nowrap;">
+                Test Packet Rejection
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Prediction Output -->
+          <div class="eval-output-card">
+            <div class="panel-header flex-between" style="padding: 0 0 12px 0;">
+              <div>
+                <span class="panel-caption">FORECAST OUTPUT & EXPERIMENTAL SCORE</span>
+                <span class="panel-meta-note">Uncalibrated logistic decision score</span>
+              </div>
+              <span id="temporalOutputBadge" class="badge-count" style="color: #94a3b8;">AWAITING EVALUATION</span>
+            </div>
+
+            <div class="score-display-row">
+              <div id="temporalScoreCircle" class="score-badge-circle">
+                <span id="temporalScoreVal">—</span>
+              </div>
+              <div class="score-meta-col">
+                <div id="temporalDecisionTitle" class="score-decision-title">Ready for Evaluation</div>
+                <div id="temporalDecisionDesc" style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.4;">
+                  Click "Evaluate Target A Forecast" to run the model against the selected sequence.
+                </div>
+                <div class="score-disclaimer-tag">⚠ EXPERIMENTAL SCORE: NOT CALIBRATED PROBABILITY</div>
+              </div>
+            </div>
+
+            <div id="temporalOutputDetails" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-secondary); background: var(--bg-card-subtle); border-radius: 6px; padding: 10px 12px; border: 1px solid var(--border-card); max-height: 120px; overflow-y: auto;">
+              // Model response will appear here...
+            </div>
+          </div>
+        </div>
+
+        <!-- Empirical Benchmark Evaluation Metrics Table -->
+        <section class="soc-panel">
+          <div class="panel-header flex-between">
+            <div>
+              <span class="panel-caption">PHASE 9C EMPIRICAL EVALUATION METRICS (THURSDAY & FRIDAY TEST PARTITION)</span>
+              <span class="panel-meta-note">N=280 eligible 1-minute test windows, 35 ground-truth onsets, 10 forecastable episodes</span>
+            </div>
+            <span class="badge-count">Zero-Shot Cross-Category Transfer</span>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="shap-table" style="width: 100%;">
+              <thead>
+                <tr>
+                  <th>MODEL ARCHITECTURE</th>
+                  <th>PR-AUC</th>
+                  <th>ROC-AUC</th>
+                  <th>PRECISION</th>
+                  <th>RECALL</th>
+                  <th>F1 SCORE</th>
+                  <th>FPR</th>
+                  <th>FALSE ALARMS / HR</th>
+                  <th>EVENT RECALL (RULE 1 / 2)</th>
+                  <th>MEAN LEAD TIME</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Dummy Prior Baseline</strong></td>
+                  <td>0.1250</td>
+                  <td>0.5000</td>
+                  <td>0.00%</td>
+                  <td>0.00%</td>
+                  <td>0.0000</td>
+                  <td>0.00%</td>
+                  <td>0.00 / hr</td>
+                  <td>0 / 10 (0.0%)</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td><strong>Dummy Stratified Baseline</strong></td>
+                  <td>0.1310</td>
+                  <td>0.5102</td>
+                  <td>33.33%</td>
+                  <td>2.86%</td>
+                  <td>0.0526</td>
+                  <td>0.82%</td>
+                  <td>0.49 / hr</td>
+                  <td>1 / 10 (10.0%)</td>
+                  <td>—</td>
+                </tr>
+                <tr style="background: rgba(56, 189, 248, 0.08); border-left: 3px solid #38bdf8;">
+                  <td><strong style="color: #38bdf8;">Logistic Regression (Primary Phase 9C)</strong></td>
+                  <td><strong style="color: #38bdf8;">0.1554</strong></td>
+                  <td><strong>0.5370</strong></td>
+                  <td><strong>15.38%</strong></td>
+                  <td><strong>5.71%</strong></td>
+                  <td><strong>0.0833</strong></td>
+                  <td><strong>4.49%</strong></td>
+                  <td><strong>2.69 / hr</strong></td>
+                  <td><strong style="color: #34d399;">3 / 10 (30.0%) / 20.0%</strong></td>
+                  <td><strong style="color: #34d399;">5.67 Minutes</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>Random Forest (Tree Baseline)</strong></td>
+                  <td>0.1815</td>
+                  <td>0.5805</td>
+                  <td>0.00%</td>
+                  <td>0.00%</td>
+                  <td>0.0000</td>
+                  <td>0.00%</td>
+                  <td>0.00 / hr</td>
+                  <td>0 / 10 (0.0%)</td>
+                  <td>—</td>
+                </tr>
+                <tr style="opacity: 0.75;">
+                  <td><strong>Compact PyTorch LSTM (Recurrent)</strong></td>
+                  <td style="color: #f87171;">0.1206 (Failure)</td>
+                  <td>0.5018</td>
+                  <td>0.00%</td>
+                  <td>0.00%</td>
+                  <td>0.0000</td>
+                  <td>0.00%</td>
+                  <td>0.00 / hr</td>
+                  <td>0 / 10 (0.0%)</td>
+                  <td>—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div style="padding: 12px 16px; font-size: 0.74rem; color: var(--text-secondary); line-height: 1.5; border-top: 1px solid var(--border-card);">
+            <strong>Scientific Assessment:</strong> The primary regularized linear model achieves a modest PR-AUC lift (+0.0304 over prior) and successfully forecasts PortScan probe (4.0 min lead) and LOIC DDoS flooding (6.0 min lead).
+            However, the 95% bootstrap confidence interval crosses zero ($[-0.0062, +0.1121]$), and the recurrent LSTM collapsed to PR-AUC 0.1206 due to the 9-event training sample bottleneck. Complex sequence forecasting requires dataset expansion before production deployment.
+          </div>
+        </section>
+
+      </div><!-- End temporal-container -->
+    </div><!-- End temporalExperimentalView -->
 
   </main>
 
+  <!-- Hex Dump / Dissection Modal -->
+  <div class="packet-inspector-panel" id="deepPacketInspectorPanel" style="display: none;">
+    <div class="inspector-header">
+      <div class="inspector-title" id="deepInspectorTitle">Packet Dissection Details</div>
+      <button class="close-btn" id="deepCloseInspectorBtn" title="Close Inspector">&times;</button>
+    </div>
+    <div class="inspector-body">
+      <div class="inspector-details" id="deepInspectorDetails"></div>
+      <div class="inspector-hex-wrap">
+        <span class="hex-label">HEX & ASCII WIRE PAYLOAD PREVIEW:</span>
+        <pre class="inspector-hex" id="deepInspectorHex"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Application Script -->
   <script src="/static/app.js"></script>
 </body>
+
 </html>

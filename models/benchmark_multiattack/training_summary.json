@@ -1,0 +1,71 @@
+{
+  "status": "COMPLETED",
+  "training_time_seconds": {
+    "logistic_regression": 735.98,
+    "random_forest": 31.82
+  },
+  "validation_metrics": {
+    "logistic_regression": {
+      "accuracy": 0.8775015211598581,
+      "macro_f1": 0.49849586833531,
+      "weighted_f1": 0.9120502432085623
+    },
+    "random_forest": {
+      "accuracy": 0.99687375422253,
+      "macro_f1": 0.9030394962134854,
+      "weighted_f1": 0.9970693155486067
+    }
+  },
+  "top_features_rf": [
+    {
+      "rank": 1,
+      "feature": "Avg Bwd Segment Size",
+      "importance": 0.04177496208965133
+    },
+    {
+      "rank": 2,
+      "feature": "Bwd Packet Length Max",
+      "importance": 0.03910880874504878
+    },
+    {
+      "rank": 3,
+      "feature": "Init_Win_bytes_backward",
+      "importance": 0.03714821983605404
+    },
+    {
+      "rank": 4,
+      "feature": "Packet Length Mean",
+      "importance": 0.03559981575246412
+    },
+    {
+      "rank": 5,
+      "feature": "Average Packet Size",
+      "importance": 0.03393388292964465
+    },
+    {
+      "rank": 6,
+      "feature": "Fwd IAT Std",
+      "importance": 0.03263198715053663
+    },
+    {
+      "rank": 7,
+      "feature": "Init_Win_bytes_forward",
+      "importance": 0.03224905100679017
+    },
+    {
+      "rank": 8,
+      "feature": "Bwd Packet Length Mean",
+      "importance": 0.032124344873589186
+    },
+    {
+      "rank": 9,
+      "feature": "Avg Fwd Segment Size",
+      "importance": 0.030017916737511724
+    },
+    {
+      "rank": 10,
+      "feature": "Fwd Packet Length Mean",
+      "importance": 0.028537380701131584
+    }
+  ]
+}

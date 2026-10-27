@@ -151,32 +151,115 @@ The test suite validates:
 
 ---
 
-## System Architecture & 6-Step Pipeline
+## Wireshark Integration & Packet Processing Guide
+
+### 1. Capturing a PCAPNG Sample with Wireshark
+To capture a real network traffic trace for analysis:
+1. Open **Wireshark** with Administrator privileges.
+2. Select your active network adapter (e.g., `Ethernet` or `Wi-Fi`).
+3. (Optional) Set a capture filter (e.g., `tcp or udp or icmp`) to focus on transport traffic.
+4. Click **Start Capturing Packets** (the blue shark fin icon).
+5. Generate normal network activity (or execute controlled lab test traffic).
+6. Click **Stop Capture** (the red square icon).
+7. Go to **File → Save As...** and save the file with the extension `.pcapng` or `.pcap` (e.g., `capture_sample.pcapng`).
+
+### 2. Processing an Existing Capture
+You can process PCAPs either through the Analyst Dashboard or via the REST API:
+- **Web UI**: Navigate to the Analyst Dashboard at `http://localhost:8000`. In the **PCAP File Ingestion** panel, select your `.pcap` or `.pcapng` file and click **Upload & Dissect Capture**.
+- **REST API (PowerShell)**:
+  ```powershell
+  Invoke-RestMethod -Uri "http://localhost:8000/api/capture/upload-pcap" -Method Post -InFile "C:\path\to\capture.pcapng" -ContentType "application/vnd.tcpdump.pcap"
+  ```
+The offline parser (`pipeline/offline_pcap.py`):
+- Verifies PCAP/PCAPNG magic byte headers.
+- Streams packet parsing via `scapy.utils.PcapReader` (avoiding loading full captures into memory).
+- Extracts actual packet timestamps, frame lengths, protocols, addresses, ports, and TCP flags.
+- Aggregates packets into discrete 1-minute temporal windows (`pipeline/temporal_aggregator.py`).
+- Registers the capture metadata and quality metrics in `data/captures/manifest.json`.
+
+### 3. Starting & Stopping Live Capture
+- **Web UI**: In the **Live Network Packet Capture** panel, select an enumerated network interface from the dropdown and click **Start Real Capture**. Click **Stop Capture** at any time to halt packet sniffing and release socket resources.
+- **REST API (PowerShell)**:
+  ```powershell
+  # Check available interfaces
+  Invoke-RestMethod -Uri "http://localhost:8000/api/capture/interfaces" -Method Get
+
+  # Start live capture on selected interface
+  Invoke-RestMethod -Uri "http://localhost:8000/api/capture/start" -Method Post -Body (@{ interface = "\Device\NPF_{...}"; capture_method = "live_sniff" } | ConvertTo-Json) -ContentType "application/json"
+
+  # Poll capture feed and 1-minute aggregated windows
+  Invoke-RestMethod -Uri "http://localhost:8000/api/capture/feed" -Method Get
+
+  # Stop live capture
+  Invoke-RestMethod -Uri "http://localhost:8000/api/capture/stop" -Method Post
+  ```
+
+### 4. Npcap and Administrator Permission Requirements
+- **Npcap Driver**: Real-time packet sniffing on Windows requires [Npcap](https://npcap.com/) (installed with the option **"Install Npcap in WinPcap API-compatible Mode"**).
+- **Administrator Privileges**: Raw socket sniffing on network interfaces requires elevated privileges. Run your terminal or PowerShell console as **Administrator**.
+- **Truthful Error Handling**: If Npcap or elevated privileges are absent, the system does **not** fall back to synthetic packets. It explicitly reports `MONITOR NOT DETECTED` or `INSUFFICIENT PERMISSIONS` in compliance with operational honesty rules.
+
+---
+
+## Conceptual Architecture: Capture vs. Detection vs. Forecasting
+
+It is critical to distinguish between the three distinct layers of network security analytics:
+
+| Operational Layer | Focus | Data Source | Latency / Scope | Readiness State in System |
+| :--- | :--- | :--- | :--- | :--- |
+| **Packet Capture** | Real-time observation of network frames | Network interface (Npcap) or PCAP file | Millisecond frame arrival | Fully implemented with streaming parsing & 1-min aggregation |
+| **Attack Detection** | Classifying ongoing anomalous patterns | Current flow or frame window | Immediate / reactive | Operational on labeled benchmarks; real packets marked `UNLABELED` |
+| **Attack Forecasting** | Predicting the *next probable attack stage* | Sequence of validated temporal windows ($T=10$) | Proactive / forward-looking | **Gated:** Displays `FORECASTING MODEL NOT VALIDATED FOR THIS DATA` for real traffic |
+
+### Strict Model Readiness Gating (Phase G)
+The pre-existing BiLSTM production weights (`models/bilstm_weights.pt`) and scaler (`pipeline/scaler.pkl`) were fitted on synthetic Gaussian progression timelines. They have **not** been trained or validated on the real-world 13-feature 1-minute packet aggregations. 
+
+In strict adherence to scientific evaluation guidelines:
+1. Real packet captures (live or PCAP) will **not** invoke the legacy synthetic BiLSTM model.
+2. The API and UI truthfully report:
+   ```json
+   {
+     "status": "FORECASTING MODEL NOT VALIDATED FOR THIS DATA",
+     "prediction_available": false,
+     "model_readiness": "NOT_VALIDATED_FOR_REAL_DATA",
+     "reason": "Empirical temporal sequence model must be trained on authentic labeled temporal PCAP data before forecasting can be enabled."
+   }
+   ```
+3. Packet telemetry, raw metrics, protocol ratios, and 1-minute window temporal aggregations remain fully operational.
+
+---
+
+## Known Limitations & Remaining Work
+
+1. **Model Validation on Real Temporal PCAP Data**: The Dual-Head BiLSTM requires training on verified multi-stage attack PCAPs with timestamp-grounded progression before live forecasting can be activated.
+2. **Wi-Fi Promiscuous Mode**: In Windows environments, capturing packets across third-party devices on a Wi-Fi network requires monitor mode or mirror port configuration (SPAN) on network switches.
+3. **Encrypted Payloads**: Deep packet inspection does not decrypt TLS/HTTPS traffic; feature extraction relies strictly on layer 3/4 headers, timing, packet sizes, and flag metadata.
+
+---
+
+## System Architecture & Pipeline
 
 ```mermaid
-flowchart LR
-    A["Step 1: Flow Ingestion & Extraction\n12 Behavioural/Temporal Features"] --> B["Step 2: Sequence Construction\nSliding Window T=10, 12 Feats"]
-    B --> C["Step 3: Current Classification\nBiLSTM Output Head 1"]
-    C --> D["Step 4: Next-Stage Forecasting\nBiLSTM Output Head 2"]
-    D --> E["Step 5: Dynamic Risk & SHAP\nRisk Score 0-100 + GradientExplainer"]
-    E --> F["Step 6: Analyst UI & Export\nDashboard + Excel .xlsx Log"]
-```
+flowchart TD
+    subgraph Data Acquisition
+        NIC["Physical Network Interface\n(Npcap / WinPcap)"] --> LIVE["Live Adapter\n(pipeline/live_capture.py)"]
+        PCAP["Offline Capture File\n(.pcap / .pcapng)"] --> OFFLINE["Offline Streaming Parser\n(pipeline/offline_pcap.py)"]
+    end
 
-### 12 Extracted Features across 6 Categories:
-| Category | Feature Name | Description |
-| :--- | :--- | :--- |
-| **Connection Frequency** | `conn_frequency` | Connections initiated per second |
-| | `packet_rate` | Average packets transmitted per second |
-| **Source–Dest Relationships** | `dst_ip_fanout` | Number of unique target IPs contacted |
-| | `src_dst_entropy` | Shannon entropy of source-to-destination pairs |
-| **Port-Access Patterns** | `port_diversity` | Number of distinct destination ports accessed |
-| | `well_known_port_ratio` | Proportion of traffic targeting standard ports (0–1023) |
-| **Host Discovery** | `host_sweep_rate` | Velocity of sequential IP addressing probes |
-| | `icmp_arp_ratio` | Ratio of control plane traffic (ICMP/ARP) |
-| **Service Enumeration** | `service_probe_rate` | Rapid query frequency against application services |
-| | `targeted_query_volume` | Volume of targeted protocol banner interactions |
-| **Timing Irregularities** | `iat_jitter` | Inter-arrival time variance and deviation |
-| | `burstiness_index` | Peak-to-average transmission ratio |
+    LIVE --> PARSER["Shared Packet Metadata Extractor\n(pipeline/packet_record.py)"]
+    OFFLINE --> PARSER
+
+    PARSER --> AGG["1-Minute Temporal Feature Aggregator\n(pipeline/temporal_aggregator.py)"]
+    PARSER --> MANIFEST["Capture Dataset Manifest\n(data/captures/manifest.json)"]
+
+    AGG --> GATE{"Model Readiness Gate\n(Real Traffic vs Benchmark)"}
+    GATE -- "Real Traffic (Unvalidated)" --> BLOCKED["Status: FORECASTING MODEL\nNOT VALIDATED FOR THIS DATA"]
+    GATE -- "Historical Benchmark" --> BILSTM["Dual-Head BiLSTM Forecaster\n(models/attack_forecaster.py)"]
+
+    BILSTM --> RISK["Dynamic Risk Engine & Countermeasures\n(models/risk_engine.py)"]
+    BLOCKED --> UI["Analyst Dashboard UI\n(dashboard/static/index.html)"]
+    RISK --> UI
+```
 
 ---
 
@@ -185,51 +268,57 @@ flowchart LR
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
 | `GET` | `/` | Serves the interactive analyst dashboard UI |
-| `POST` | `/api/forecast` | Computes forecast, dynamic risk score, and SHAP attributions for a provided sequence (or current active window) |
-| `GET` | `/api/stream` | Advances the simulated multi-stage attack stream by one window ($T=10$) |
-| `POST` / `GET`| `/api/ingest-real` | Ingests uploaded CICIDS CSV or default sample, returning sequential windowed forecasts |
-| `GET` | `/api/ingest-real-stream` | Delivers the next sequential window from ingested real CICIDS data |
-| `POST` / `GET`| `/api/export-xlsx` | Generates and downloads a `.xlsx` Excel workbook logging forecast session history |
+| `GET` | `/api/capture/interfaces` | Returns detected host network interfaces |
+| `POST` | `/api/capture/start` | Starts live network traffic capture (`live_sniff`) |
+| `POST` | `/api/capture/stop` | Stops live packet capture and releases socket resources |
+| `POST` | `/api/capture/clear` | Clears packet history buffers and resets sliding baseline |
+| `GET` | `/api/capture/status` | Returns truthful live capture engine status and metrics |
+| `GET` | `/api/capture/feed` | Delivers real-time packet feed, sliding window features, and gated prediction |
+| `POST` | `/api/capture/upload-pcap` | Dissects uploaded `.pcap`/`.pcapng` packet capture via streaming Scapy parser |
+| `GET` | `/api/capture/temporal-windows` | Retrieves computed 1-minute discrete aggregated temporal windows |
+| `GET` | `/api/captures/manifest` | Returns manifest of all imported offline captures |
+| `GET` | `/api/soc/overview` | Aggregated SOC operational health and capture metrics |
+| `POST` | `/api/forecast` | Forecasts for provided sequence (gated if real data) |
 | `GET` | `/docs` | Interactive Swagger/OpenAPI documentation |
-
----
-
-## Dataset Balancing Note
-
-> **Engineering Assumption**: In real-world enterprise network traffic, attack traffic is **not** evenly distributed across stages: early stages (*Reconnaissance* and *Scanning*) are far more common than confirmed *Intrusion*, as the majority of hostile probes stall, get dropped by firewalls, or are mitigated before penetration.
->
-> In this prototype, **equal-per-stage balancing** (approx. 20% representation per stage across both the training dataset and the live `/api/stream` generator) is a deliberate engineering choice. This ensures balanced gradient updates across all 5 classes, eliminates late-stage (Intrusion) bias, and allows clean demonstration of stage-to-stage transitions.
 
 ---
 
 ## Project Directory Structure
 
 ```
-sih/
+AI-based-Network-Attack-Forecasting-from-Network-Traffic-Data-main/
 ├── dashboard/
-│   ├── server.py              # FastAPI server & endpoint controllers
+│   ├── server.py                   # FastAPI server, REST routes & readiness gating
 │   └── static/
-│       ├── index.html         # Analyst dashboard HTML structure
-│       ├── style.css          # Design system, CSS variables & animations
-│       └── app.js             # Real-time state management, count-ups & charts
+│       ├── index.html              # Cleaned analyst dashboard UI (zero fake streams)
+│       ├── style.css               # Design system, CSS variables & layouts
+│       └── app.js                  # Frontend state management & live charts
 ├── data/
-│   └── sample_cicids2017.csv  # 31-flow multi-stage real CICIDS2017 sample
+│   ├── captures/                   # Real offline & live PCAP captures and manifest
+│   │   └── manifest.json           # Capture provenance, packet counts, duration
+│   └── benchmark/temporal/         # Preserved historical research artifacts
 ├── models/
-│   ├── attack_forecaster.py   # Dual-Head PyTorch BiLSTM neural network
-│   ├── bilstm_weights.pt      # Pre-trained model weights
-│   ├── risk_engine.py         # Dynamic risk engine & multiple defending methods
-│   └── shap_explainer.py      # SHAP GradientExplainer wrapper
+│   ├── attack_forecaster.py        # Dual-Head PyTorch BiLSTM neural network
+│   ├── bilstm_weights.pt           # Preserved production model weights (unmodified)
+│   ├── risk_engine.py              # Dynamic risk engine & defensive mitigations
+│   └── shap_explainer.py           # Feature attribution engine
 ├── pipeline/
-│   ├── dataset.py             # Rebalanced synthetic timeline & sequence generator
-│   ├── excel_exporter.py      # Openpyxl Excel workbook generator
-│   ├── feature_extractor.py   # 12-feature behavioural & temporal extractor
-│   ├── real_flow_loader.py    # CICIDS2017/2018 CSV parser & window constructor
-│   ├── background_samples.npy # SHAP reference baseline flows
-│   └── scaler.pkl             # Fitted StandardScaler
+│   ├── packet_record.py            # Shared metadata schema & Scapy packet parser
+│   ├── offline_pcap.py             # Streaming PCAP/PCAPNG validator and parser
+│   ├── temporal_aggregator.py      # 1-minute discrete temporal feature aggregator
+│   ├── capture_manifest.py         # Capture dataset registry & audit logging
+│   ├── live_capture.py             # Npcap/Scapy live sniffer with truthful states
+│   ├── feature_extractor.py        # 12-feature legacy behavioral extractor
+│   ├── real_flow_loader.py         # CICIDS2017/2018 CSV parser
+│   └── scaler.pkl                  # Preserved StandardScaler (unmodified)
 ├── tests/
-│   └── test_pipeline.py       # 10 automated unit & integration tests
-├── README.md                  # System documentation & usage guide
-├── requirements.txt           # Python package dependencies
-├── run_demo.py                # One-click application launcher
-└── train.py                   # Model training & artifact export script
+│   ├── test_offline_capture.py     # Offline PCAP validation & parsing tests
+│   ├── test_live_capture_real.py   # Live capture lifecycle & truthful state tests
+│   ├── test_temporal_aggregation.py# 1-minute window temporal aggregation tests
+│   ├── test_model_gating_real.py   # Model readiness gating & unvalidated state tests
+│   └── test_pipeline.py            # Core pipeline and legacy benchmark tests
+├── README.md                       # System documentation & usage guide
+├── requirements.txt                # Python package dependencies
+└── run_demo.py                     # One-click application launcher
 ```
+

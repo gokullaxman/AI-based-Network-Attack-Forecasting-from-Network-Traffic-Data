@@ -1,0 +1,341 @@
+{
+  "model_name": "Target_A_Temporal_Attack_Forecaster",
+  "model_version": "1.0.0-experimental",
+  "timestamp_created": "2026-10-26T23:10:00Z",
+  "status": "EXPERIMENTAL_RESEARCH_MODEL",
+  "is_calibrated": false,
+  "calibration_note": "Probabilities represent uncalibrated sigmoid/logistic scores from class-weighted training. Do not interpret as calibrated Bayesian posteriors.",
+  "target_definition": {
+    "target_name": "Target A",
+    "historical_context_minutes": 10,
+    "clean_history_required": true,
+    "lead_gap_minutes": 2,
+    "clean_gap_required": true,
+    "forecast_horizon_minutes": 5,
+    "positive_condition": "Authentic multi-stage attack onset begins within [t+3, t+7]"
+  },
+  "feature_schema": {
+    "base_features_per_epoch": [
+      "flow_count",
+      "total_packets",
+      "total_bytes",
+      "mean_flow_duration_ms",
+      "std_flow_duration_ms",
+      "tcp_flow_ratio",
+      "udp_flow_ratio",
+      "dst_port_diversity",
+      "dst_port_entropy",
+      "distinct_src_ips",
+      "distinct_dst_ips",
+      "syn_flag_ratio"
+    ],
+    "total_epochs": 10,
+    "feature_dim": 120,
+    "lag_order": [
+      "flow_count_lag_9",
+      "total_packets_lag_9",
+      "total_bytes_lag_9",
+      "mean_flow_duration_ms_lag_9",
+      "std_flow_duration_ms_lag_9",
+      "tcp_flow_ratio_lag_9",
+      "udp_flow_ratio_lag_9",
+      "dst_port_diversity_lag_9",
+      "dst_port_entropy_lag_9",
+      "distinct_src_ips_lag_9",
+      "distinct_dst_ips_lag_9",
+      "syn_flag_ratio_lag_9",
+      "flow_count_lag_8",
+      "total_packets_lag_8",
+      "total_bytes_lag_8",
+      "mean_flow_duration_ms_lag_8",
+      "std_flow_duration_ms_lag_8",
+      "tcp_flow_ratio_lag_8",
+      "udp_flow_ratio_lag_8",
+      "dst_port_diversity_lag_8",
+      "dst_port_entropy_lag_8",
+      "distinct_src_ips_lag_8",
+      "distinct_dst_ips_lag_8",
+      "syn_flag_ratio_lag_8",
+      "flow_count_lag_7",
+      "total_packets_lag_7",
+      "total_bytes_lag_7",
+      "mean_flow_duration_ms_lag_7",
+      "std_flow_duration_ms_lag_7",
+      "tcp_flow_ratio_lag_7",
+      "udp_flow_ratio_lag_7",
+      "dst_port_diversity_lag_7",
+      "dst_port_entropy_lag_7",
+      "distinct_src_ips_lag_7",
+      "distinct_dst_ips_lag_7",
+      "syn_flag_ratio_lag_7",
+      "flow_count_lag_6",
+      "total_packets_lag_6",
+      "total_bytes_lag_6",
+      "mean_flow_duration_ms_lag_6",
+      "std_flow_duration_ms_lag_6",
+      "tcp_flow_ratio_lag_6",
+      "udp_flow_ratio_lag_6",
+      "dst_port_diversity_lag_6",
+      "dst_port_entropy_lag_6",
+      "distinct_src_ips_lag_6",
+      "distinct_dst_ips_lag_6",
+      "syn_flag_ratio_lag_6",
+      "flow_count_lag_5",
+      "total_packets_lag_5",
+      "total_bytes_lag_5",
+      "mean_flow_duration_ms_lag_5",
+      "std_flow_duration_ms_lag_5",
+      "tcp_flow_ratio_lag_5",
+      "udp_flow_ratio_lag_5",
+      "dst_port_diversity_lag_5",
+      "dst_port_entropy_lag_5",
+      "distinct_src_ips_lag_5",
+      "distinct_dst_ips_lag_5",
+      "syn_flag_ratio_lag_5",
+      "flow_count_lag_4",
+      "total_packets_lag_4",
+      "total_bytes_lag_4",
+      "mean_flow_duration_ms_lag_4",
+      "std_flow_duration_ms_lag_4",
+      "tcp_flow_ratio_lag_4",
+      "udp_flow_ratio_lag_4",
+      "dst_port_diversity_lag_4",
+      "dst_port_entropy_lag_4",
+      "distinct_src_ips_lag_4",
+      "distinct_dst_ips_lag_4",
+      "syn_flag_ratio_lag_4",
+      "flow_count_lag_3",
+      "total_packets_lag_3",
+      "total_bytes_lag_3",
+      "mean_flow_duration_ms_lag_3",
+      "std_flow_duration_ms_lag_3",
+      "tcp_flow_ratio_lag_3",
+      "udp_flow_ratio_lag_3",
+      "dst_port_diversity_lag_3",
+      "dst_port_entropy_lag_3",
+      "distinct_src_ips_lag_3",
+      "distinct_dst_ips_lag_3",
+      "syn_flag_ratio_lag_3",
+      "flow_count_lag_2",
+      "total_packets_lag_2",
+      "total_bytes_lag_2",
+      "mean_flow_duration_ms_lag_2",
+      "std_flow_duration_ms_lag_2",
+      "tcp_flow_ratio_lag_2",
+      "udp_flow_ratio_lag_2",
+      "dst_port_diversity_lag_2",
+      "dst_port_entropy_lag_2",
+      "distinct_src_ips_lag_2",
+      "distinct_dst_ips_lag_2",
+      "syn_flag_ratio_lag_2",
+      "flow_count_lag_1",
+      "total_packets_lag_1",
+      "total_bytes_lag_1",
+      "mean_flow_duration_ms_lag_1",
+      "std_flow_duration_ms_lag_1",
+      "tcp_flow_ratio_lag_1",
+      "udp_flow_ratio_lag_1",
+      "dst_port_diversity_lag_1",
+      "dst_port_entropy_lag_1",
+      "distinct_src_ips_lag_1",
+      "distinct_dst_ips_lag_1",
+      "syn_flag_ratio_lag_1",
+      "flow_count_lag_0",
+      "total_packets_lag_0",
+      "total_bytes_lag_0",
+      "mean_flow_duration_ms_lag_0",
+      "std_flow_duration_ms_lag_0",
+      "tcp_flow_ratio_lag_0",
+      "udp_flow_ratio_lag_0",
+      "dst_port_diversity_lag_0",
+      "dst_port_entropy_lag_0",
+      "distinct_src_ips_lag_0",
+      "distinct_dst_ips_lag_0",
+      "syn_flag_ratio_lag_0"
+    ],
+    "layer_type": "flow_aggregate"
+  },
+  "dataset_provenance": {
+    "source": "CICIDS2017 GeneratedLabelledFlows 1-minute temporal epochs",
+    "epochs_parquet_sha256": "2c3490de8f516b2a29e1d58239e4244ac52102edb6a804e4e588bed09d5cef59",
+    "event_ledger_sha256": "8111067343e9b8f170a95c987eec0ad5c8013296eade1fa7e1b0527ef7f1ae19",
+    "training_split": "Monday, Tuesday, Wednesday (1,117 windows: 30 positive, 1,087 negative, 9 onsets across 4 scenarios)",
+    "evaluation_split": "Thursday, Friday (280 windows: 35 positive, 245 negative, 10 onsets across 5 scenarios)",
+    "cross_category_transfer": "Zero overlap between training and testing attack categories"
+  },
+  "evaluation_metrics": {
+    "window_level": {
+      "dummy_prior": {
+        "n_samples": 280,
+        "n_positive": 35,
+        "n_negative": 245,
+        "true_positives": 0,
+        "false_positives": 0,
+        "true_negatives": 245,
+        "false_negatives": 35,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "pr_auc": 0.125,
+        "roc_auc": 0.5,
+        "false_positive_rate": 0.0,
+        "false_alarms_per_hour": 0.0,
+        "confusion_matrix": [
+          [
+            245,
+            0
+          ],
+          [
+            35,
+            0
+          ]
+        ]
+      },
+      "dummy_stratified": {
+        "n_samples": 280,
+        "n_positive": 35,
+        "n_negative": 245,
+        "true_positives": 1,
+        "false_positives": 2,
+        "true_negatives": 243,
+        "false_negatives": 34,
+        "precision": 0.3333,
+        "recall": 0.0286,
+        "f1_score": 0.0526,
+        "pr_auc": 0.131,
+        "roc_auc": 0.5102,
+        "false_positive_rate": 0.0082,
+        "false_alarms_per_hour": 0.49,
+        "confusion_matrix": [
+          [
+            243,
+            2
+          ],
+          [
+            34,
+            1
+          ]
+        ]
+      },
+      "logistic_regression": {
+        "n_samples": 280,
+        "n_positive": 35,
+        "n_negative": 245,
+        "true_positives": 2,
+        "false_positives": 11,
+        "true_negatives": 234,
+        "false_negatives": 33,
+        "precision": 0.1538,
+        "recall": 0.0571,
+        "f1_score": 0.0833,
+        "pr_auc": 0.1554,
+        "roc_auc": 0.537,
+        "false_positive_rate": 0.0449,
+        "false_alarms_per_hour": 2.69,
+        "confusion_matrix": [
+          [
+            234,
+            11
+          ],
+          [
+            33,
+            2
+          ]
+        ]
+      },
+      "random_forest": {
+        "n_samples": 280,
+        "n_positive": 35,
+        "n_negative": 245,
+        "true_positives": 0,
+        "false_positives": 0,
+        "true_negatives": 245,
+        "false_negatives": 35,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "pr_auc": 0.1402,
+        "roc_auc": 0.4901,
+        "false_positive_rate": 0.0,
+        "false_alarms_per_hour": 0.0,
+        "confusion_matrix": [
+          [
+            245,
+            0
+          ],
+          [
+            35,
+            0
+          ]
+        ]
+      },
+      "compact_lstm": {
+        "n_samples": 280,
+        "n_positive": 35,
+        "n_negative": 245,
+        "true_positives": 24,
+        "false_positives": 167,
+        "true_negatives": 78,
+        "false_negatives": 11,
+        "precision": 0.1257,
+        "recall": 0.6857,
+        "f1_score": 0.2124,
+        "pr_auc": 0.131,
+        "roc_auc": 0.5197,
+        "false_positive_rate": 0.6816,
+        "false_alarms_per_hour": 40.9,
+        "confusion_matrix": [
+          [
+            78,
+            167
+          ],
+          [
+            11,
+            24
+          ]
+        ]
+      }
+    },
+    "event_level": {
+      "logistic_regression": {
+        "rule1_multi_credit_detected": 3,
+        "rule1_recall": 0.3,
+        "rule2_strict_earliest_detected": 2,
+        "rule2_recall": 0.2,
+        "detected_events_rule1": [
+          "EVT_FRI_19",
+          "EVT_FRI_20",
+          "EVT_FRI_27"
+        ],
+        "detected_events_rule2": [
+          "EVT_FRI_19",
+          "EVT_FRI_27"
+        ],
+        "lead_times_minutes": [
+          4.0,
+          7.0,
+          6.0
+        ],
+        "mean_lead_time_minutes": 5.67
+      },
+      "random_forest": {
+        "rule1_multi_credit_detected": 0,
+        "rule1_recall": 0.0,
+        "rule2_strict_earliest_detected": 0,
+        "rule2_recall": 0.0,
+        "detected_events_rule1": [],
+        "detected_events_rule2": [],
+        "lead_times_minutes": []
+      },
+      "compact_lstm": {
+        "rule1_multi_credit_detected": 9,
+        "rule1_recall": 0.9,
+        "rule2_strict_earliest_detected": 0,
+        "rule2_recall": 0.0,
+        "detected_events_rule1": [],
+        "detected_events_rule2": [],
+        "lead_times_minutes": []
+      }
+    }
+  }
+}

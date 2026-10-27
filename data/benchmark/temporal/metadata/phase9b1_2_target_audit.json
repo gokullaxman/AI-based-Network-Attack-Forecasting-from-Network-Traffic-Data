@@ -1,0 +1,36 @@
+{
+  "rebuilt_target_a_onset": {
+    "eligible_windows": 1397,
+    "positive_windows": 65,
+    "negative_windows": 1332,
+    "class_imbalance": "1:20",
+    "ineligible_attack_in_history": 704,
+    "ineligible_attack_in_gap": 28,
+    "excluded_boundary_windows": 80
+  },
+  "rebuilt_target_b_activity": {
+    "eligible_windows": 1425,
+    "positive_windows": 89,
+    "negative_windows": 1336,
+    "class_imbalance": "1:15",
+    "ineligible_attack_in_history": 704,
+    "ineligible_attack_in_gap": 0,
+    "excluded_boundary_windows": 80
+  },
+  "chronological_split_target_a": {
+    "train_mon_wed": {
+      "eligible_windows": 1117,
+      "positive_windows": 30,
+      "ground_truth_episodes": 25,
+      "forecastable_onsets": 9,
+      "negative_windows": 1087
+    },
+    "test_thu_fri": {
+      "ground_truth_episodes": 32,
+      "forecastable_onsets": 10,
+      "eligible_windows": 280,
+      "positive_windows": 35,
+      "negative_windows": 245
+    }
+  }
+}
