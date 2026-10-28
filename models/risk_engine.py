@@ -8,6 +8,7 @@ Pipeline Step 5 & 6: Dynamic Risk Engine & Preventive Response Recommender
   with an explicit feature-based rationale string for security analyst review.
 """
 
+import math
 from typing import Dict, Any, Tuple, List, Optional
 
 
@@ -35,20 +36,31 @@ class DynamicRiskEngine:
     ) -> Tuple[int, str]:
         """
         Calculate dynamic risk score (0-100) and risk category (LOW / MEDIUM / HIGH).
+        Strictly validates numeric types, finite ranges, and bounded probabilities.
         """
+        if confidence is None or not isinstance(confidence, (int, float)) or math.isnan(confidence) or math.isinf(confidence):
+            raise ValueError(f"Invalid confidence value: {confidence}. Expected finite float in [0.0, 1.0].")
+        if not (0.0 <= confidence <= 1.0):
+            raise ValueError(f"Confidence {confidence} out of supported range [0.0, 1.0].")
+
+        if anomaly_intensity is None or not isinstance(anomaly_intensity, (int, float)) or math.isnan(anomaly_intensity) or math.isinf(anomaly_intensity):
+            raise ValueError(f"Invalid anomaly_intensity value: {anomaly_intensity}. Expected finite float in [0.0, 1.0].")
+        if not (0.0 <= anomaly_intensity <= 1.0):
+            raise ValueError(f"Anomaly intensity {anomaly_intensity} out of supported range [0.0, 1.0].")
+
         curr_sev = self.severity_weights.get(current_stage, 25)
         next_sev = self.severity_weights.get(predicted_next_stage, 35)
-        
-        score_val = (0.35 * curr_sev) + (0.45 * next_sev * confidence) + (0.20 * anomaly_intensity * 100.0)
+
+        score_val = (0.35 * curr_sev) + (0.45 * next_sev * float(confidence)) + (0.20 * float(anomaly_intensity) * 100.0)
         risk_score = int(min(100, max(5, round(score_val))))
-        
+
         if risk_score < 40:
             risk_level = "LOW"
         elif risk_score < 75:
             risk_level = "MEDIUM"
         else:
             risk_level = "HIGH"
-            
+
         return risk_score, risk_level
 
     def get_recommendation(
@@ -57,133 +69,158 @@ class DynamicRiskEngine:
         top_features: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
-        Generates a ranked list of 2-4 concrete, non-blocking defensive options,
-        each tied to the predicted next stage and the SHAP-flagged top contributing feature(s).
-        Returns a dict with `title`, `description`, and `options` list.
+        Generates a ranked list of 2-4 concrete, non-blocking defensive options.
+        If real SHAP top_features are provided, the rationale directly references the
+        genuine contributing features and attributions.
+        If SHAP is unavailable or empty, standard defensive rationales are provided
+        without fabricating attribution values or false feature names.
         """
-        # Extract top 2 feature names and values from SHAP ranking for the rationale string
-        feat1_name = "conn_frequency"
-        feat1_val = "0.45"
-        feat2_name = "dst_ip_fanout"
-        feat2_val = "0.38"
+        has_shap = bool(top_features and len(top_features) > 0)
+        feat1_name: Optional[str] = None
+        feat1_val: Optional[str] = None
+        feat2_name: Optional[str] = None
+        feat2_val: Optional[str] = None
 
-        if top_features and len(top_features) > 0:
+        if has_shap and top_features:
             f1 = top_features[0]
-            feat1_name = f1.get("feature", "conn_frequency")
-            val1 = f1.get("attribution", f1.get("value", 0.45))
-            feat1_val = f"{abs(float(val1)):.2f}"
-            
+            feat1_name = str(f1.get("feature", "unknown_feature"))
+            val1 = f1.get("attribution", f1.get("value", 0.0))
+            try:
+                feat1_val = f"{abs(float(val1)):.2f}"
+            except (ValueError, TypeError):
+                feat1_val = "0.00"
+
             if len(top_features) > 1:
                 f2 = top_features[1]
-                feat2_name = f2.get("feature", "dst_ip_fanout")
-                val2 = f2.get("attribution", f2.get("value", 0.38))
-                feat2_val = f"{abs(float(val2)):.2f}"
-            else:
-                feat2_name = "iat_jitter"
-                feat2_val = "0.22"
+                feat2_name = str(f2.get("feature", "secondary_feature"))
+                val2 = f2.get("attribution", f2.get("value", 0.0))
+                try:
+                    feat2_val = f"{abs(float(val2)):.2f}"
+                except (ValueError, TypeError):
+                    feat2_val = "0.00"
 
         options = []
 
         if predicted_next_stage == "Reconnaissance":
+            r1 = f"Rate-limit perimeter probes — driven by elevated {feat1_name} ({feat1_val})" + (f" and {feat2_name} ({feat2_val})." if feat2_name else ".") if has_shap else "Rate-limit perimeter probes — standard defensive policy (SHAP attribution unavailable)."
+            r2 = f"Filter discovery sweeps — driven by abnormal {feat1_name} ({feat1_val})." if has_shap else "Filter discovery sweeps — baseline ingress protection policy."
+            r3 = f"Honeypot activation — indicated by early target mapping in {feat2_name or feat1_name} ({feat2_val or feat1_val})." if has_shap else "Honeypot activation — defensive boundary tripwire."
+
             options = [
                 {
                     "priority": 1,
                     "action": "Inspect ingress edge telemetry and rate-limit discovery probes",
-                    "rationale": f"Rate-limit perimeter probes — driven by elevated {feat1_name} ({feat1_val}) and {feat2_name} ({feat2_val})."
+                    "rationale": r1
                 },
                 {
                     "priority": 2,
                     "action": "Tighten ICMP/ARP gateway broadcast ACLs and verify DMZ host isolation",
-                    "rationale": f"Filter discovery sweeps — driven by abnormal {feat1_name} ({feat1_val})."
+                    "rationale": r2
                 },
                 {
                     "priority": 3,
                     "action": "Arm decoy darknet addresses and monitor boundary honeypot tripwires",
-                    "rationale": f"Honeypot activation — indicated by early target mapping in {feat2_name} ({feat2_val})."
+                    "rationale": r3
                 }
             ]
             title = "Ingress Filtering & Probe Threshold Tuning"
             description = "Inspect perimeter firewall and IDS logs for sequential sweep patterns. Review ICMP/ARP rate-limiting policies on external gateways."
 
         elif predicted_next_stage == "Scanning":
+            r1 = f"Throttle scanning sources — driven by elevated {feat1_name} ({feat1_val})" + (f" and {feat2_name} ({feat2_val})." if feat2_name else ".") if has_shap else "Throttle scanning sources — standard defensive policy (SHAP attribution unavailable)."
+            r2 = f"Filter target ports — driven by high {feat1_name} ({feat1_val})." if has_shap else "Filter target ports — standard adaptive ACL protection policy."
+            r3 = f"Alert SOC analysts — driven by sweep intensity in {feat2_name or feat1_name} ({feat2_val or feat1_val})." if has_shap else "Alert SOC analysts — stateful port-scan tripwire policy."
+
             options = [
                 {
                     "priority": 1,
                     "action": "Rate-limit suspicious source IPs and drop half-open connections",
-                    "rationale": f"Throttle scanning sources — driven by elevated {feat1_name} ({feat1_val}) and {feat2_name} ({feat2_val})."
+                    "rationale": r1
                 },
                 {
                     "priority": 2,
                     "action": "Tighten firewall ACLs on probed port ranges and cloaked service ports",
-                    "rationale": f"Filter target ports — driven by high {feat1_name} ({feat1_val})."
+                    "rationale": r2
                 },
                 {
                     "priority": 3,
                     "action": "Enable stateful port-scan detection alerting and SYN-cookie thresholds",
-                    "rationale": f"Alert SOC analysts — driven by sweep intensity in {feat2_name} ({feat2_val})."
+                    "rationale": r3
                 }
             ]
             title = "Port Cloaking & Adaptive Rate Limiting"
             description = "Validate perimeter ACLs against unmapped high-port sweeps. Increase SYN-cookie thresholds, flag anomalous source IPs for analyst inspection."
 
         elif predicted_next_stage == "Enumeration":
+            r1 = f"Mask service versions — driven by elevated {feat1_name} ({feat1_val})" + (f" and {feat2_name} ({feat2_val})." if feat2_name else ".") if has_shap else "Mask service versions — standard service hardening policy (SHAP attribution unavailable)."
+            r2 = f"Limit service access — driven by targeted probe concentration in {feat1_name} ({feat1_val})." if has_shap else "Limit service access — defensive subnet isolation policy."
+            r3 = f"Rotate vulnerable credentials — driven by anomalous query bursts in {feat2_name or feat1_name} ({feat2_val or feat1_val})." if has_shap else "Stage credential rotation — proactive credential hygiene policy."
+
             options = [
                 {
                     "priority": 1,
                     "action": "Disable unnecessary service banners and suppress HTTP/SSH version headers",
-                    "rationale": f"Mask service versions — driven by elevated {feat1_name} ({feat1_val}) and {feat2_name} ({feat2_val})."
+                    "rationale": r1
                 },
                 {
                     "priority": 2,
                     "action": "Restrict SMB, RPC, and SSH exposure to authorized bastion management subnets",
-                    "rationale": f"Limit service access — driven by targeted probe concentration in {feat1_name} ({feat1_val})."
+                    "rationale": r2
                 },
                 {
                     "priority": 3,
                     "action": "Stage credential rotation for queried service accounts and verify WAF inspect rules",
-                    "rationale": f"Rotate vulnerable credentials — driven by anomalous query bursts in {feat2_name} ({feat2_val})."
+                    "rationale": r3
                 }
             ]
             title = "Service Banner Suppression & Access Restraint"
             description = "Enforce strict HTTP/SSH/SMB header masking to suppress version enumeration. Review web application firewall (WAF) inspect rules and verify endpoint service exposure."
 
         elif predicted_next_stage == "Exploitation":
+            r1 = f"Deploy virtual patch — driven by elevated {feat1_name} ({feat1_val})" + (f" and payload burstiness in {feat2_name} ({feat2_val})." if feat2_name else ".") if has_shap else "Deploy virtual patch — emergency WAF defense rule (SHAP attribution unavailable)."
+            r2 = f"Isolate affected endpoint — driven by critical {feat1_name} ({feat1_val})." if has_shap else "Isolate affected endpoint — rapid micro-segmentation policy."
+            r3 = f"Enforce step-up authentication — driven by timing irregularities in {feat2_name or feat1_name} ({feat2_val or feat1_val})." if has_shap else "Enforce step-up authentication — defensive access step-up rule."
+
             options = [
                 {
                     "priority": 1,
                     "action": "Apply virtual patching and emergency WAF inspection rules for targeted services",
-                    "rationale": f"Deploy virtual patch — driven by elevated {feat1_name} ({feat1_val}) and payload burstiness in {feat2_name} ({feat2_val})."
+                    "rationale": r1
                 },
                 {
                     "priority": 2,
                     "action": "Stage rapid network micro-segmentation and prepare candidate host isolation",
-                    "rationale": f"Isolate affected endpoint — driven by critical {feat1_name} ({feat1_val})."
+                    "rationale": r2
                 },
                 {
                     "priority": 3,
                     "action": "Enforce mandatory MFA step-up verification on exposed application endpoints",
-                    "rationale": f"Enforce step-up authentication — driven by timing irregularities in {feat2_name} ({feat2_val})."
+                    "rationale": r3
                 }
             ]
             title = "Targeted Host Isolation & Patch Validation"
             description = "Alert Tier-2 SOC analysts to prioritize candidate vulnerable service endpoints. Prepare rapid network micro-segmentation and stage emergency virtual patching rules."
 
         else: # Intrusion
+            r1 = f"Segment subnet — driven by elevated {feat1_name} ({feat1_val})" + (f" and {feat2_name} ({feat2_val})." if feat2_name else ".") if has_shap else "Segment subnet — immediate containment policy (SHAP attribution unavailable)."
+            r2 = f"Revoke compromised tokens — driven by breach escalation in {feat1_name} ({feat1_val})." if has_shap else "Revoke compromised tokens — defensive identity protection rule."
+            r3 = f"Trigger forensic acquisition — driven by sustained beaconing in {feat2_name or feat1_name} ({feat2_val or feat1_val})." if has_shap else "Trigger forensic acquisition — incident response escalation policy."
+
             options = [
                 {
                     "priority": 1,
                     "action": "Segment and quarantine the affected subnet to prevent lateral movement",
-                    "rationale": f"Segment subnet — driven by elevated {feat1_name} ({feat1_val}) and {feat2_name} ({feat2_val})."
+                    "rationale": r1
                 },
                 {
                     "priority": 2,
                     "action": "Force enterprise-wide credential rotation and invalidate active Kerberos/OAuth sessions",
-                    "rationale": f"Revoke compromised tokens — driven by breach escalation in {feat1_name} ({feat1_val})."
+                    "rationale": r2
                 },
                 {
                     "priority": 3,
                     "action": "Escalate to Tier-3 Incident Response (IR) war room and initiate memory forensics capture",
-                    "rationale": f"Trigger forensic acquisition — driven by sustained beaconing in {feat2_name} ({feat2_val})."
+                    "rationale": r3
                 }
             ]
             title = "Privilege Audit & East-West Flow Containment"
@@ -192,5 +229,6 @@ class DynamicRiskEngine:
         return {
             "title": title,
             "description": description,
-            "options": options
+            "options": options,
+            "attribution_available": has_shap
         }

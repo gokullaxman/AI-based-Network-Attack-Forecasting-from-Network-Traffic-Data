@@ -24,6 +24,7 @@ import os
 import sys
 import pickle
 import json
+import math
 from datetime import datetime
 import numpy as np
 import torch
@@ -870,16 +871,26 @@ def get_capture_manifest():
 # EXPERIMENTAL REAL-DATA TEMPORAL FORECASTING ENDPOINTS (Phase 9C)
 # ============================================================================
 _temporal_forecaster = None
+_temporal_forecaster_failed: bool = False
+_temporal_forecaster_error: Optional[str] = None
 
-def get_temporal_forecaster():
-    global _temporal_forecaster
-    if _temporal_forecaster is None:
+def get_temporal_forecaster(force_reload: bool = False):
+    global _temporal_forecaster, _temporal_forecaster_failed, _temporal_forecaster_error
+    if force_reload:
+        _temporal_forecaster = None
+        _temporal_forecaster_failed = False
+        _temporal_forecaster_error = None
+
+    if _temporal_forecaster is None and not _temporal_forecaster_failed:
         try:
             from models.temporal_forecasting import TemporalAttackForecaster
             _temporal_forecaster = TemporalAttackForecaster()
+            _temporal_forecaster_error = None
         except Exception as e:
             logger.warning(f"Failed to load experimental temporal forecaster: {e}")
             _temporal_forecaster = None
+            _temporal_forecaster_failed = True
+            _temporal_forecaster_error = str(e)
     return _temporal_forecaster
 
 
@@ -888,7 +899,14 @@ def get_temporal_experimental_metadata():
     """Returns provenance, target definition, feature schema, and evaluation metrics for Phase 9C model."""
     forecaster = get_temporal_forecaster()
     if forecaster is None:
-        return JSONResponse(status_code=503, content={"error": "Experimental temporal forecasting model not available."})
+        diag = _temporal_forecaster_error or "Artifacts missing or uninitialized"
+        return JSONResponse(
+            status_code=503,
+            content={
+                "error": "Experimental temporal forecasting model not available.",
+                "diagnostic": diag
+            }
+        )
     return JSONResponse(content=forecaster.get_metadata())
 
 
@@ -896,28 +914,51 @@ def get_temporal_experimental_metadata():
 async def predict_temporal_experimental(request: Request):
     """
     Evaluates real-data Target A attack onset forecast for a 120-dim flow-feature sequence.
-    Strictly validates feature schema and rejects incompatible packet-layer features.
+    Strictly validates feature schema, rejects incompatible packet-layer features,
+    and enforces finite threshold bounds [0.0, 1.0].
     """
     forecaster = get_temporal_forecaster()
     if forecaster is None:
-        return JSONResponse(status_code=503, content={"error": "Experimental temporal forecasting model not available."})
+        diag = _temporal_forecaster_error or "Model uninitialized or failed to load"
+        return JSONResponse(
+            status_code=503,
+            content={
+                "error": "Experimental temporal forecasting model not available.",
+                "diagnostic": diag
+            }
+        )
     try:
         body = await request.json()
     except Exception:
         return JSONResponse(status_code=400, content={"error": "Invalid JSON body"})
 
+    if not isinstance(body, dict):
+        return JSONResponse(status_code=400, content={"error": "Expected JSON object body"})
+
     features = body.get("features")
     if features is None:
         return JSONResponse(status_code=400, content={"error": "Missing 'features' key in payload"})
 
-    threshold = float(body.get("threshold", 0.5))
+    raw_thresh = body.get("threshold", 0.5)
+    try:
+        if raw_thresh is None or isinstance(raw_thresh, (list, dict)):
+            raise ValueError("Threshold must be a scalar numeric value.")
+        threshold = float(raw_thresh)
+        if math.isnan(threshold) or math.isinf(threshold):
+            raise ValueError("Threshold cannot be NaN or Infinite.")
+        if not (0.0 <= threshold <= 1.0):
+            raise ValueError(f"Threshold {threshold} out of supported range [0.0, 1.0].")
+    except (ValueError, TypeError) as e:
+        return JSONResponse(status_code=422, content={"error": f"Invalid threshold: {e}"})
+
     try:
         result = forecaster.predict(features, threshold=threshold)
         return JSONResponse(content=result)
     except ValueError as ve:
         return JSONResponse(status_code=422, content={"error": str(ve)})
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        logger.error(f"Prediction execution failed: {e}")
+        return JSONResponse(status_code=500, content={"error": "Forecasting inference failed."})
 
 
 @app.get("/api/forecast/temporal-experimental/sample-windows")

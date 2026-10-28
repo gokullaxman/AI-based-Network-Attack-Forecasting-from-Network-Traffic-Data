@@ -17,20 +17,38 @@ TEMPORAL_RAW_DIR = os.path.join("data", "benchmark", "temporal", "raw")
 TEMPORAL_META_DIR = os.path.join("data", "benchmark", "temporal", "metadata")
 
 
-def parse_timestamp_series(series: pd.Series, apply_afternoon_correction: bool = True) -> pd.Series:
+def parse_timestamp_series(
+    series: pd.Series,
+    apply_afternoon_correction: bool = True,
+    file_context: Optional[str] = None
+) -> pd.Series:
     """
     Parses CICIDS2017 timestamp strings handling both Monday (%d/%m/%Y %H:%M:%S)
     and Tue-Fri (%d/%m/%Y %H:%M) formats, truncating to 1-minute epoch boundaries.
-    If apply_afternoon_correction is True, corrects the documented CICIDS2017 12-hour format omission
-    for afternoon working hours (hours 1..7 -> 13..19) while strictly preserving morning hours (8..12).
+
+    Timestamp Correction Policy:
+    - If apply_afternoon_correction is True and file_context does NOT indicate a morning capture,
+      corrects the documented CICIDS2017 12-hour format omission for afternoon working hours
+      (hours 1..7 -> 13..19) while strictly preserving morning hours (8..12).
+    - If file_context indicates 'morning', the correction is strictly suppressed to prevent converting
+      authentic early-morning timestamps into afternoon timestamps.
     """
     s1 = pd.to_datetime(series, format="%d/%m/%Y %H:%M:%S", errors="coerce")
     s2 = pd.to_datetime(series, format="%d/%m/%Y %H:%M", errors="coerce")
     combined = s1.fillna(s2)
+
+    if file_context and "morning" in file_context.lower():
+        apply_afternoon_correction = False
+
     if apply_afternoon_correction:
-        hours = combined.dt.hour
-        is_pm = hours.isin([1, 2, 3, 4, 5, 6, 7])
-        combined.loc[is_pm] = combined.loc[is_pm] + pd.Timedelta(hours=12)
+        valid_mask = combined.notna()
+        if valid_mask.any():
+            hours = combined[valid_mask].dt.hour
+            is_pm = hours.isin([1, 2, 3, 4, 5, 6, 7])
+            pm_indices = is_pm[is_pm].index
+            if len(pm_indices) > 0:
+                combined.loc[pm_indices] = combined.loc[pm_indices] + pd.Timedelta(hours=12)
+
     return combined.dt.floor("min")
 
 
@@ -98,7 +116,7 @@ class TemporalEpochAggregator:
             chunk = chunk.rename(columns=col_rename)
 
             # Parse and truncate timestamp to 1-minute epoch
-            chunk["Epoch"] = parse_timestamp_series(chunk["Timestamp"])
+            chunk["Epoch"] = parse_timestamp_series(chunk["Timestamp"], file_context=fname)
             chunk = chunk[chunk["Epoch"].notnull()].copy()
 
             if len(chunk) == 0:

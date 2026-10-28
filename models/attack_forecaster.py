@@ -23,13 +23,15 @@ class AttackForecasterBiLSTM(nn.Module):
         hidden_dim: int = 64,
         num_layers: int = 2,
         num_classes: int = 5,
-        dropout: float = 0.2
+        dropout: float = 0.2,
+        sequence_pooling: str = "last"
     ):
         super().__init__()
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
         self.num_layers = num_layers
         self.num_classes = num_classes
+        self.sequence_pooling = sequence_pooling
 
         # Bidirectional LSTM encoder
         self.lstm = nn.LSTM(
@@ -73,8 +75,19 @@ class AttackForecasterBiLSTM(nn.Module):
         # lstm_out shape: [batch_size, seq_len, hidden_dim * 2]
         lstm_out, _ = self.lstm(x)
         
-        # Pool the sequence representation from the final time-step
-        seq_repr = lstm_out[:, -1, :]  # [batch_size, hidden_dim * 2]
+        if self.sequence_pooling == "bidirectional_endpoints":
+            # True bidirectional traversal representation:
+            # Forward sequence endpoint is at index -1 [:hidden_dim]
+            # Backward sequence endpoint is at index 0 [hidden_dim:]
+            seq_repr = torch.cat([
+                lstm_out[:, -1, :self.hidden_dim],
+                lstm_out[:, 0, self.hidden_dim:]
+            ], dim=-1)
+        else:
+            # Legacy slice (lstm_out[:, -1, :]) preserved for compatibility
+            # with pretrained synthetic checkpoint (models/bilstm_weights.pt)
+            seq_repr = lstm_out[:, -1, :]
+            
         seq_repr = self.dropout(seq_repr)
         
         current_logits = self.current_stage_head(seq_repr)

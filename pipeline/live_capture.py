@@ -230,7 +230,7 @@ def resolve_scapy_interface(iface_spec: Any) -> Any:
     except Exception:
         pass
 
-    return str_spec
+    return None
 
 
 class CapturedPacket:
@@ -544,6 +544,7 @@ class LiveNetworkCaptureEngine:
 
     def stop_capture(self) -> Dict[str, Any]:
         """Stops live capture gracefully and releases resources."""
+        thread_to_join = None
         with self.lock:
             if not self.is_capturing:
                 return {"status": "not_running", "capture_status": self.capture_status}
@@ -551,6 +552,8 @@ class LiveNetworkCaptureEngine:
             self.is_capturing = False
             self._stop_event.set()
             self.capture_status = "STOPPED"
+            thread_to_join = self.capture_thread
+            self.capture_thread = None
 
             if self._async_sniffer:
                 try:
@@ -559,6 +562,10 @@ class LiveNetworkCaptureEngine:
                     pass
                 self._async_sniffer = None
 
+        if thread_to_join and thread_to_join.is_alive() and threading.current_thread() != thread_to_join:
+            thread_to_join.join(timeout=2.0)
+
+        with self.lock:
             return {
                 "status": "stopped",
                 "capture_status": self.capture_status,

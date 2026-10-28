@@ -362,6 +362,31 @@ class DeviceObservationRegistry:
         with self._lock:
             return len(self._get_target_map(mode))
 
+    def cleanup_stale(self, max_age_seconds: float, mode: Optional[str] = None) -> int:
+        """
+        Thread-safely removes observations whose last_seen is older than max_age_seconds.
+        If mode is specified, prunes only that mode's storage. Otherwise, prunes all modes.
+        Returns the total number of pruned records.
+        """
+        if max_age_seconds <= 0:
+            return 0
+        now = time.time()
+        cutoff = now - max_age_seconds
+        pruned_count = 0
+        with self._lock:
+            maps_to_clean = [self._get_target_map(mode)] if mode else [
+                self._live_registry,
+                self._pcap_registry,
+                self._sim_registry,
+                self._conn_registry
+            ]
+            for reg in maps_to_clean:
+                stale_keys = [ip for ip, entry in reg.items() if entry.last_seen < cutoff]
+                for k in stale_keys:
+                    del reg[k]
+                    pruned_count += 1
+        return pruned_count
+
     def clear(self, mode: Optional[str] = None):
         """Clears registry records for the specified mode, or all modes if None."""
         with self._lock:
@@ -372,3 +397,4 @@ class DeviceObservationRegistry:
                 self._pcap_registry.clear()
                 self._sim_registry.clear()
                 self._conn_registry.clear()
+

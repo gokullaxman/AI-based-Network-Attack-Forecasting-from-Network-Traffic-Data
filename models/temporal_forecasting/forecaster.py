@@ -27,8 +27,9 @@ EXPECTED_FLOW_FEATURES = [
 
 # Signatures of incompatible packet-layer features from live capture
 INCOMPATIBLE_PACKET_SIGNATURES = {
-    "mean_frame_length", "std_frame_length", "tcp_packet_ratio",
-    "udp_packet_ratio", "other_protocol_ratio", "iat_mean", "iat_std"
+    "packet_count", "total_captured_bytes", "mean_frame_length", "std_frame_length",
+    "tcp_packet_ratio", "udp_packet_ratio", "other_protocol_ratio", "distinct_dst_ports",
+    "iat_mean", "iat_std"
 }
 
 
@@ -82,11 +83,16 @@ class TemporalAttackForecaster:
         if isinstance(features, pd.DataFrame):
             cols = set(features.columns)
 
-            # Check for illegal packet feature contamination
-            overlap = cols.intersection(INCOMPATIBLE_PACKET_SIGNATURES)
-            if overlap:
+            # Check for illegal packet feature contamination (exact match or lagged variants)
+            detected_incompatible = set()
+            for col in cols:
+                base_col = col.split("_lag")[0] if "_lag" in col else col
+                if base_col in INCOMPATIBLE_PACKET_SIGNATURES or col in INCOMPATIBLE_PACKET_SIGNATURES:
+                    detected_incompatible.add(col)
+
+            if detected_incompatible:
                 raise ValueError(
-                    f"Schema Mismatch: Detected incompatible packet-layer feature(s) {sorted(list(overlap))}. "
+                    f"Schema Mismatch: Detected incompatible packet-layer feature(s) {sorted(list(detected_incompatible))}. "
                     "This model was trained on dataset-native flow features (PREDICTOR_COLUMNS). "
                     "Feeding packet features into a flow-trained model without empirical calibration is prohibited."
                 )
@@ -159,17 +165,23 @@ class TemporalAttackForecaster:
     ) -> Dict[str, Any]:
         """
         Calculates binary attack onset forecast based on the specified threshold.
+        Validates that threshold is a finite numeric value in [0.0, 1.0].
         """
+        if threshold is None or not isinstance(threshold, (int, float)) or np.isnan(threshold) or np.isinf(threshold):
+            raise ValueError(f"Invalid threshold: {threshold}. Expected finite float in [0.0, 1.0].")
+        if not (0.0 <= threshold <= 1.0):
+            raise ValueError(f"Threshold {threshold} out of supported range [0.0, 1.0].")
+
         res = self.predict_proba(features)
         raw_prob = res["forecast_probability"]
         if isinstance(raw_prob, (float, int)):
             pred_value = int(raw_prob >= threshold)
-            res["decision_threshold"] = threshold
+            res["decision_threshold"] = float(threshold)
             res["forecast_onset_positive"] = bool(pred_value == 1)
         else:
             probs = np.array(raw_prob)
             preds = (probs >= threshold).astype(int).tolist()
-            res["decision_threshold"] = threshold
+            res["decision_threshold"] = float(threshold)
             res["forecast_onset_positive"] = [bool(p == 1) for p in preds]
         return res
 
