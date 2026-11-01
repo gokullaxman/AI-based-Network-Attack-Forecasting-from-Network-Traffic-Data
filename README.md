@@ -6,16 +6,35 @@ An intelligent cybersecurity defense system that forecasts the most probable **N
 
 ---
 
+## Documentation Index
+
+Comprehensive engineering, architectural, and scientific documentation is maintained in the `docs/` directory:
+
+| Document | Purpose | Key Content |
+| :--- | :--- | :--- |
+| [**Architecture Specification**](docs/ARCHITECTURE.md) | System Design & Topology | 6-layer pipeline, bidirectional flow extraction, dual model subsystems, REST architecture |
+| [**Baseline Audit**](docs/BASELINE_AUDIT.md) | Technical Ledger | Initial codebase state, entry points, repaired flow accounting bugs, test audit |
+| [**Model Card**](docs/MODEL_CARD.md) | AI Forecaster Transparency | Target A vs BiLSTM kill-chain forecaster, schemas, intended use, PR-AUC / ROC-AUC metrics |
+| [**Data & Labels**](docs/DATA_AND_LABELS.md) | Target Formalization | Target A formulation ($[t+3, t+7]$), zero-leakage splits, canonical 12-feature schema contract |
+| [**Evaluation Report**](docs/EVALUATION.md) | Empirical Benchmark Results | Window-level and strict earliest-warning event evaluations, baseline comparisons |
+| [**Live Capture Setup**](docs/LIVE_CAPTURE_SETUP.md) | Operational Installation | Windows Npcap configuration, adapter discovery, privileged vs unprivileged playback |
+| [**Troubleshooting**](docs/TROUBLESHOOTING.md) | Operator Guide | Actionable diagnostics for Npcap, port conflicts, socket permissions, and cold-start latencies |
+| [**Known Limitations**](docs/KNOWN_LIMITATIONS.md) | Truth in Advertising | Zero-shot cross-category transfer limitations, LSTM overfitting, encrypted traffic bounds |
+| [**Final Verification Report**](docs/FINAL_VERIFICATION_REPORT.md) | Acceptance & Test Record | 228/228 passing automated tests, performance benchmarks, responsive layout verification |
+
+---
+
 ## Table of Contents
 1. [Core Features](#core-features)
-2. [Prerequisites & Installation](#prerequisites--installation)
-3. [How to Run the Application](#how-to-run-the-application)
-4. [Using the Analyst Dashboard](#using-the-analyst-dashboard)
-5. [Training & Testing](#training--testing)
-6. [System Architecture & 6-Step Pipeline](#system-architecture--6-step-pipeline)
-7. [API Endpoints Reference](#api-endpoints-reference)
-8. [Dataset Balancing Note](#dataset-balancing-note)
-9. [Project Directory Structure](#project-directory-structure)
+2. [Documentation Index](#documentation-index)
+3. [Prerequisites & Installation](#prerequisites--installation)
+4. [How to Run the Application](#how-to-run-the-application)
+5. [Using the Analyst Dashboard](#using-the-analyst-dashboard)
+6. [Training & Testing](#training--testing)
+7. [System Architecture & 6-Step Pipeline](#system-architecture--6-step-pipeline)
+8. [API Endpoints Reference](#api-endpoints-reference)
+9. [Dataset Balancing Note](#dataset-balancing-note)
+10. [Project Directory Structure](#project-directory-structure)
 
 ---
 
@@ -267,18 +286,28 @@ flowchart TD
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/` | Serves the interactive analyst dashboard UI |
-| `GET` | `/api/capture/interfaces` | Returns detected host network interfaces |
-| `POST` | `/api/capture/start` | Starts live network traffic capture (`live_sniff`) |
-| `POST` | `/api/capture/stop` | Stops live packet capture and releases socket resources |
-| `POST` | `/api/capture/clear` | Clears packet history buffers and resets sliding baseline |
-| `GET` | `/api/capture/status` | Returns truthful live capture engine status and metrics |
-| `GET` | `/api/capture/feed` | Delivers real-time packet feed, sliding window features, and gated prediction |
-| `POST` | `/api/capture/upload-pcap` | Dissects uploaded `.pcap`/`.pcapng` packet capture via streaming Scapy parser |
-| `GET` | `/api/capture/temporal-windows` | Retrieves computed 1-minute discrete aggregated temporal windows |
-| `GET` | `/api/captures/manifest` | Returns manifest of all imported offline captures |
-| `GET` | `/api/soc/overview` | Aggregated SOC operational health and capture metrics |
-| `POST` | `/api/forecast` | Forecasts for provided sequence (gated if real data) |
+| `GET` | `/` | Serves the interactive analyst security dashboard UI |
+| `GET` | `/api/capture/health` | Comprehensive Npcap diagnostics, DLL status, and sniffer readiness |
+| `POST` | `/api/mode/select` | Switches operating mode (`live`, `pcap`, `simulation`, `connection_metadata`) |
+| `GET` | `/api/capture/interfaces` | Discovers host network interfaces with friendly names, GUIDs, IPs, MACs |
+| `POST` | `/api/capture/interface/select` | Selects active adapter and resets buffers to avoid cross-adapter blending |
+| `POST` | `/api/capture/start` | Starts packet capture on selected adapter in designated mode |
+| `POST` | `/api/capture/stop` | Stops packet capture and releases network socket resources |
+| `POST` | `/api/capture/clear` | Clears packet buffer and sliding flow sequence |
+| `GET` | `/api/capture/status` | Returns truthful live telemetry, packet counts, and capture state |
+| `GET` | `/api/capture/feed` | Delivers rolling packet stream, telemetry, and gated AI prediction |
+| `POST` | `/api/capture/upload-pcap` | Dissects uploaded PCAP trace with preserved historical timestamps |
+| `GET` | `/api/capture/flow-epochs` | Retrieves assembled 1-minute discrete epochs with 12 flow metrics |
+| `GET` | `/api/soc/overview` | Aggregated SOC operational health, verified traffic counts, and threat stats |
+| `GET` | `/api/soc/topology` | 3D force-directed topology derived strictly from verified endpoint registry |
+| `GET` | `/api/soc/devices` | Verified device inventory with connection status and last-seen timestamps |
+| `GET` | `/api/soc/threat-logs` | Threat logs filtered by severity, event type, and operating mode |
+| `POST` | `/api/forecast` | Dual-Head BiLSTM attack stage forecast and SHAP feature attribution |
+| `GET` | `/api/forecast/temporal-experimental/metadata` | Metadata, target definition, and benchmark metrics for Target A model |
+| `POST` | `/api/forecast/temporal-experimental` | Evaluates Target A onset forecast on 120-dim flow feature vector |
+| `GET` | `/api/forecast/temporal-experimental/live` | Evaluates Target A forecast directly on 10 live assembled flow epochs |
+| `GET` | `/api/forecast/temporal-experimental/sample-windows` | Curated authentic test windows from Phase 9C benchmark |
+| `GET` | `/api/export/excel` | One-click styled Excel (.xlsx) download of session forecast records |
 | `GET` | `/docs` | Interactive Swagger/OpenAPI documentation |
 
 ---
@@ -287,36 +316,68 @@ flowchart TD
 
 ```
 AI-based-Network-Attack-Forecasting-from-Network-Traffic-Data-main/
+├── docs/                           # Comprehensive technical & scientific documentation
+│   ├── ARCHITECTURE.md             # 6-layer architecture & dataflow specification
+│   ├── BASELINE_AUDIT.md           # Baseline technical audit & component ledger
+│   ├── DATA_AND_LABELS.md          # Target A formulation & canonical 12-feature schema
+│   ├── EVALUATION.md               # Benchmark evaluation methodology & metrics
+│   ├── FINAL_VERIFICATION_REPORT.md# Acceptance test record (228/228 passing)
+│   ├── KNOWN_LIMITATIONS.md        # Transparent truth-in-advertising documentation
+│   ├── LIVE_CAPTURE_SETUP.md       # Windows Npcap & packet capture setup guide
+│   ├── MODEL_CARD.md               # Model cards for Target A and BiLSTM forecasters
+│   └── TROUBLESHOOTING.md          # Operator troubleshooting & diagnostics guide
 ├── dashboard/
 │   ├── server.py                   # FastAPI server, REST routes & readiness gating
+│   ├── soc_manager.py              # SOC telemetry counters & topology manager
 │   └── static/
-│       ├── index.html              # Cleaned analyst dashboard UI (zero fake streams)
-│       ├── style.css               # Design system, CSS variables & layouts
+│       ├── index.html              # Responsive analyst dashboard UI
+│       ├── style.css               # Design system, CSS variables & mobile media queries
 │       └── app.js                  # Frontend state management & live charts
 ├── data/
 │   ├── captures/                   # Real offline & live PCAP captures and manifest
-│   │   └── manifest.json           # Capture provenance, packet counts, duration
-│   └── benchmark/temporal/         # Preserved historical research artifacts
+│   │   ├── manifest.json           # Capture provenance, packet counts, duration
+│   │   ├── smtp.pcap               # Sample verified SMTP traffic trace
+│   │   └── vsftpd.pcap             # Sample verified VSFTPD traffic trace
+│   └── benchmark/temporal/         # Authentic CICIDS2017 temporal parquet & event ledgers
 ├── models/
 │   ├── attack_forecaster.py        # Dual-Head PyTorch BiLSTM neural network
-│   ├── bilstm_weights.pt           # Preserved production model weights (unmodified)
+│   ├── bilstm_weights.pt           # Production BiLSTM weights
 │   ├── risk_engine.py              # Dynamic risk engine & defensive mitigations
-│   └── shap_explainer.py           # Feature attribution engine
+│   ├── shap_explainer.py           # SHAP GradientExplainer attribution engine
+│   └── temporal_forecasting/       # Authentic Target A onset forecaster package
+│       ├── forecaster.py           # TargetATemporalForecaster inference module
+│       ├── model.joblib            # Balanced Logistic Regression model
+│       ├── random_forest.joblib    # Random Forest classifier
+│       ├── compact_lstm.pt         # 1-layer PyTorch LSTM model
+│       ├── preprocessor.joblib     # StandardScaler fit on training partition
+│       └── metadata.json           # Model metadata, schema, and benchmark metrics
 ├── pipeline/
-│   ├── packet_record.py            # Shared metadata schema & Scapy packet parser
+│   ├── streaming_flow_assembler.py # Real-time bidirectional flow assembly & 1m epochs
+│   ├── device_registry.py          # DeviceObservationRegistry & endpoint inventory
+│   ├── live_capture.py             # Npcap/Scapy live sniffer with truthful states
 │   ├── offline_pcap.py             # Streaming PCAP/PCAPNG validator and parser
 │   ├── temporal_aggregator.py      # 1-minute discrete temporal feature aggregator
 │   ├── capture_manifest.py         # Capture dataset registry & audit logging
-│   ├── live_capture.py             # Npcap/Scapy live sniffer with truthful states
-│   ├── feature_extractor.py        # 12-feature legacy behavioral extractor
+│   ├── feature_extractor.py        # 12-feature behavioral extractor
 │   ├── real_flow_loader.py         # CICIDS2017/2018 CSV parser
-│   └── scaler.pkl                  # Preserved StandardScaler (unmodified)
-├── tests/
-│   ├── test_offline_capture.py     # Offline PCAP validation & parsing tests
-│   ├── test_live_capture_real.py   # Live capture lifecycle & truthful state tests
-│   ├── test_temporal_aggregation.py# 1-minute window temporal aggregation tests
-│   ├── test_model_gating_real.py   # Model readiness gating & unvalidated state tests
-│   └── test_pipeline.py            # Core pipeline and legacy benchmark tests
+│   └── scaler.pkl                  # StandardScaler for BiLSTM sequence
+├── tests/                          # 228 automated pytest unit & integration tests
+│   ├── test_flow_accounting_reference.py # Independent reference math & flow semantics
+│   ├── test_streaming_flow_assembler.py  # Bidirectional flow assembly & epoch tests
+│   ├── test_phase5_ui_integration.py     # API contracts, mode isolation, health diagnostics
+│   ├── test_phase6_pipeline_validation.py# Feature schema contracts & gating
+│   ├── test_phase7b_detection_baseline.py# Task A detection baselines
+│   ├── test_phase8b_multiattack_benchmark.py # Multi-attack benchmark tests
+│   ├── test_phase9c_temporal_model.py    # Target A model training & evaluation
+│   ├── test_connected_devices.py         # Connected device filtering & timeout logic
+│   ├── test_device_type_visualization.py # Topology colors & router isolation
+│   ├── test_device_registry.py           # Device registry L2/L3 mapping
+│   ├── test_live_capture.py              # Scapy sniffer initialization & workers
+│   ├── test_live_capture_real.py         # Real interface discovery & diagnostics
+│   ├── test_model_gating_real.py         # Rejection of incompatible features
+│   ├── test_offline_capture.py           # PCAP timestamp preservation & parsing
+│   ├── test_server_endpoints.py          # FastAPI endpoint responses & schema contracts
+│   └── test_soc_manager.py              # SOC traffic counters & risk telemetry
 ├── README.md                       # System documentation & usage guide
 ├── requirements.txt                # Python package dependencies
 └── run_demo.py                     # One-click application launcher

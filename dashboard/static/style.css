@@ -2218,6 +2218,83 @@ body.soc-theme {
   }
   .soc-col { height: auto; }
   .threejs-viewport-container { height: 500px; }
+  .temporal-eval-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  body.soc-theme {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+  .soc-header {
+    height: auto;
+    min-height: 56px;
+    padding: 10px 14px;
+  }
+  .soc-header-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .soc-brand {
+    justify-content: flex-start;
+  }
+  .soc-nav-tabs {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 3px;
+  }
+  .soc-nav-tab {
+    white-space: nowrap;
+    padding: 6px 10px;
+    font-size: 0.74rem;
+  }
+  .soc-header-actions {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .health-banner-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .health-actions-col {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .threejs-viewport-container { height: 400px; }
+  .stats-metric-grid { grid-template-columns: 1fr 1fr; }
+  .modal-dialog {
+    width: calc(100% - 20px) !important;
+    max-width: 100% !important;
+    margin: 10px auto !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .soc-brand-title { font-size: 0.78rem; }
+  .soc-brand-subtitle { font-size: 0.65rem; }
+  .stats-metric-grid { grid-template-columns: 1fr; }
+  .threejs-viewport-container { height: 300px; }
+  .score-display-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .score-badge-circle {
+    width: 60px;
+    height: 60px;
+    font-size: 1.1rem;
+  }
+  .severity-chips-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ==========================================================================
