@@ -210,6 +210,8 @@ def test_simulation_data_strictly_quarantined_from_live():
 
     # Switching back to live must clear simulated nodes
     client.post("/api/mode/select", json={"mode": "live"})
+    capture_engine.stop_capture()
+    capture_engine.device_registry.clear(mode="live")
     res_live = client.get("/api/soc/topology")
     assert res_live.status_code == 200
     assert res_live.json()["mode"] == "live"
@@ -279,6 +281,8 @@ def test_mode_changes_clear_incompatible_telemetry():
 
     # Switch to live
     client.post("/api/mode/select", json={"mode": "live"})
+    capture_engine.stop_capture()
+    capture_engine.device_registry.clear(mode="live")
     live_topo = client.get("/api/soc/topology").json()
     assert len(live_topo["nodes"]) == 0
     assert live_topo["mode"] == "live"

@@ -1,74 +1,40 @@
-# Master Implementation Task Plan
-## AI-Based Network Attack Forecasting from Network Traffic Data: Wireshark Integration, Real Packet Processing, Removal of Synthetic Components, and Project Cleanup
+# Phase 9B.1.1 Task Plan: Temporal Dataset Integrity and Target Correction Audit
+## Objective
+Audit and correct the Phase 9B.1 temporal dataset and experimental specification before any model training.
+Strict audit and correction phase only. No model training, no production model modifications, no dashboard alterations, no Phase 9B.2 execution.
+## Phases & Milestones
+### Phase 9B.1.1: Tasks Breakdown
+- [ ] **Task 1: Reconcile Raw-Record Counts and Epoch Keys**
+  - Count raw lines and data rows in each of the 7 extracted CSV files.
+  - Audit actual parsed rows, skipped rows, and unparseable rows per file.
+  - Reconcile 2,209 total epochs vs 2,847 daily epoch sum (investigate Friday multi-file aggregation vs concatenation).
+  - Verify `(capture_day, epoch_timestamp)` uniqueness and full calendar date integrity in `epochs_1min.parquet`.
+  - Record input/output file hashes before/after any rebuild.
+- [ ] **Task 2: Audit Timestamp Parsing and Temporal Continuity**
+  - Verify Monday parsing (%d/%m/%Y %H:%M:%S) and Tue-Fri (%d/%m/%Y %H:%M).
+  - Verify no time zone guessing; strict capture-day boundaries; zero synthetic missing-minute filling.
+  - Count valid vs excluded epochs; audit first observed attack flow time vs true attack onset.
+- [ ] **Task 3: Formalize the Research Target (Target A vs Target B)**
+  - Formulate Target A (Attack-onset forecasting: clean history AND clean gap).
+  - Formulate Target B (Future attack-activity forecasting: clean history only).
+  - Calculate empirical window metrics, exclusions, and class imbalance for both targets.
+  - Recommend Target A or B based on scientific defensibility.
+- [ ] **Task 4: Validate Event Definitions and Clustering**
+  - Extract ground-truth attack episodes from minute-level labels.
+  - Compare ground-truth episodes vs the 14 onset clusters reported in Phase 9B.1.
+  - Define episode boundaries, benign gaps, multi-category concurrency, and independence limitations.
+- [ ] **Task 5: Freeze Leakage-Safe Predictor Schema**
+  - Partition 15 epoch fields into: A) Observable predictors, B) Label-derived targets, C) Metadata.
+  - Exclude label-derived columns (`attack_flow_count`, `benign_flow_count`, `is_attack_active`).
+  - Document predictor names, units, missing-value handling, constant features, and flattened input dimensions ($10 \times P$).
+- [ ] **Task 6: Reassess Chronological Split Feasibility**
+  - Evaluate Mon–Wed training vs Thu–Fri testing with corrected targets and episodes.
+  - Check category distribution, cross-split category shifts, and statistical sample size limitations.
+- [ ] **Task 7: Deliverables & Test Verification**
+  - Create `data/benchmark/temporal/metadata/phase9b1_1_integrity_audit.json`.
+  - Create `data/benchmark/temporal/metadata/phase9b1_1_target_comparison.json`.
+  - Create `data/benchmark/temporal/metadata/phase9b1_1_audit_report.md`.
+  - Implement focused regression tests in `tests/test_phase9b1_1_target_correction.py`.
+  - Run full pytest regression suite and verify 100% passing rate.
+  - Provide final verdict and await approval.
 
-### Objective
-Implement the real-data pipeline, integrate Wireshark-compatible packet capture (offline PCAP/PCAPNG and live capture via Npcap/Scapy), remove obsolete and synthetic components (simulation fallback, fake devices, random threat scores), separate benchmark research data, establish strict model readiness gating (independent of capture status), clean frontend and API to present honest operational states, run comprehensive testing, and document deliverables.
-
----
-
-### Phase Plan
-
-- [x] **Phase A — Remove Misleading and Obsolete Components**
-  - [x] Audit codebase (`pipeline/live_capture.py`, `dashboard/soc_manager.py`, `dashboard/server.py`, `pipeline/device_registry.py`, `dashboard/static/app.js`) for synthetic traffic generators, fictional device creation, mock counters, and random threat scores.
-  - [x] Classify all findings (Required Production, Required Research, Dev Fixture, Obsolete/Misleading, Uncertain).
-  - [x] Remove simulation fallback and fake packet generation from production capture paths.
-  - [x] Remove fake device discovery and random threat score calculations in production.
-
-- [x] **Phase B — Implement Wireshark-Compatible Offline Capture Processing**
-  - [x] Implement robust offline PCAP and PCAPNG reader module (using `scapy` / maintained library).
-  - [x] Support user-selected capture file validation (missing, invalid, empty captures, malformed packets).
-  - [x] Stream packets without excessive memory buffering; extract timestamps, frame lengths, IP/TCP/UDP headers.
-  - [x] Track packet counts, parsing errors, capture duration, and timestamp coverage accurately.
-
-- [x] **Phase C — Implement Live Packet Capture**
-  - [x] Enumerate Windows network interfaces via Scapy / Npcap.
-  - [x] Implement interface selection, validation, and safe start/stop capture lifecycle.
-  - [x] Implement truthful capture states: `MONITOR NOT DETECTED`, `INTERFACE NOT AVAILABLE`, `CAPTURE INITIALIZING`, `CAPTURING REAL PACKETS`, `NO PACKETS OBSERVED`, `CAPTURE ERROR`, `INSUFFICIENT PERMISSIONS`, `STOPPED`.
-  - [x] Strictly prevent any synthetic fallback traffic.
-
-- [x] **Phase D — Build a Shared Packet-Metadata Pipeline**
-  - [x] Define shared packet record schema: timestamp, frame length, network protocol, transport protocol, IP src/dst, ports, TCP flags, parse status.
-  - [x] Unify parsing logic across offline and live captures.
-  - [x] Avoid deriving fictional services, operating systems, or decrypting payloads.
-
-- [x] **Phase E — Implement Temporal Feature Aggregation**
-  - [x] Implement 1-minute discrete time-window aggregation for real packet observations.
-  - [x] Observable features: packet count, total bytes, frame length mean/std, TCP/UDP/other protocol ratios, distinct IPs, distinct ports, SYN flag ratio, inter-arrival time stats.
-  - [x] Handle missing intervals honestly (no silent zero-filling; distinguish empty interval vs capture outage).
-  - [x] Prevent future-window data leakage.
-
-- [x] **Phase F — Separate Real Traffic from Benchmark Data**
-  - [x] Isolate captured live/offline traffic from CICIDS2017 benchmark datasets and research artifacts.
-  - [x] Build capture dataset manifest recording metadata (source, date, interface/file, duration, packet count, status).
-  - [x] Never label live traffic as benign or attacks without ground truth.
-
-- [x] **Phase G — Repair Model Readiness and Forecasting Gates**
-  - [x] Decouple capture status from model readiness.
-  - [x] Implement strict gate: if model feature schema, sequence length, or weights are unvalidated for real packet features, report: `FORECASTING MODEL NOT VALIDATED FOR THIS DATA`.
-  - [x] Preserve existing production BiLSTM weights (`models/bilstm_weights.pt`) and scaler (`pipeline/scaler.pkl`) without modification.
-
-- [x] **Phase H — Clean the Frontend and API**
-  - [x] Clean API endpoints (`dashboard/server.py`) to serve genuine capture stats, device observations, and model readiness.
-  - [x] Update frontend (`dashboard/static/app.js`, `index.html`) to eliminate fake graphs, fictional counters, and mock topology.
-  - [x] Provide truthful empty states and clear status indicators for capture, detection, and forecasting.
-
-- [x] **Phase I — Testing and Validation**
-  - [x] Write unit tests for offline capture (valid, missing, invalid, empty, malformed PCAPs).
-  - [x] Write unit tests for live capture states, lifecycle, and zero-synthetic-fallback enforcement.
-  - [x] Write unit tests for temporal feature aggregation and model readiness gating.
-  - [x] Run full test suite (`python -m pytest tests/`) and resolve any regressions.
-
-- [x] **Phase J — Final Project Cleanup & Documentation**
-  - [x] Generate `data/benchmark/temporal/implementation/implementation_report.md`.
-  - [x] Generate `data/benchmark/temporal/implementation/cleanup_manifest.md`.
-  - [x] Update `README.md` with Wireshark PCAP guide, Npcap setup, and operational instructions.
-
-- [x] **Phase 9C — Implement the Real-Data Attack Forecasting Model**
-  - [x] Train primary validated Logistic Regression model on authentic 1-minute temporal flow observations (Target A).
-  - [x] Train Random Forest and evaluate compact PyTorch LSTM sequence model (analyzing sample bottleneck and out-of-distribution failure).
-  - [x] Fit preprocessing (`StandardScaler`) strictly on training data ($N=1117$).
-  - [x] Export trained artifacts, preprocessor, feature schema, and metadata to `models/temporal_forecasting/`.
-  - [x] Implement schema-validated inference module `models/temporal_forecasting/forecaster.py` prohibiting packet/flow contamination.
-  - [x] Connect experimental API endpoints (`/api/forecast/temporal-experimental`).
-  - [x] Implement unit tests in `tests/test_phase9c_temporal_model.py` (9 passed, 169 total passed).
-  - [x] Generate final research report at `data/benchmark/temporal/phase9c/real_data_model_report.md`.

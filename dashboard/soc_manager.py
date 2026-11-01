@@ -17,7 +17,7 @@ from datetime import datetime
 from collections import deque
 from typing import List, Dict, Any, Optional
 
-from pipeline.device_registry import DeviceObservationRegistry
+from pipeline.device_registry import DeviceObservationRegistry, normalize_device_type
 
 
 class SOCTrafficManager:
@@ -254,22 +254,30 @@ class SOCTrafficManager:
         self,
         recent_packets: Optional[List[Dict[str, Any]]] = None,
         registry: Optional[DeviceObservationRegistry] = None,
-        mode: str = "live"
+        mode: str = "live",
+        connected_only: bool = False,
+        timeout_seconds: float = 60.0
     ) -> Dict[str, Any]:
         """
         Generates 3D network topology graph nodes and edges strictly from verified DeviceObservationRegistry records.
-        If no verified observations exist, returns an authentic empty state: nodes: [], edges: [].
-        Visual positions are calculated using a deterministic ring layout based on endpoint count.
+        Derives connection status from genuine observations and the configurable recency timeout.
+        When connected_only=True, restricts nodes to those where is_connected is explicitly True.
         """
         active_registry = registry or self.device_registry
-        verified_devices = active_registry.get_devices(mode=mode) if active_registry else []
+        verified_devices = active_registry.get_devices(
+            mode=mode,
+            connected_only=connected_only,
+            timeout_seconds=timeout_seconds
+        ) if active_registry else []
 
         if not verified_devices:
             return {
                 "nodes": [],
                 "edges": [],
                 "node_count": 0,
+                "connected_device_count": 0,
                 "edge_count": 0,
+                "timeout_seconds": timeout_seconds,
                 "layout_metadata": "Empty state: waiting for genuine network observations."
             }
 
@@ -294,11 +302,16 @@ class SOCTrafficManager:
             # Categorize based strictly on evidence
             category = "Suspicious" if dev["observation_count"] > 200 and "ICMP" in dev.get("protocols_observed", []) else "Normal"
 
+            is_connected = bool(dev.get("is_connected", False))
+            status = dev.get("connection_status", "connected" if is_connected else ("historical" if mode == "pcap" else ("unknown" if mode == "simulation" else "disconnected")))
+            conn_src = dev.get("connectivity_source", dev.get("observation_source", "Unknown"))
+
             nodes.append({
                 "id": node_id,
                 "label": f"Endpoint {ip}",
                 "ip": ip,
                 "role": dev.get("identity_type", "Observed IP Endpoint"),
+                "device_type": dev.get("device_type") or normalize_device_type(dev.get("identity_type") or dev.get("role")),
                 "category": category,
                 "pos": pos,
                 "risk_score": None,  # No fabricated risk scores per device
@@ -308,7 +321,11 @@ class SOCTrafficManager:
                 "bytes": dev.get("bytes_observed"),
                 "active_connections": len(dev.get("ports_observed", [])),
                 "has_alert": False,
-                "status": dev.get("status", "Recently observed"),
+                "status": status,
+                "connection_status": status,
+                "is_connected": is_connected,
+                "connectivity_source": conn_src,
+                "connectivity_reason": dev.get("connectivity_reason", ""),
                 "description": dev.get("attribution_notes", "Observed network endpoint.")
             })
 
@@ -341,11 +358,15 @@ class SOCTrafficManager:
                     "active": True
                 })
 
+        connected_count = sum(1 for n in nodes if n["is_connected"] is True)
+
         return {
             "nodes": nodes,
             "edges": edges,
             "node_count": len(nodes),
+            "connected_device_count": connected_count,
             "edge_count": len(edges),
+            "timeout_seconds": timeout_seconds,
             "layout_metadata": "Deterministic Layout (Visual coordinates only; not physical positions or network distances)."
         }
 

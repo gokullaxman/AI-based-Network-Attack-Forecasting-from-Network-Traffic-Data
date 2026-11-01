@@ -708,32 +708,42 @@ def get_soc_overview():
 
 
 @app.get("/api/soc/topology")
-def get_soc_topology():
+def get_soc_topology(connected_only: bool = False, timeout: float = 60.0):
     """
     Returns 3D network topology graph nodes and edges strictly derived from verified observations.
+    Exposes connected status, timeout, and connected-device counts.
     """
     recent = capture_engine.get_recent_packets(count=25)
     recent_dicts = [p if isinstance(p, dict) else p.to_dict() for p in recent]
     topology = soc_manager.get_topology(
         recent_packets=recent_dicts,
         registry=capture_engine.device_registry,
-        mode=capture_engine.capture_mode
+        mode=capture_engine.capture_mode,
+        connected_only=connected_only,
+        timeout_seconds=timeout
     )
     topology["mode"] = capture_engine.capture_mode
     return JSONResponse(content=topology)
 
 
 @app.get("/api/soc/devices")
-def get_soc_devices(mode: Optional[str] = None):
+def get_soc_devices(mode: Optional[str] = None, connected_only: bool = False, timeout: float = 60.0):
     """
     Returns verified endpoint inventory from DeviceObservationRegistry for the selected mode.
     Exposes IP, MAC, source, first/last seen timestamps, and identity caveats.
     """
     target_mode = mode if mode else capture_engine.capture_mode
-    devices = capture_engine.device_registry.get_devices(mode=target_mode)
+    devices = capture_engine.device_registry.get_devices(
+        mode=target_mode,
+        connected_only=connected_only,
+        timeout_seconds=timeout
+    )
+    connected_count = sum(1 for d in devices if d.get("is_connected", False) is True)
     return JSONResponse(content={
         "count": len(devices),
+        "connected_count": connected_count,
         "mode": target_mode,
+        "timeout_seconds": timeout,
         "devices": devices
     })
 
@@ -860,6 +870,35 @@ def get_temporal_windows():
     })
 
 
+@app.get("/api/capture/flow-epochs")
+def get_flow_epochs():
+    """
+    Returns authentic 1-minute discrete bidirectional flow epochs assembled by StreamingFlowAssembler (Phase 9D).
+    Exposes the 12 flow-level feature schema required by the Target A Forecaster.
+    """
+    epochs = capture_engine.get_flow_epochs()
+    sliding_status = capture_engine.get_flow_sliding_window()
+    return JSONResponse(content={
+        "feature_schema": [
+            "flow_count", "total_packets", "total_bytes",
+            "mean_flow_duration_ms", "std_flow_duration_ms",
+            "tcp_flow_ratio", "udp_flow_ratio",
+            "dst_port_diversity", "dst_port_entropy",
+            "distinct_src_ips", "distinct_dst_ips", "syn_flag_ratio"
+        ],
+        "epoch_duration_seconds": 60.0,
+        "total_completed_epochs": len(epochs),
+        "epochs": epochs,
+        "sliding_window_status": {
+            "ready": sliding_status.get("ready", False),
+            "status": sliding_status.get("status", "UNAVAILABLE"),
+            "epochs_available": sliding_status.get("epochs_available", 0),
+            "epochs_required": sliding_status.get("epochs_required", 10),
+            "anchor_epoch": sliding_status.get("anchor_epoch")
+        }
+    })
+
+
 @app.get("/api/captures/manifest")
 def get_capture_manifest():
     """Returns the capture dataset manifest recording metadata for all imported captures."""
@@ -959,6 +998,50 @@ async def predict_temporal_experimental(request: Request):
     except Exception as e:
         logger.error(f"Prediction execution failed: {e}")
         return JSONResponse(status_code=500, content={"error": "Forecasting inference failed."})
+
+
+@app.get("/api/forecast/temporal-experimental/live")
+def forecast_temporal_live(threshold: float = 0.5):
+    """
+    Evaluates real-time Target A attack onset forecast directly on genuine live network flow epochs.
+    Requires 10 completed consecutive 1-minute epochs from StreamingFlowAssembler (Phase 9D).
+    If fewer than 10 epochs exist, returns status='INSUFFICIENT_HISTORY' without fabricating predictions.
+    """
+    forecaster = get_temporal_forecaster()
+    if forecaster is None:
+        diag = _temporal_forecaster_error or "Experimental temporal forecasting model not available"
+        return JSONResponse(status_code=503, content={"error": diag})
+
+    if threshold is None or math.isnan(threshold) or math.isinf(threshold) or not (0.0 <= threshold <= 1.0):
+        return JSONResponse(status_code=422, content={"error": "Threshold must be finite float in [0.0, 1.0]"})
+
+    window_info = capture_engine.get_flow_sliding_window()
+    if not window_info.get("ready", False):
+        return JSONResponse(content={
+            "ready": False,
+            "status": window_info.get("status", "INSUFFICIENT_HISTORY"),
+            "epochs_available": window_info.get("epochs_available", 0),
+            "epochs_required": window_info.get("epochs_required", 10),
+            "forecast": None,
+            "message": f"Insufficient history: {window_info.get('epochs_available', 0)} of 10 consecutive 1-minute epochs completed."
+        })
+
+    features = window_info["features"]
+    try:
+        prediction = forecaster.predict(features, threshold=threshold)
+        return JSONResponse(content={
+            "ready": True,
+            "status": "FORECAST_AVAILABLE",
+            "epochs_available": 10,
+            "epochs_required": 10,
+            "anchor_epoch": window_info.get("anchor_epoch"),
+            "oldest_epoch": window_info.get("oldest_epoch"),
+            "forecast": prediction,
+            "message": "Target A forecast evaluated on 10 genuine assembled flow epochs."
+        })
+    except Exception as e:
+        logger.error(f"Live flow forecasting failed: {e}")
+        return JSONResponse(status_code=500, content={"error": "Inference on live flow window failed."})
 
 
 @app.get("/api/forecast/temporal-experimental/sample-windows")

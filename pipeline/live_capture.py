@@ -30,6 +30,7 @@ from .feature_extractor import FEATURE_NAMES, FEATURE_DESCRIPTIONS
 from .device_registry import DeviceObservationRegistry
 from .packet_record import PacketMetadata, parse_scapy_packet
 from .temporal_aggregator import TemporalAggregator, TemporalWindow
+from .streaming_flow_assembler import StreamingFlowAssembler
 
 
 def check_npcap_diagnostics() -> Dict[str, Any]:
@@ -391,6 +392,13 @@ class LiveNetworkCaptureEngine:
         self._current_window_packets: List[PacketMetadata] = []
         self._current_window_start: Optional[float] = None
 
+        # Streaming bidirectional flow assembler (Phase 9D)
+        self.flow_assembler = StreamingFlowAssembler(
+            epoch_duration=60.0,
+            history_length=10,
+            provenance="live_capture"
+        )
+
         # Auto-detect default active interface
         self._select_default_interface()
 
@@ -587,6 +595,8 @@ class LiveNetworkCaptureEngine:
             self.temporal_windows.clear()
             self._current_window_packets.clear()
             self._current_window_start = None
+            if hasattr(self, "flow_assembler") and self.flow_assembler:
+                self.flow_assembler.clear()
             return {"status": "cleared"}
 
     def _live_sniff_worker(self):
@@ -764,6 +774,20 @@ class LiveNetworkCaptureEngine:
                 self._current_window_packets = []
 
             self._current_window_packets.append(meta)
+
+            # Ingest into streaming bidirectional flow assembler (Phase 9D)
+            if hasattr(self, "flow_assembler") and self.flow_assembler:
+                self.flow_assembler.ingest_packet(
+                    timestamp=now,
+                    src_ip=src_ip,
+                    dst_ip=dst_ip,
+                    sport=sport,
+                    dport=dport,
+                    proto=proto,
+                    length=pkt_len,
+                    flags=flags,
+                    provenance="live_capture" if self.capture_mode == "live" else self.capture_mode
+                )
 
             # Step features dynamically every 5 packets
             if self.actual_packets_captured % 5 == 0:
@@ -1101,6 +1125,22 @@ class LiveNetworkCaptureEngine:
                 if chunk:
                     self._aggregate_and_step_features(chunk)
 
+            # Ingest into streaming bidirectional flow assembler (Phase 9D)
+            if hasattr(self, "flow_assembler") and self.flow_assembler:
+                for cp in parsed_packets:
+                    self.flow_assembler.ingest_packet(
+                        timestamp=cp.timestamp,
+                        src_ip=cp.src_ip,
+                        dst_ip=cp.dst_ip,
+                        sport=cp.sport,
+                        dport=cp.dport,
+                        proto=cp.proto,
+                        length=cp.length,
+                        flags=cp.flags,
+                        provenance="pcap_replay"
+                    )
+                self.flow_assembler.flush_current_epoch()
+
         return parsed_packets
 
     def get_sliding_window(self) -> Optional[np.ndarray]:
@@ -1137,7 +1177,29 @@ class LiveNetworkCaptureEngine:
                 "recovery_instruction": self.recovery_instruction,
                 "flow_sequence_steps": len(self.flow_sequence),
                 "flow_sequence_required": self.sequence_length,
-                "temporal_windows_count": len(self.temporal_windows)
+                "temporal_windows_count": len(self.temporal_windows),
+                "flow_epochs_count": len(self.flow_assembler._completed_epochs) if hasattr(self, "flow_assembler") and self.flow_assembler else 0
+            }
+
+    def get_flow_epochs(self) -> List[Dict[str, Any]]:
+        """Returns all completed 1-minute flow epochs assembled from real traffic (Phase 9D)."""
+        with self.lock:
+            if hasattr(self, "flow_assembler") and self.flow_assembler:
+                with self.flow_assembler._lock:
+                    return [e.to_feature_dict() for e in self.flow_assembler._completed_epochs]
+            return []
+
+    def get_flow_sliding_window(self) -> Dict[str, Any]:
+        """Returns the 120-dim feature vector if 10 consecutive flow epochs exist (Phase 9D)."""
+        with self.lock:
+            if hasattr(self, "flow_assembler") and self.flow_assembler:
+                return self.flow_assembler.get_sliding_window_features()
+            return {
+                "ready": False,
+                "status": "UNAVAILABLE",
+                "epochs_available": 0,
+                "epochs_required": 10,
+                "features": None
             }
 
     def get_temporal_windows(self, count: int = 50) -> List[Dict[str, Any]]:

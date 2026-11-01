@@ -12,12 +12,13 @@
 | Test Suite / Scope | Total Tests | Passed | Failed | Skipped | Status |
 |---|---|---|---|---|---|
 | **Audit Verification Suite (`test_audit_fixes.py`)** | 12 | 12 | 0 | 0 | **100% PASS** |
+| **Streaming Flow Assembler (`test_streaming_flow_assembler.py`)** | 16 | 16 | 0 | 0 | **100% PASS** |
 | **Pipeline Core (`test_pipeline.py`)** | 10 | 10 | 0 | 0 | **100% PASS** |
 | **Device Registry (`test_device_registry.py`)** | 9 | 9 | 0 | 0 | **100% PASS** |
 | **Phase 9C Model & Schema (`test_phase9c_temporal_model.py`)** | 12 | 12 | 0 | 0 | **100% PASS** |
 | **Temporal Aggregation (`test_temporal_aggregation.py`)** | 5 | 5 | 0 | 0 | **100% PASS** |
 | **FastAPI Endpoints (`test_server_endpoints.py`)** | 12 | 12 | 0 | 0 | **100% PASS** |
-| **Total Automated Tests Executed** | **60** | **60** | **0** | **0** | **100% PASS** |
+| **Total Automated Tests Executed** | **76** | **76** | **0** | **0** | **100% PASS** |
 
 ---
 
@@ -99,6 +100,40 @@ tests/test_device_registry.py::test_device_endpoint_empty_when_no_devices PASSED
 tests/test_server_endpoints.py::test_capture_health_never_claims_fake_packets PASSED [ 97%]
 tests/test_server_endpoints.py::test_existing_soc_endpoint_contracts_compatible PASSED [100%]
 ======================= 48 passed, 4 warnings in 41.27s =======================
+```
+
+### 2.3 Streaming Flow Assembler Test Suite (`tests/test_streaming_flow_assembler.py`)
+```bash
+python -m pytest tests/test_streaming_flow_assembler.py -v
+```
+**Output:**
+```text
+tests/test_streaming_flow_assembler.py::test_forward_and_reverse_packets_assigned_to_same_bidirectional_flow PASSED [  6%]
+tests/test_streaming_flow_assembler.py::test_multiple_simultaneous_flows_tracked_separately PASSED [ 12%]
+tests/test_streaming_flow_assembler.py::test_tcp_and_udp_protocol_handling PASSED [ 18%]
+tests/test_streaming_flow_assembler.py::test_ipv4_and_ipv6_support PASSED [ 25%]
+tests/test_streaming_flow_assembler.py::test_missing_transport_ports_handled_safely PASSED [ 31%]
+tests/test_streaming_flow_assembler.py::test_flow_termination_via_fin_flag PASSED [ 37%]
+tests/test_streaming_flow_assembler.py::test_flow_expiration_via_idle_timeout PASSED [ 43%]
+tests/test_streaming_flow_assembler.py::test_epoch_boundaries_and_discrete_rollover PASSED [ 50%]
+tests/test_streaming_flow_assembler.py::test_empty_epoch_handling_no_fabricated_traffic PASSED [ 56%]
+tests/test_streaming_flow_assembler.py::test_out_of_order_packets_update_time_bounds PASSED [ 62%]
+tests/test_streaming_flow_assembler.py::test_dst_port_entropy_calculation PASSED [ 68%]
+tests/test_streaming_flow_assembler.py::test_ten_epoch_history_sliding_window_and_ordering PASSED [ 75%]
+tests/test_streaming_flow_assembler.py::test_forecaster_inference_with_assembled_features PASSED [ 81%]
+tests/test_streaming_flow_assembler.py::test_bounded_memory_capacity_and_eviction PASSED [ 87%]
+tests/test_streaming_flow_assembler.py::test_live_capture_engine_accumulates_flow_epochs PASSED [ 93%]
+tests/test_streaming_flow_assembler.py::test_api_live_forecast_endpoint_insufficient_history PASSED [100%]
+====================== 16 passed, 2 warnings in 12.06s =======================
+```
+
+### 2.4 Full Combined Regression Suite (All 7 Suites)
+```bash
+python -m pytest tests/test_audit_fixes.py tests/test_streaming_flow_assembler.py tests/test_pipeline.py tests/test_device_registry.py tests/test_phase9c_temporal_model.py tests/test_temporal_aggregation.py tests/test_server_endpoints.py -v
+```
+**Output:**
+```text
+================== 76 passed, 4 warnings in 60.43s (0:01:00) ==================
 ```
 
 ---

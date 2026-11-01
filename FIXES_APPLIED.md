@@ -18,6 +18,10 @@ This document details every source file modified during the codebase audit and r
 | 8 | `dashboard/server.py` | Validated API threshold inputs (HTTP 422 on NaN/Inf/invalid); cached model loading failures | `tests/test_audit_fixes.py`, `tests/test_server_endpoints.py` | PASS |
 | 9 | `pipeline/device_registry.py` | Added thread-safe `cleanup_stale()` method for pruning expired records | `tests/test_audit_fixes.py`, `tests/test_device_registry.py` | PASS |
 | 10 | `.gitignore` | Excluded large benchmark CSVs (`>100MB`) to comply with GitHub remote push constraints | Git push verification | PASS |
+| 11 | `pipeline/streaming_flow_assembler.py` | Implemented streaming bidirectional 5-tuple flow assembler, 60s epoch aggregator, and 120-dim sliding window | `tests/test_streaming_flow_assembler.py` | PASS |
+| 12 | `pipeline/live_capture.py` | Embedded `StreamingFlowAssembler` into live capture and PCAP parsing pipelines; exposed flow epoch getters | `tests/test_streaming_flow_assembler.py` | PASS |
+| 13 | `dashboard/server.py` | Added `/api/capture/flow-epochs` and `/api/forecast/temporal-experimental/live` endpoints with honest gating | `tests/test_streaming_flow_assembler.py` | PASS |
+| 14 | `tests/test_streaming_flow_assembler.py` | Created 16 deterministic tests covering bidirectional pairing, TCP/UDP, IPv6, timeouts, entropy, schemas | `pytest tests/test_streaming_flow_assembler.py` | PASS |
 
 ---
 
@@ -147,3 +151,63 @@ This document details every source file modified during the codebase audit and r
 - **Why Modified:** GitHub blocks git pushes containing files larger than 100MB. Uncompressed raw benchmark datasets (`Monday-WorkingHours.pcap_ISCX.csv` etc.) were >200MB.
 - **What Changed:** Added `data/benchmark/raw/`, `data/benchmark/temporal/raw/`, `*.csv.gz`, and `*.pcapng` to `.gitignore`.
 - **Relevant Tests:** Verified successful git commit and push to remote repository.
+
+---
+
+### 2.11 `pipeline/streaming_flow_assembler.py` (Phase 9D)
+- **Why Modified:** The experimental temporal forecasting model (Target A) was trained on 1-minute discrete epochs extracted from CICIDS2017 bidirectional flow records (`PREDICTOR_COLUMNS`). In live capture mode, only discrete L2/L3 packets were observed, leaving an architectural gap where live features could not be fed to the model without fabricating synthetic data.
+- **What Changed:**
+  - Implemented `StreamingFlowAssembler` and `BidirectionalFlow` state machine.
+  - Canonical 5-tuple key: `(src_ip, sport, dst_ip, dport, proto)` with reverse lookup mapping packets in both directions to the same flow.
+  - Expiration policies: TCP FIN/RST termination, 60s idle timeout, 120s active lifetime timeout, and bounded active flow capacity (default 50,000 flows).
+  - 60-second discrete epoch boundaries (`math.floor(ts / 60.0) * 60.0`).
+  - Mathematical formulation of all 12 authoritative features matching `pipeline/temporal_preprocessor.py` (`mean_flow_duration_ms` clamped to $\ge 0.001$, normalized Shannon destination port entropy, SYN flag ratio, protocol ratios, etc.).
+  - 10-epoch sliding window generator producing the exact 120-dimensional feature schema (`[col_lag_9, ..., col_lag_0]`).
+  - Honest gating: When $<10$ epochs are complete, returns `ready=False` and status `"INSUFFICIENT_HISTORY"` without fabricating traffic or predictions.
+- **Relevant Tests:** `tests/test_streaming_flow_assembler.py` (16 tests).
+- **Compatibility:** Strictly preserves existing packet aggregation and production forecaster; Target A model remains uncalibrated and experimental.
+
+---
+
+### 2.12 `pipeline/live_capture.py` (Phase 9D Integration)
+- **Why Modified:** Connect packet observation pipelines (both live network sniffing and offline PCAP replay) to the flow assembler to continuously track bidirectional flow state.
+- **What Changed:**
+  - Initialized `self.flow_assembler = StreamingFlowAssembler()` in `LiveNetworkCaptureEngine`.
+  - Injected `flow_assembler.ingest_packet(...)` calls into `_process_genuine_packet()` and `parse_pcap_bytes()`.
+  - Added thread-safe methods `get_flow_epochs()` and `get_flow_sliding_window()`.
+  - Added `flow_assembler.clear()` in `clear_buffer()`.
+  - Exposed `flow_epochs_count` and `flow_assembler_status` in `get_status()`.
+- **Relevant Tests:** `tests/test_streaming_flow_assembler.py::test_live_capture_engine_accumulates_flow_epochs`.
+
+---
+
+### 2.13 `dashboard/server.py` (Phase 9D Endpoints)
+- **Why Modified:** Allow operators and SOC dashboards to monitor completed flow epochs and query the live experimental forecaster on genuine assembled traffic.
+- **What Changed:**
+  - Added `GET /api/capture/flow-epochs`: returns completed 1-minute flow epochs, current window size, and schema.
+  - Added `GET /api/forecast/temporal-experimental/live`: evaluates the Target A Forecaster directly on the 10-epoch sliding window from genuine traffic. If $<10$ epochs are available, returns HTTP 200 with `ready: false`, `status: "INSUFFICIENT_HISTORY"`, and `forecast: null`.
+- **Relevant Tests:** `tests/test_streaming_flow_assembler.py::test_api_live_forecast_endpoint_insufficient_history`.
+
+---
+
+### 2.14 `tests/test_streaming_flow_assembler.py`
+- **Why Added:** Provide comprehensive, deterministic verification of the streaming bidirectional flow assembler and its forecasting integration.
+- **What Changed:** Created 16 deterministic tests covering:
+  1. Forward and reverse packet unification into the same bidirectional flow.
+  2. Multi-flow tracking with distinct 5-tuples.
+  3. TCP and UDP protocol handling.
+  4. IPv4 and IPv6 support.
+  5. Missing transport port fallback (defaulting to port 0).
+  6. TCP FIN/RST connection termination.
+  7. Inactivity idle timeout expiration.
+  8. Discrete 60-second epoch boundary rollover.
+  9. Empty epoch handling (zero features without fabricated packets).
+  10. Out-of-order packet timestamp updates.
+  11. Normalized Shannon destination port entropy calculation.
+  12. 10-epoch sliding window construction and exact 120-column lag ordering.
+  13. Direct Target A Forecaster model inference on assembled features.
+  14. Memory capacity bounds and LRU eviction under flow stress.
+  15. Engine accumulation of flow epochs from simulated/PCAP packet streams.
+  16. Live forecast API endpoint response gating under insufficient history.
+- **Relevant Tests:** All 16 tests passing in 12.06s.
+

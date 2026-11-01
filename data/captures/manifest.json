@@ -1,0 +1,55 @@
+{
+  "version": "1.0",
+  "updated_at": "2026-10-28 06:41:30",
+  "total_registered_captures": 3,
+  "captures": [
+    {
+      "capture_id": "cap_1793149844_1",
+      "registered_at": "2026-10-28 06:40:44",
+      "source": "User Upload (vsftpd.pcap)",
+      "filename": "vsftpd.pcap",
+      "file_format": "PCAP (Byte-swapped Microsecond)",
+      "interface_or_context": "Offline User Import",
+      "duration_seconds": 117.556,
+      "packet_count": 37173,
+      "total_bytes": 5103237,
+      "timestamp_quality": "VALID_TIMESTAMPS",
+      "parsing_status": "SUCCESS",
+      "label_availability": "UNLABELED (Real Observation)",
+      "ground_truth_status": "NONE (Operational Traffic Unlabeled)",
+      "processing_version": "2.0-RealData"
+    },
+    {
+      "capture_id": "cap_1793149887_2",
+      "registered_at": "2026-10-28 06:41:27",
+      "source": "User Upload (smtp.pcap)",
+      "filename": "smtp.pcap",
+      "file_format": "PCAP (Byte-swapped Microsecond)",
+      "interface_or_context": "Offline User Import",
+      "duration_seconds": 196.066,
+      "packet_count": 913,
+      "total_bytes": 86414,
+      "timestamp_quality": "VALID_TIMESTAMPS",
+      "parsing_status": "SUCCESS",
+      "label_availability": "UNLABELED (Real Observation)",
+      "ground_truth_status": "NONE (Operational Traffic Unlabeled)",
+      "processing_version": "2.0-RealData"
+    },
+    {
+      "capture_id": "cap_1793149890_3",
+      "registered_at": "2026-10-28 06:41:30",
+      "source": "User Upload (smtp.pcap)",
+      "filename": "smtp.pcap",
+      "file_format": "PCAP (Byte-swapped Microsecond)",
+      "interface_or_context": "Offline User Import",
+      "duration_seconds": 196.066,
+      "packet_count": 913,
+      "total_bytes": 86414,
+      "timestamp_quality": "VALID_TIMESTAMPS",
+      "parsing_status": "SUCCESS",
+      "label_availability": "UNLABELED (Real Observation)",
+      "ground_truth_status": "NONE (Operational Traffic Unlabeled)",
+      "processing_version": "2.0-RealData"
+    }
+  ]
+}

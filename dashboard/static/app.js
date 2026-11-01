@@ -213,6 +213,106 @@
   // =========================================================================
   // 1. THREE.JS 3D NETWORK VISUALIZATION
   // =========================================================================
+  // Centralized Device-Type Color Mapping & Metadata
+  // =========================================================================
+  const DEVICE_TYPE_COLORS = {
+    'Router':        { name: 'Router', hex: '#00D5FF', int: 0x00d5ff },
+    'Switch':        { name: 'Switch', hex: '#4287F5', int: 0x4287f5 },
+    'Server':        { name: 'Server', hex: '#A970FF', int: 0xa970ff },
+    'Desktop / PC':  { name: 'Desktop / PC', hex: '#42D392', int: 0x42d392 },
+    'Laptop':        { name: 'Laptop', hex: '#20B8A8', int: 0x20b8a8 },
+    'Mobile device': { name: 'Mobile device', hex: '#FF9F43', int: 0xff9f43 },
+    'IoT device':    { name: 'IoT device', hex: '#F4D35E', int: 0xf4d35e },
+    'Firewall':      { name: 'Firewall', hex: '#FF4D5A', int: 0xff4d5a },
+    'Unknown':       { name: 'Unknown / other', hex: '#8B95A5', int: 0x8b95a5 }
+  };
+
+  function normalizeDeviceType(rawType) {
+    if (!rawType || typeof rawType !== 'string') return 'Unknown';
+    const cleaned = rawType.trim().toLowerCase();
+    if (!cleaned || ['unknown', 'unverified', 'other', 'none', 'observed ip endpoint', 'observed l2/l3 node', 'operating-system connection endpoint'].includes(cleaned)) {
+      return 'Unknown';
+    }
+    // Router rule: Gateway, Core Router, Router normalize strictly to Router
+    if (cleaned.includes('router') || cleaned.includes('gateway')) {
+      return 'Router';
+    }
+    if (cleaned.includes('switch')) {
+      return 'Switch';
+    }
+    if (cleaned.includes('server')) {
+      return 'Server';
+    }
+    if (cleaned.includes('desktop') || cleaned.includes('workstation') || cleaned.includes('pc')) {
+      return 'Desktop / PC';
+    }
+    if (cleaned.includes('laptop') || cleaned.includes('notebook')) {
+      return 'Laptop';
+    }
+    if (cleaned.includes('mobile') || cleaned.includes('phone') || cleaned.includes('tablet') || cleaned.includes('android') || cleaned.includes('ios')) {
+      return 'Mobile device';
+    }
+    if (cleaned.includes('iot') || cleaned.includes('sensor') || cleaned.includes('camera') || cleaned.includes('smart device')) {
+      return 'IoT device';
+    }
+    if (cleaned.includes('firewall') || cleaned.includes('fw') || cleaned.includes('ngfw')) {
+      return 'Firewall';
+    }
+    return 'Unknown';
+  }
+
+  function getDeviceTypeConfig(rawType) {
+    const canonical = normalizeDeviceType(rawType);
+    return DEVICE_TYPE_COLORS[canonical] || DEVICE_TYPE_COLORS['Unknown'];
+  }
+
+  function updateDeviceTypeLegend(nodes) {
+    const container = document.getElementById('legendDeviceTypesContainer');
+    const countBadge = document.getElementById('legendConnectedCount');
+    const count = (nodes && Array.isArray(nodes)) ? nodes.length : 0;
+    if (countBadge) {
+      countBadge.textContent = `${count} Connected`;
+    }
+    if (!container) return;
+
+    if (count === 0) {
+      container.innerHTML = '<div class="legend-empty-note">Waiting for connected devices...</div>';
+      return;
+    }
+
+    const typeCounts = new Map();
+    nodes.forEach(node => {
+      const devType = normalizeDeviceType(node.device_type || node.role);
+      typeCounts.set(devType, (typeCounts.get(devType) || 0) + 1);
+    });
+
+    let html = '';
+    const sortedTypes = Array.from(typeCounts.entries()).sort((a, b) => b[1] - a[1]);
+
+    sortedTypes.forEach(([devType, c]) => {
+      const cfg = DEVICE_TYPE_COLORS[devType] || DEVICE_TYPE_COLORS['Unknown'];
+      html += `
+        <div class="legend-row">
+          <span class="legend-dot" style="background-color: ${cfg.hex}; box-shadow: 0 0 6px ${cfg.hex}88;"></span>
+          <span class="legend-label">${cfg.name}</span>
+          <span class="legend-count-pill">${c}</span>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  }
+
+  // Expose for verification and browser inspector
+  if (typeof window !== 'undefined') {
+    window.SOC_VISUALIZATION = {
+      DEVICE_TYPE_COLORS,
+      normalizeDeviceType,
+      getDeviceTypeConfig,
+      updateDeviceTypeLegend
+    };
+  }
+
   let scene, camera, renderer, controls, raycaster, mouse;
   const nodeMeshes = new Map();
   const edgeMeshes = new Map();
@@ -356,9 +456,10 @@
       dom.threeJsTooltip.style.display = 'block';
       dom.threeJsTooltip.style.left = `${event.clientX - rect.left}px`;
       dom.threeJsTooltip.style.top = `${event.clientY - rect.top - 15}px`;
+      const canonicalType = normalizeDeviceType(nodeData.device_type || nodeData.role);
       dom.threeJsTooltip.innerHTML = `
         <span class="tooltip-ip">${nodeData.ip}</span>
-        <span class="tooltip-role">${nodeData.label || nodeData.ip} (${nodeData.role || 'Observed Host'})</span>
+        <span class="tooltip-role">${nodeData.label || nodeData.ip} (${canonicalType})</span>
       `;
     } else {
       dom.threeJsCanvas.style.cursor = 'default';
@@ -378,7 +479,8 @@
     state.selectedNodeId = nodeData.id;
 
     // Populate Floating Node Inspector with strictly verified attributes
-    dom.insRolePill.textContent = nodeData.role || 'Observed Endpoint';
+    const canonicalType = normalizeDeviceType(nodeData.device_type || nodeData.role);
+    dom.insRolePill.textContent = canonicalType !== 'Unknown' ? canonicalType : (nodeData.role || 'Observed Endpoint');
     dom.insCatPill.textContent = (nodeData.category || 'Normal').toUpperCase();
     dom.insCatPill.className = `inspector-cat-pill cat-${(nodeData.category || 'normal').toLowerCase()}`;
 
@@ -427,7 +529,10 @@
   }
 
   function clear3DTopologyMeshes() {
-    nodeMeshes.forEach(({ mesh }) => scene.remove(mesh));
+    nodeMeshes.forEach(val => {
+      if (val.mesh) scene.remove(val.mesh);
+      if (val.connRingMesh) scene.remove(val.connRingMesh);
+    });
     nodeMeshes.clear();
 
     edgeMeshes.forEach(({ line }) => scene.remove(line));
@@ -438,88 +543,166 @@
 
     edgeParticles.forEach(ep => scene.remove(ep.mesh));
     edgeParticles.length = 0;
+
+    updateDeviceTypeLegend([]);
   }
 
   function build3DTopology(data) {
     if (!scene) return;
     state.topologyData = data || { nodes: [], edges: [] };
-    const nodes = data && data.nodes ? data.nodes : [];
-    const edges = data && data.edges ? data.edges : [];
+    const allNodes = data && data.nodes ? data.nodes : [];
+    // Strict Connected-Device Policy: render only nodes whose is_connected is explicitly true
+    const nodes = allNodes.filter(n => n && n.is_connected === true);
+    const connectedNodeIds = new Set(nodes.map(n => n.id));
 
-    // Empty State Check (Section 5)
+    // Edges strictly between connected nodes
+    const allEdges = data && data.edges ? data.edges : [];
+    const edges = allEdges.filter(e => connectedNodeIds.has(e.source) && connectedNodeIds.has(e.target));
+
+    // Empty State Check: no live devices currently connected
     if (nodes.length === 0) {
       clear3DTopologyMeshes();
       if (dom.threeJsEmptyState) {
         dom.threeJsEmptyState.style.display = 'flex';
+        const title = dom.threeJsEmptyState.querySelector('.empty-title');
+        if (title) title.textContent = 'No connected devices detected';
+        const desc = dom.threeJsEmptyState.querySelector('.empty-desc');
+        if (desc) desc.textContent = 'No live devices have transmitted verified packets within the 60s recency window. Disconnected and historical endpoints are quarantined.';
       }
-      dom.hudNodesOnline.textContent = '0 NODES OBSERVED';
+      dom.hudNodesOnline.textContent = '0 CONNECTED DEVICES';
       dom.hudEdgesActive.textContent = '0 ACTIVE LINKS';
       dom.hudThreatNodes.textContent = '0 THREAT NODES';
       if (dom.threeNodeInspector) {
         dom.threeNodeInspector.style.display = 'none';
       }
+      updateDeviceTypeLegend([]);
       return;
     }
 
-    // Nodes are present: hide empty state overlay
+    // Connected devices present: hide empty state overlay
     if (dom.threeJsEmptyState) {
       dom.threeJsEmptyState.style.display = 'none';
     }
 
-    // Update HUD counters
-    dom.hudNodesOnline.textContent = `${nodes.length} NODES OBSERVED`;
+    // Update HUD counters to reflect connected devices accurately
+    dom.hudNodesOnline.textContent = `${nodes.length} CONNECTED DEVICES`;
     dom.hudEdgesActive.textContent = `${edges.length} ACTIVE LINKS`;
 
     const threatCount = nodes.filter(n => n.category === 'Suspicious' || n.category === 'Malicious').length;
     dom.hudThreatNodes.textContent = `${threatCount} THREAT NODES`;
 
-    // 1. Reconcile Nodes
-    const activeNodeIds = new Set(nodes.map(n => n.id));
+    // Update dynamic legend with current connected devices and counts
+    updateDeviceTypeLegend(nodes);
 
-    // Remove nodes that are no longer in observation registry
+    // 1. Reconcile Nodes: remove disconnected or expired nodes from scene
     nodeMeshes.forEach((val, id) => {
-      if (!activeNodeIds.has(id)) {
+      if (!connectedNodeIds.has(id)) {
         scene.remove(val.mesh);
+        if (val.connRingMesh) scene.remove(val.connRingMesh);
         nodeMeshes.delete(id);
       }
     });
 
+    // Reconcile Alert Rings: remove orphaned rings when nodes disconnect
+    for (let i = alertRings.length - 1; i >= 0; i--) {
+      const ring = alertRings[i];
+      if (!ring.nodeId || !connectedNodeIds.has(ring.nodeId)) {
+        scene.remove(ring.mesh);
+        alertRings.splice(i, 1);
+      }
+    }
+
     nodes.forEach(node => {
+      const devType = normalizeDeviceType(node.device_type || node.role);
+      const typeConfig = getDeviceTypeConfig(devType);
+
       if (nodeMeshes.has(node.id)) {
         const item = nodeMeshes.get(node.id);
+        const prevType = item.deviceType;
+        item.node = node;
         item.mesh.userData = node;
+
+        // Reconcile device-type material when reported device type changes
+        if (prevType !== devType) {
+          item.mesh.material.color.setHex(typeConfig.int);
+          item.mesh.material.emissive.setHex(typeConfig.int);
+          item.deviceType = devType;
+        }
+
+        // Reconcile threat alert ring independently without modifying primary device-type color
+        const hasThreat = node.has_alert || node.category === 'Suspicious' || node.category === 'Malicious';
+        const ringIdx = alertRings.findIndex(r => r.nodeId === node.id);
+
+        if (hasThreat) {
+          const ringColor = node.category === 'Malicious' ? 0xef4444 : 0xf59e0b;
+          if (ringIdx >= 0) {
+            alertRings[ringIdx].mesh.material.color.setHex(ringColor);
+          } else {
+            const size = item.size || 10;
+            const ringGeo = new THREE.RingGeometry(size * 1.45, size * 1.75, 32);
+            const ringMat = new THREE.MeshBasicMaterial({
+              color: ringColor,
+              side: THREE.DoubleSide,
+              transparent: true,
+              opacity: 0.85
+            });
+            const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+            ringMesh.position.copy(item.mesh.position);
+            ringMesh.rotation.x = Math.PI / 2;
+            scene.add(ringMesh);
+            alertRings.push({ mesh: ringMesh, baseSize: size * 1.45, scale: 1, nodeId: node.id });
+          }
+        } else if (ringIdx >= 0) {
+          scene.remove(alertRings[ringIdx].mesh);
+          alertRings.splice(ringIdx, 1);
+        }
+
         return;
       }
 
-      // Create new 3D Node Mesh
-      let color = 0x06b6d4; // Default Teal
+      // Create new 3D Node Mesh strictly colored by device type
+      const color = typeConfig.int;
       let size = 10;
       let geometry;
 
-      if (node.role === 'Gateway') {
-        color = 0x3b82f6;
-        size = 14;
-        geometry = new THREE.OctahedronGeometry(size, 1);
-      } else if (node.role === 'Core Router') {
-        color = 0x0284c7;
-        size = 13;
-        geometry = new THREE.IcosahedronGeometry(size, 1);
-      } else if (node.category === 'Malicious') {
-        color = 0xef4444;
-        size = 13;
-        geometry = new THREE.DodecahedronGeometry(size, 0);
-      } else if (node.category === 'Suspicious') {
-        color = 0xf59e0b;
-        size = 12;
-        geometry = new THREE.SphereGeometry(size, 20, 20);
-      } else if (node.role && node.role.includes('Server')) {
-        color = 0x06b6d4;
-        size = 11;
-        geometry = new THREE.CylinderGeometry(size, size, size * 1.4, 16);
-      } else {
-        color = 0x38bdf8;
-        size = 9;
-        geometry = new THREE.SphereGeometry(size, 16, 16);
+      switch (devType) {
+        case 'Router':
+          size = 13;
+          geometry = new THREE.IcosahedronGeometry(size, 1);
+          break;
+        case 'Switch':
+          size = 12;
+          geometry = new THREE.OctahedronGeometry(size, 0);
+          break;
+        case 'Server':
+          size = 11;
+          geometry = new THREE.CylinderGeometry(size * 0.9, size * 0.9, size * 1.4, 16);
+          break;
+        case 'Desktop / PC':
+          size = 11;
+          geometry = new THREE.BoxGeometry(size * 1.2, size * 1.2, size * 1.2);
+          break;
+        case 'Laptop':
+          size = 10;
+          geometry = new THREE.BoxGeometry(size * 1.4, size * 0.4, size * 1.0);
+          break;
+        case 'Mobile device':
+          size = 9;
+          geometry = new THREE.BoxGeometry(size * 0.7, size * 1.4, size * 0.35);
+          break;
+        case 'IoT device':
+          size = 8;
+          geometry = new THREE.OctahedronGeometry(size, 0);
+          break;
+        case 'Firewall':
+          size = 12;
+          geometry = new THREE.DodecahedronGeometry(size, 0);
+          break;
+        case 'Unknown':
+        default:
+          size = 9;
+          geometry = new THREE.SphereGeometry(size, 16, 16);
+          break;
       }
 
       const material = new THREE.MeshStandardMaterial({
@@ -527,7 +710,7 @@
         roughness: 0.25,
         metalness: 0.65,
         emissive: color,
-        emissiveIntensity: node.has_alert ? 0.6 : 0.2
+        emissiveIntensity: 0.25
       });
 
       const mesh = new THREE.Mesh(geometry, material);
@@ -536,23 +719,37 @@
       mesh.userData = node;
       scene.add(mesh);
 
-      // Pulsing alert ring for high-threat or flagged nodes
+      // Connectivity indicator: subtle ring beneath node base
+      const connRingGeo = new THREE.RingGeometry(size * 1.15, size * 1.28, 32);
+      const connRingMat = new THREE.MeshBasicMaterial({
+        color: 0x00d5ff,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.35
+      });
+      const connRingMesh = new THREE.Mesh(connRingGeo, connRingMat);
+      connRingMesh.position.copy(mesh.position);
+      connRingMesh.position.y -= size * 0.55;
+      connRingMesh.rotation.x = Math.PI / 2;
+      scene.add(connRingMesh);
+
+      // Pulsing alert ring for high-threat or flagged nodes (separate secondary indicator)
       if (node.has_alert || node.category === 'Suspicious' || node.category === 'Malicious') {
-        const ringGeo = new THREE.RingGeometry(size * 1.4, size * 1.7, 32);
+        const ringGeo = new THREE.RingGeometry(size * 1.45, size * 1.75, 32);
         const ringMat = new THREE.MeshBasicMaterial({
           color: node.category === 'Malicious' ? 0xef4444 : 0xf59e0b,
           side: THREE.DoubleSide,
           transparent: true,
-          opacity: 0.8
+          opacity: 0.85
         });
         const ringMesh = new THREE.Mesh(ringGeo, ringMat);
         ringMesh.position.copy(mesh.position);
         ringMesh.rotation.x = Math.PI / 2;
         scene.add(ringMesh);
-        alertRings.push({ mesh: ringMesh, baseSize: size * 1.4, scale: 1 });
+        alertRings.push({ mesh: ringMesh, baseSize: size * 1.45, scale: 1, nodeId: node.id });
       }
 
-      nodeMeshes.set(node.id, { mesh, node });
+      nodeMeshes.set(node.id, { mesh, node, deviceType: devType, size, connRingMesh });
     });
 
     // 2. Reconcile Edges
@@ -563,6 +760,15 @@
         edgeMeshes.delete(id);
       }
     });
+
+    // Clean orphaned edge particles
+    for (let i = edgeParticles.length - 1; i >= 0; i--) {
+      const ep = edgeParticles[i];
+      if (!ep.edgeId || !activeEdgeIds.has(ep.edgeId)) {
+        scene.remove(ep.mesh);
+        edgeParticles.splice(i, 1);
+      }
+    }
 
     edges.forEach(edge => {
       if (edgeMeshes.has(edge.id)) return;
@@ -614,7 +820,8 @@
         p1: p1,
         p2: p2,
         progress: Math.random(),
-        speed: 0.006 + Math.random() * 0.008
+        speed: 0.006 + Math.random() * 0.008,
+        edgeId: edge.id
       });
     });
 
@@ -1104,13 +1311,32 @@
     try {
       const res = await fetch('/api/soc/topology');
       if (seq < topologyReqSeq) return; // Discard stale delayed response
-      if (!res.ok) return;
+      if (!res.ok) {
+        handleTopologyFetchFailure(`HTTP error ${res.status}`);
+        return;
+      }
       const data = await res.json();
       if (seq < topologyReqSeq) return; // Discard stale delayed response
       build3DTopology(data);
     } catch (err) {
       console.warn('Error fetching /api/soc/topology:', err);
+      handleTopologyFetchFailure(err.message || 'Network fetch failed');
     }
+  }
+
+  function handleTopologyFetchFailure(reason) {
+    // Ensure API failures do not leave a misleading stale topology on screen
+    clear3DTopologyMeshes();
+    if (dom.threeJsEmptyState) {
+      dom.threeJsEmptyState.style.display = 'flex';
+      const title = dom.threeJsEmptyState.querySelector('.empty-title');
+      if (title) title.textContent = 'Topology Telemetry Offline';
+      const desc = dom.threeJsEmptyState.querySelector('.empty-desc');
+      if (desc) desc.textContent = `Unable to retrieve verified topology from backend (${reason}). Topology cleared to prevent stale rendering.`;
+    }
+    if (dom.hudNodesOnline) dom.hudNodesOnline.textContent = '0 CONNECTED DEVICES';
+    if (dom.hudEdgesActive) dom.hudEdgesActive.textContent = '0 ACTIVE LINKS';
+    if (dom.hudThreatNodes) dom.hudThreatNodes.textContent = '0 THREAT NODES';
   }
 
   async function fetchSocThreatLogs() {

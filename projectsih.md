@@ -157,6 +157,7 @@ Input Sequence ──►│  Bidirectional LSTM (Layer 1, Dim 64)  │
      Current Stage Probs                         Predicted Next Stage Probs
 ```
 
+
 ### 5.2 Mathematical Formulation
 Given an input temporal sequence $\mathbf{X} = (\mathbf{x}_1, \mathbf{x}_2, \dots, \mathbf{x}_T) \in \mathbb{R}^{T \times D}$ where $T=10$ and $D=12$:
 1. Forward hidden state: $\overrightarrow{\mathbf{h}}_t = \text{LSTM}_{\text{fwd}}(\mathbf{x}_t, \overrightarrow{\mathbf{h}}_{t-1})$

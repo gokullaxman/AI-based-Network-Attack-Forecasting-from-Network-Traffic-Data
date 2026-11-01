@@ -476,7 +476,7 @@
               <h2 class="col-heading">3D NETWORK TOPOLOGY VISUALIZATION</h2>
             </div>
             <div class="center-header-stats">
-              <span class="hud-stat-pill" id="hudNodesOnline">0 NODES OBSERVED</span>
+              <span class="hud-stat-pill" id="hudNodesOnline">0 CONNECTED DEVICES</span>
               <span class="hud-stat-pill" id="hudEdgesActive">0 ACTIVE LINKS</span>
               <span class="hud-stat-pill highlight" id="hudThreatNodes">0 THREAT NODES</span>
             </div>
@@ -586,25 +586,30 @@
             <!-- Floating Visual Legend Overlay (Bottom-Left) -->
             <div class="canvas-visual-legend" id="canvasLegend">
               <div class="legend-header">
-                <span class="legend-title">TOPOLOGY LEGEND</span>
-                <span class="legend-hint">Orbit: Left Click | Pan: Right Click | Zoom: Scroll</span>
+                <div class="legend-title-group">
+                  <span class="legend-title">DEVICE TYPES & TOPOLOGY</span>
+                  <span class="legend-badge" id="legendConnectedCount">0 Connected</span>
+                </div>
+                <span class="legend-hint">Orbit: Left Drag | Pan: Right Drag | Zoom: Scroll</span>
               </div>
               <div class="legend-grid">
                 <div class="legend-col">
-                  <span class="legend-col-title">DEVICE NODES:</span>
-                  <div class="legend-row"><span class="legend-dot dot-gw"></span> Gateway Router (192.168.1.1)</div>
-                  <div class="legend-row"><span class="legend-dot dot-server"></span> Internal Server Cluster</div>
-                  <div class="legend-row"><span class="legend-dot dot-ws"></span> Corporate Workstations</div>
-                  <div class="legend-row"><span class="legend-dot dot-susp"></span> Suspicious Host (192.168.1.25)</div>
-                  <div class="legend-row"><span class="legend-dot dot-att"></span> External Attacker (198.51.100.77)</div>
+                  <span class="legend-col-title">ACTIVE DEVICE TYPES:</span>
+                  <div class="legend-device-list" id="legendDeviceTypesContainer">
+                    <div class="legend-empty-note">Waiting for connected devices...</div>
+                  </div>
+                  <div class="legend-fallback-note">
+                    <span class="legend-dot dot-fallback"></span>
+                    <span class="fallback-text">Neutral Grey (#8B95A5): Unverified / Unknown</span>
+                  </div>
                 </div>
                 <div class="legend-col">
-                  <span class="legend-col-title">TRAFFIC LINKS:</span>
-                  <div class="legend-row"><span class="legend-line line-norm"></span> Normal Business Flow</div>
-                  <div class="legend-row"><span class="legend-line line-susp"></span> Suspicious Scan / Sweep</div>
-                  <div class="legend-row"><span class="legend-line line-mal"></span> Malicious Exploit / C2</div>
-                  <div class="legend-row"><span class="legend-pulse-icon"></span> Animated Glowing Particles</div>
-                  <div class="legend-row"><span class="legend-ring-icon"></span> Pulsing Alert Ring</div>
+                  <span class="legend-col-title">VISUAL INDICATORS:</span>
+                  <div class="legend-row"><span class="legend-dot-type-hint"></span> Node Color = Device Type</div>
+                  <div class="legend-row"><span class="legend-ring-icon ring-conn"></span> Subtle Ring = Connected Status</div>
+                  <div class="legend-row"><span class="legend-ring-icon ring-susp"></span> Pulsing Amber = Suspicious</div>
+                  <div class="legend-row"><span class="legend-ring-icon ring-mal"></span> Pulsing Red = Malicious</div>
+                  <div class="legend-row"><span class="legend-line line-norm"></span> Verified Traffic Link</div>
                 </div>
               </div>
             </div>
